@@ -97,7 +97,12 @@ filter expression, then let the deterministic engine run it. The LLM helps with
 discovery and curation, but the result set should still be explainable and
 repeatable.
 
-### Quickly Notify A Selected Group
+Later, local-LLM support will be added for natural language search and assisted discovery.
+
+Also, OSS FTW, because people are definitely going to just rewrite the search layer 
+with AI, and use their own local AIs to help with discovery using private context.
+
+### Quickly notify a selected group
 
 Problem: You need a fast way to send out a notification to a group that 
 may not have a unified chat group or mailing list.
