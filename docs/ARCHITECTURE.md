@@ -5,6 +5,9 @@ share stable data contracts instead of one large runtime. Each tool should be
 usable from a CLI, callable as a small Python library, and able to exchange data
 through documented SQLite and JSON formats.
 
+The composability and privilege-seperation models of UNIX philosophy and djb are 
+a strong inspiration and aspiration for the project.
+
 The toolkit is meant to be application-building infrastructure as much as an
 end-user app. A developer should be able to use the importer, DB, viewer, search,
 or exporter together, or replace any one of them with their own script. See
