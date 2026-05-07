@@ -1,13 +1,15 @@
 # Personal Network Toolkit
 
-Personal Network Toolkit is a local-first set of small tools for managing personal connections and relationships privately.
+Personal Network Toolkit is a local-first set of small tools for managing personal connections and relationships privately.  
 
 - **Import your contacts** from one or more centralized databases (Google, Apple, Facebook, Linkedin, bespoke directories).
 - **Add relationship data** on top of your contact data, without giving that information back up to centralized vendors.
 - Use a super fast local viewer to view, filter, discover and **organize them into personal networks**.
 - **Export networks** as web apps, pdfs, emails and lists for use elsewhere.
 - **Plug into communications** channels and use them in the viewer - email, p2p chat, AT protocol, etc.
-- **Build** your own personal network tools, or tools for relationship or directory management on top.
+- **Build** your own personal network tools, or tools for relationship or directory management, or plugins for those apps.
+
+Private, local-only apps need to be the place we keep private data.  To build killer apps for ourselves, those apps need to be able to source data from the legacy centralized internet.  To communicate with the natural tools of a community, we need to be able to plug in those communications tools - only with sufficient privacy can we begin to gather data for personal and community insights to social network health.
 
 ## Status
 
