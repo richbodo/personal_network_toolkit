@@ -8,7 +8,7 @@
 
 ## Preamble
 
-Two shifts are arriving at the same time that make [PNAs](#vocab-pna) necessary.  First, data is still flowing into SaaS, but trust if flowing out: users are increasingly unwilling to trust SaaS vendors (Facebook, Google, Apple, etc.) with knowing who they talk to about politics or mental health. At the same time, edge compute and AI agents capable of running serious work locally are arriving fast. The first shift creates demand for tools that keep user data sovereign; the second makes such tools practical to build, run, and recompose at the user's own pace.
+Two shifts are arriving at the same time that make [PNAs](#vocab-pna) necessary.  First, data is still flowing into SaaS, but trust if flowing out: users are increasingly unwilling to trust SaaS vendors (Facebook, Google, Apple, etc.) at all, nevermind with knowing who they talk to about politics or mental health. At the same time, edge compute and AI agents capable of running serious work locally are arriving fast. The first shift creates demand for tools that keep user data sovereign; the second makes such tools practical to build, run, and recompose at the user's own pace.
 
 A personal network application is a tool for users to manage and use contact and relationship data that makes up their personal networks. A PNA handles a user's contact data and personal-relationship data with strong, declared contracts about how that data is treated. The PNA separates the concerns of editing data that is shared with other systems from data that is created and held locally and privately.
 
