@@ -84,20 +84,6 @@ Without PNAs, we have no credible exit from SaaS systems to user-owned software 
 
 Without PANs, we go to a list of contacts in linkedin or facebook and are overwhelmed by the number of non-relationships in the contact list, manipulation through feeds, abuse and sale of our information, and are kept on those sites as long as possible by the SaaS vendors, often never solving any relational need, even if it is extremely urgent and sensitive.  The lack of privacy in for our personal relationship data is making it much harder for many to improve individual and community health.
 
-### Personal Network Toolkit
-
-When building a PNA, specs are foundational because users will increasingly compose software by prompting AI agents, and success is measured by adherence to them.
-
-The Personal Network Toolkit project is an attempt to offer:
-
-- Foundational specs for PNAs
-- Production-ready reference applications
-- MCP servers
-
-That combination best satisfies the composability model of Software 3.0 in this context. It should ensure that both the humans and the AIs in modern human-AI builder teams can build PNAs that they understand fully and that behave as expected. The Personal Network Toolkit augments the human-AI builder teams; it doesn't automatically build applications itself.
-
-So we expect most PNAs to be built and rebuilt by AIs — adapting a thematic reference design like fellows_local_db, or building fresh against the specs and code herein. 
-
 ### Building a PNA
 
 When an AI is asked to build a PNA, it is required to follow the contracts of the PNA on the user's behalf, and those contracts are written so the AI can pick them up and check its own work. The user's confidence comes from the spec being clear enough that both they and the AI can read it.  As long as the contracts hold, an AI can rewrite a PNA from scratch while the user is still talking to it without changing the user's sovereignty, durability, or privacy posture. The goals below are user-facing needs; the architectural commitments after them are the choices that make those needs achievable.
