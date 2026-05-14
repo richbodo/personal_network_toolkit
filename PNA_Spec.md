@@ -12,7 +12,7 @@ The spec uses a small, deliberate set of terms. Worked examples below cite `fell
 
 - **Personal network application (PNA).** A PNA is an application that helps a user view contact data and work on relationship data over it as a firewalled data layer with higher security needs than the contact data. The PNA runs local-only, never as SaaS - servers are only used for distribution and app updates, and only where appropriate. The PNA bridges SaaS data (which should never contain private relationship data) into a much more functional, customizable user-owned work environment suitable for viewing personal networks, updating private data about them, and interacting with them.
 
-  fellows_local_db is one PNA reference design — making a directory archive useful and fast. Another PNA reference design would be an app that aggregates personal contact data ingested from the big SaaS providers and lets the user operate privately on that data, adding privacy-sensitive notes, searching, and launching tasks from the app. PNAs bridge the old world of SaaS and offer private, custom tools to operate on contact data.
+fellows_local_db is one PNA reference design — making a directory archive useful and fast - providing a credible exit from a SaaS directory system. Another PNA reference design would be a PRM - an app that aggregates personal contact data ingested from the big SaaS providers and lets the user operate privately on that data, adding privacy-sensitive notes, searching, and launching tasks from the app. PNAs bridge the old world of SaaS and offer private, custom tools to operate on contact data.
 
 - **Slot.** A slot is a part of a PNA — a code module that handles a specific job within the system. v0.1 names five slots:
 
@@ -76,9 +76,13 @@ The spec uses a small, deliberate set of terms. Worked examples below cite `fell
 
 Two shifts are arriving at the same time that make PNAs necessary.  First, personal data is withdrawing from centralized systems: users are increasingly unwilling to trust SaaS vendors (Facebook, Google, Apple, etc.) with knowing who they talk to about politics or mental health. At the same time, edge compute and AI agents capable of running serious work locally are arriving fast. The first shift creates demand for tools that keep user data sovereign; the second makes such tools practical to build, run, and recompose at the user's own pace.
 
-A personal network application is a tool for users to manage and use contact and relationship data that makes up their personal networks. A PNA handles a user's contact data and personal-relationship data with strong, declared contracts about how that data is treated. The PNA separates the concerns of editing data shared with other systems from data created and held locally as private.
+A personal network application is a tool for users to manage and use contact and relationship data that makes up their personal networks. A PNA handles a user's contact data and personal-relationship data with strong, declared contracts about how that data is treated. The PNA separates the concerns of editing data that is shared with other systems from data that is created and held locally and privately.
 
 v0.1 PNAs all operate downstream of SaaS systems of record — they do not modify contact data, although a contact manager might well exist as a plugin to a PNA, or vice-versa. What distinguishes the niche is the architectural promise: shared data is local-first and replaceable; private data is sovereign and protected; the user can reclassify a record's privacy at any time, and the PNA honors it durably; communication transports are user-chosen to meet the user's privacy and other requirements; the user can reason about where their data lives without trusting a vendor.
+
+Without PNAs, we have no credible exit from SaaS systems to user-owned software - PNAs create that exit.
+
+Without PANs, we go to a list of contacts in linkedin or facebook and are overwhelmed by the number of non-relationships in the contact list, manipulation through feeds, abuse and sale of our information, and are kept on those sites as long as possible by the SaaS vendors, often never solving any relational need, even if it is extremely urgent and sensitive.  The lack of privacy in for our personal relationship data is making it much harder for many to improve individual and community health.
 
 ### Personal Network Toolkit
 
@@ -100,7 +104,7 @@ When an AI is asked to build a PNA, it is required to follow the contracts of th
 
 ### Vision
 
-One longer-arc target is an ecosystem of cooperating PNAs on a single user's device — a Personal Relationship Manager (where private relationship data lives) running alongside one or more Directory Archives, a Contact Manager, and a Calendar app, each in its own bundle and sharing data as per their contracts.
+One longer-arc target is an ecosystem of cooperating PNAs on a single user's device — a Personal Relationship Manager (PRM - where private relationship data lives) running alongside one or more Directory Archives, a Contact Manager, and a Calendar app, each in its own bundle and sharing data as per their contracts.
 
 The PRM acts as the meta-workspace: relationship data layered on top of a deduplicated read-only meta-view composed from the other apps' shared stores (Bob's cell from Google + work history from a fellowship directory + email from a Facebook export, resolved into one coherent contact view; the PRM's private overlay attached through stable IDs). The user can also work in clean per-app workspaces when they want a single context. Composing the meta-view requires per-source connectors, dedup with conflict resolution, and disciplined provenance — work for later spec versions. The eventual *ecosystem reference design* is the goal; v0.1 ships one PNA (fellows_local_db) and the spec it conforms to, along with MCP servers, with the architectural seams sized to let the ecosystem grow into place.
 
