@@ -1,18 +1,8 @@
 # Personal Network Toolkit
 
-The Personal Network Toolkit is a blueprint for building **[personal network applications (PNAs)](PNA_Spec.md#goals)** — local-only apps for viewing contact data and working on relationship data over a firewalled private data layer. PNAs run on the user's device, never as SaaS, and bridge SaaS-held contact data into a private workspace.
+The Personal Network Toolkit is a blueprint for building **[personal network applications (PNAs)](PNA_Spec.md)** — local-only apps for viewing contact data and working on relationship data over a firewalled private data layer. PNAs run on the user's device, never as SaaS, and bridge SaaS-held contact data into a private workspace.  **[Why do this?](PNA_Spec.md#goals)**
 
 When building a PNA, specs are foundational because users will increasingly compose software by prompting AI agents, and success is measured by adherence to them.
-
-The Personal Network Toolkit project is an attempt to offer:
-
-- Foundational specs for PNAs
-- Production-ready reference applications
-- MCP servers
-
-That combination best satisfies the composability model of Software 3.0 in this context. It should ensure that both the humans and the AIs in modern human-AI builder teams can build PNAs that they understand fully and that behave as expected. The Personal Network Toolkit augments the human-AI builder teams; it doesn't automatically build applications itself.
-
-So we expect most PNAs to be built and rebuilt by AIs — adapting a thematic reference design, or building fresh against the specs and code herein. 
 
 Three deliverables, in dependency order:
 
@@ -20,7 +10,9 @@ Three deliverables, in dependency order:
 2. **Production-ready reference applications.** Working PNAs you can install, study, and adapt. — first reference design is a distributed directory archive (lives at [richbodo/fellows_local_db](https://github.com/richbodo/fellows_local_db)).
 3. **MCP servers.** Composability-layer (Software 3.0) bridges so AI clients (Claude Desktop, Cursor, local Ollama agents) can drive a PNA on the user's behalf. — three v1 stdio servers ship inside `fellows_local_db/mcp_servers/`; typed contracts for all five canonical MCP servers live here in [`spec/contracts/`](spec/contracts/).
 
-This toolkit augments human-AI builder teams; it doesn't auto-build applications itself; it is a blueprint for agents to implement and humans to customize and verify.  Verification is made simply by composable contract specifications.
+That combination best satisfies the composability model of Software 3.0 in this context. It should ensure that both the humans and the AIs in modern human-AI builder teams can build PNAs that they understand fully and that behave as expected. The Personal Network Toolkit augments the human-AI builder teams; it doesn't automatically build applications itself.
+
+This toolkit augments human-AI builder teams; it doesn't auto-build applications itself; it is a blueprint for agents to implement and humans to customize and verify.  Verification is made simply by composable contract specifications made primarily for AIs, derived from goals made for humans to read.
 
 ## Entry points
 
