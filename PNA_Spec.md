@@ -22,7 +22,8 @@ Without PANs, we go to a list of contacts in linkedin or facebook and are overwh
 
 ## Building a PNA
 
-When an AI is asked to build a PNA, it is required to follow the contracts of the PNA on the user's behalf, and those contracts are written so the AI can pick them up and check its own work. The user's confidence comes from the spec being clear enough that both they and the AI can read it.  As long as the contracts hold, an AI can rewrite a PNA from scratch while the user is still talking to it without changing the user's sovereignty, durability, or privacy posture. The goals below are user-facing needs; the [architectural commitments](#vocab-universal-ac) after them are the choices that make those needs achievable.
+When an AI is asked to build a PNA, it is required to follow the contracts of the PNA on the user's behalf, and those contracts are written so the AI can pick them up and check its own work. The user's confidence comes from the spec being clear enough that both they and the AI can read it.  As long as the contracts hold, an AI can rewrite a PNA from scratch while the user is still talking to it without changing the user's sovereignty, durability, or privacy posture. The goals below are user-facing needs; the [architectural commitments](#vocab-universal-ac) after them are the choices that make those needs achievable.  Check out the specs of any reference design to see the output of this process.
+
 
 ---
 
