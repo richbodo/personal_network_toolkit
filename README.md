@@ -1,14 +1,14 @@
 # Personal Network Toolkit
 
-The Personal Network Toolkit offers the foundational materials for building **personal network applications (PNAs)** — local-only apps for viewing contact data and working on relationship data over a firewalled private data layer. PNAs run on the user's device, never as SaaS, and bridge SaaS-held contact data into a private, customizable workspace.
+The Personal Network Toolkit is a blueprint for building **personal network applications (PNAs)** — local-only apps for viewing contact data and working on relationship data over a firewalled private data layer. PNAs run on the user's device, never as SaaS, and bridge SaaS-held contact data into a private workspace.
 
-Three eventual deliverables, in dependency order:
+Three deliverables, in dependency order:
 
 1. **Foundational specs.** Universal vocabulary, goals, axes, architectural commitments, and typed contracts for a PNA. — **shipping in v0.1 (draft)**.
-2. **Production-ready reference applications.** Working PNAs you can install, study, and adapt. — first reference design (`fellows_local_db`) lives at [richbodo/fellows_local_db](https://github.com/richbodo/fellows_local_db).
+2. **Production-ready reference applications.** Working PNAs you can install, study, and adapt. — first reference design is a distributed directory archive (lives at [richbodo/fellows_local_db](https://github.com/richbodo/fellows_local_db)).
 3. **MCP servers.** Composability-layer (Software 3.0) bridges so AI clients (Claude Desktop, Cursor, local Ollama agents) can drive a PNA on the user's behalf. — three v1 stdio servers ship inside `fellows_local_db/mcp_servers/`; typed contracts for all five canonical MCP servers live here in [`spec/contracts/`](spec/contracts/).
 
-The toolkit augments human-AI builder teams; it doesn't auto-build applications itself.
+This toolkit augments human-AI builder teams; it doesn't auto-build applications itself; it is a blueprint for agents to implement and humans to customize and verify.  Verification is made simply by composable contract specifications.
 
 ## Entry points
 
