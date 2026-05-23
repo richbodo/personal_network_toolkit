@@ -14,6 +14,8 @@ That combination best satisfies the composability model of Software 3.0 in this 
 
 This toolkit augments human-AI builder teams; it doesn't auto-build applications itself; it is a blueprint for agents to implement and humans to customize and verify.  Verification is made simply by composable contract specifications made primarily for AIs, derived from goals made for humans to read.
 
+Note: This does not quite fit into a /skill or I would make it one.  Building the reference apps feeds the spec and the apps in a virtuous loop, so there is no conventional path that makes this more accessible like adding to /skill repos.
+
 ## Entry points
 
 Read in this order if you're new:
