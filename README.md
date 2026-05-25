@@ -1,6 +1,6 @@
 # Personal Network Toolkit
 
-The Personal Network Toolkit is a [generative application-class blueprint](research/prior_art_survey.md) for building **[personal network applications (PNAs)](PNA_Spec.md#goals)** — local-only apps for viewing contact data and working on relationship data over a firewalled private data layer. PNAs run on the user's device, never as SaaS, and bridge SaaS-held contact data into a private workspace. **[Why do this?](PNA_Spec.md#preamble)**
+The Personal Network Toolkit is a [generative application-class blueprint](research/prior_art_survey.md) for building and validating **[personal network applications (PNAs)](PNA_Spec.md#goals)** — local-only apps for viewing contact data and working on relationship data over a firewalled private data layer. PNAs run on the user's device, never as SaaS, and bridge SaaS-held contact data into a private workspace. **[Why do this?](PNA_Spec.md#preamble)**
 
 When building a PNA, specs are foundational because users will increasingly compose software by prompting AI agents, and success is measured by adherence to them.
 
