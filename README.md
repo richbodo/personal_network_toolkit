@@ -29,6 +29,8 @@ What we're working toward — success looks like:
 5. The PNA Spec evolves at least one minor version based on a contributed reference design's findings.
 6. Every AC in the spec carries a stable ID; every typed contract names the AC(s) it realizes; every Architecture document maps each applicable AC to a verification mechanism.
 
+Step-by-step instructions for each of those goals live in [`docs/users-guide.md`](docs/users-guide.md).
+
 Substantive changes from v0.1 bump the spec version per `[CHANGELOG.md](CHANGELOG.md)`.
 
 ## Entry points
@@ -36,6 +38,7 @@ Substantive changes from v0.1 bump the spec version per `[CHANGELOG.md](CHANGELO
 Read in this order if you're new:
 
 - `**[spec/PNA_Spec.md](spec/PNA_Spec.md)`** — universal PNA specification. Vocabulary, goals, use cases, axes, composition, universal architectural commitments, slot map with 57 sub-contracts, scope/versioning. **Start here.**
+- `**[docs/users-guide.md](docs/users-guide.md)`** — step-by-step instructions for each of the success criteria in § Status (building a PNA, auditing one, submitting a reference design).
 - `**[spec/axes.md](spec/axes.md)`** — the Axes a PNA varies along, attested picks per Axis, and the flavor-derived ACs each pick triggers.
 - `**[spec/use_cases.md](spec/use_cases.md)**` — attested classes of PNA (Directory Archive realized; Personal Relationship Manager draft; Multi-PNA ecosystem target).
 - `**[contracts/](contracts/)**` — typed contracts for the load-bearing interfaces: JSON Schema for the worker init handshake + RPC protocol, OpenAPI for distribution auth, SQL DDL for the two database schemas, TypeScript for the Communications transport interface, JSON Schema for the five canonical MCP server tool surfaces.

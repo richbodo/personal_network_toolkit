@@ -50,16 +50,50 @@ Callers may ask you to emphasize specific Goals or axes at runtime (e.g., "focus
 
 ## Contribute flow
 
-Use when the user has built or operated a PNA and found a spec ambiguity, gap, or constraint not yet captured. The contribute flow walks them through producing a well-formed PR back to PNT.
+Use when the user has built or operated a PNA and wants to submit it back to PNT as a reference design — whether they found a spec gap and want to propose a fix, or they have a working design that adds ecosystem value at a flavor not yet attested. The flow has two phases: **preflight validation** (is the design submission-ready?) and **PR authoring** (open the actual PR).
 
-1. **Read `CONTRIBUTING.md`** for the philosophy and acceptance rules.
-2. **Frame the contribution as a spec diff motivated by working code in the design.** PNT does not accept spec changes without a demonstrating reference design.
-3. **Author or update the design record** at `reference_designs/<design-name>/README.md` per `reference_designs/templates/TEMPLATE.md`.
-4. **Author or update the Architecture document** at `reference_designs/<design-name>/Architecture.md` per `reference_designs/templates/ARCHITECTURE_TEMPLATE.md`, including the AC attestation table with verification references for every applicable AC. Rows missing the Verification field are grounds for PR rejection.
-5. **Open a PR** with: spec diff, design record, Architecture document, canonical repo URL, and the commit SHA being submitted.
-6. After merge, the maintainer triggers Software Heritage archival via `tools/swh-save.sh` and records the returned SWHID in the design record.
+### Preflight validation
 
-A builder using Claude Code can ask the agent to drive steps 3–5 end-to-end. Maintainer review at acceptance time is the human-judgment gate that's intentionally not automated.
+Before authoring the PR, validate that the design is submission-ready. This step is interactive — ask the user questions, walk them through gaps, iterate until clean.
+
+1. **Locate the design's Architecture document.** Typically at `docs/Architecture.md` (or equivalent) in the design's own repo.
+   - **If it exists**, validate it against the code. For each AC attested as `conformant`, check the cited code locations and confirm the realization matches. For each AC with a Verification mechanism declared, check that the cited test/rubric/note actually exists and (where automated) passes.
+   - **If it doesn't exist**, walk the user through creating one interactively. Use `reference_designs/templates/ARCHITECTURE_TEMPLATE.md` as the template. Ask about each section in turn:
+     - Which PNA Spec version does the design conform to?
+     - For each axis in `spec/axes.md`, which pick does the design use, and at which axis version?
+     - For each axis, how does the design realize the pick? (Read the code to help fill this in.)
+     - For each applicable AC (universal in `spec/PNA_Spec.md`, plus any flavor-derived AC in `spec/axes.md` triggered by the picks): how does the design realize it? What test/rubric/note verifies it?
+
+2. **Ask the user what's interesting architecturally about this design.** Three patterns are valuable enough to justify submission:
+   - **New architectural commitment.** The design demonstrates a constraint the spec doesn't yet name. (Most valuable — the PR includes a spec diff.)
+   - **Existing patterns on a new platform.** The design exercises existing ACs on a substrate or use-case not yet attested in the reference set. (Valuable — no spec change needed; the design's flavor expands the ecosystem.)
+   - **Ecosystem value-add.** The design fills a use-case gap, brings accessibility, or makes something easier that no existing design demonstrates. (Valuable.)
+
+   If the design fits any of these patterns, encourage submission. If it's purely identical to an existing reference with no novelty, surface that and ask what motivated the submission — if nothing surfaces, the PR may not be worth the maintenance overhead.
+
+3. **Report what's broken or missing** in a structured list. The user needs to address these before the PR will be accepted:
+   - Missing files (Architecture document, design record)
+   - Missing sections in the Architecture document
+   - Missing Verification field on any row of the AC attestation table
+   - AC realizations whose cited code doesn't match the claim
+   - Failing or missing tests on the Verification side
+   - License problems (must be OSI-approved; must permit Software Heritage archival)
+
+4. **Iterate.** When the user fixes things, re-run preflight. Keep going until the report is clean.
+
+### PR authoring
+
+Once preflight passes:
+
+1. **Read `CONTRIBUTING.md`** for the acceptance rules.
+2. **Frame the contribution.** If proposing a spec change, write the spec diff and explain what working code in the design demonstrates each change. If purely additive (no spec change), say so in the design record's contributions section.
+3. **Author the design record** at `reference_designs/<design-name>/README.md` per `reference_designs/templates/TEMPLATE.md`.
+4. **Copy the Architecture document** to `reference_designs/<design-name>/Architecture.md`. (PNT keeps its own copy at acceptance time; the design's own repo may evolve after.)
+5. **Open the PR** with: spec diff (if any), design record, Architecture document, canonical repo URL, and the commit SHA being submitted.
+
+After merge, the maintainer triggers Software Heritage archival via `tools/swh-save.sh` and records the returned SWHID in the design record. A final preflight run against the merged state should come out clean.
+
+A builder using Claude Code can drive both preflight and PR authoring end-to-end. Maintainer review at acceptance time is the human-judgment gate that's intentionally not automated.
 
 ## Principles to honor in every flow
 

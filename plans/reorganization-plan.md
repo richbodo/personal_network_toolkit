@@ -1,5 +1,11 @@
 # Plan: PNT Reorganization
 
+## Status (2026-05-25)
+
+Phases 1–4 landed on branch `reorg-phases-1-4` (in a PR pending review). Phase 4.5 (User's Guide + skill preflight enhancement) is the next-up work and lands in the same PR; it is intentionally pre-Phase-5 so the User's Guide can be exercised against `fellows_local_db` as the first reference-design submission in Phase 5.
+
+Subsequent phases (5: Archival tooling and first design record; 6: Validation tooling; 7: Dogfood with a second contribution) remain as written below.
+
 ## What this plan supersedes
 
 This plan is the unified successor to:
@@ -338,34 +344,42 @@ Phases are sized for Claude Code sessions. Each ends in a committable, working s
 
 ### Phase 1 — Repo restructure
 
-- [ ] Create new directory layout: `spec/`, `contracts/`, `reference_designs/`, `reference_designs/templates/`, `skill/`, `tools/`, `docs/`, `archive/`.
-- [ ] Move existing spec documents into `spec/`.
-- [ ] Move existing typed contracts from `spec/contracts/` into top-level `contracts/`.
-- [ ] Relocate `research/prior_art_survey.md` to `docs/prior_art.md`.
-- [ ] Create `reference_designs/fellows_local_db/` with a placeholder README pointing to the external repo (SWHID added in Phase 5).
-- [ ] Update root `README.md` to reflect the new layout (the `## Status` section is the home for success criteria).
+- [x] Create new directory layout: `spec/`, `contracts/`, `reference_designs/`, `reference_designs/templates/`, `skill/`, `tools/`, `docs/`, `archive/`.
+- [x] Move existing spec documents into `spec/`.
+- [x] Move existing typed contracts from `spec/contracts/` into top-level `contracts/`.
+- [x] Relocate `research/prior_art_survey.md` to `docs/prior_art.md`.
+- [x] Create `reference_designs/fellows_local_db/` with a placeholder README pointing to the external repo (SWHID added in Phase 5).
+- [x] Update root `README.md` to reflect the new layout (the `## Status` section is the home for success criteria).
 
 ### Phase 2 — Documentation scaffolding
 
-- [ ] Write `CONTRIBUTING.md`.
-- [ ] Write `reference_designs/README.md` (index + introduction to the contribution model).
-- [ ] Write `reference_designs/templates/TEMPLATE.md`.
-- [ ] Write `reference_designs/templates/ARCHITECTURE_TEMPLATE.md`, including the AC attestation table format with the Verification field.
-- [ ] Audit existing spec prose for numeric axis counts and replace with variable language.
-- [ ] Add to `spec/PNA_Spec.md`: declaration that v0.1 uses Software Heritage SWHIDs as the permanent identifier for reference designs.
-- [ ] Add to `spec/PNA_Spec.md § Vision`: forward note about conformance evaluation as a potential precondition for multi-PNA ecosystem interop in a future spec version, framed as a systems-level test that will require rethinking the spec at that level.
+- [x] Write `CONTRIBUTING.md`.
+- [x] Write `reference_designs/README.md` (index + introduction to the contribution model).
+- [x] Write `reference_designs/templates/TEMPLATE.md`.
+- [x] Write `reference_designs/templates/ARCHITECTURE_TEMPLATE.md`, including the AC attestation table format with the Verification field.
+- [x] Audit existing spec prose for numeric axis counts and replace with variable language.
+- [x] Add to `spec/PNA_Spec.md`: declaration that v0.1 uses Software Heritage SWHIDs as the permanent identifier for reference designs.
+- [x] Add to `spec/PNA_Spec.md § Vision`: forward note about conformance evaluation as a potential precondition for multi-PNA ecosystem interop in a future spec version, framed as a systems-level test that will require rethinking the spec at that level.
 
 ### Phase 3 — Spec formalization pass
 
-- [ ] RFC 2119 keyword pass on `spec/PNA_Spec.md`: every AC and sub-contract reworded with MUST / SHOULD / MAY where conformance-bearing. Readable prose preserved around them. Document the pass in `CHANGELOG.md`.
-- [ ] Bidirectional-traceability pass on `contracts/`: every typed contract file gets a header naming the AC(s) it realizes. Update the contracts index.
-- [ ] Write `tools/lint-spec-ids.py`: verify every AC has an ID; every contract names at least one AC. Wire into CI.
+- [x] RFC 2119 keyword pass on `spec/PNA_Spec.md`: every AC and sub-contract reworded with MUST / SHOULD / MAY where conformance-bearing. Readable prose preserved around them. Document the pass in `CHANGELOG.md`.
+- [x] Bidirectional-traceability pass on `contracts/`: every typed contract file gets a header naming the AC(s) it realizes. Update the contracts index.
+- [x] Write `tools/lint-spec-ids.py`: verify every AC has an ID; every contract names at least one AC. Wire into CI.
 
 ### Phase 4 — Skill packaging
 
-- [ ] Write `skill/SKILL.md` per the sketch above — build, evaluate, contribute flows in one skill.
-- [ ] Verify the skill description triggers correctly on representative test prompts for each flow.
-- [ ] If a single skill shows friction, split — but only then.
+- [x] Write `skill/SKILL.md` per the sketch above — build, evaluate, contribute flows in one skill.
+- [x] Verify the skill description triggers correctly on representative test prompts for each flow.
+- [x] If a single skill shows friction, split — but only then.
+
+### Phase 4.5 — User's Guide and contribute-flow preflight
+
+- [ ] Write `docs/users-guide.md` — concise step-by-step instructions organized around the six success criteria in `README.md § Status`. The reference-design submission workflow gets the most space (since `fellows_local_db` is the first user of it in Phase 5).
+- [ ] Enhance `skill/SKILL.md`'s contribute flow with an explicit **preflight validation** step (does the design have all required files? is the Architecture document complete and accurate against the code?), the **"what's interesting architecturally?"** prompt — with three valid patterns documented (new AC, existing pattern on a new platform, ecosystem-value-add) — and explicit **interactive** guidance for creating the Architecture document when it doesn't yet exist.
+- [ ] Link `docs/users-guide.md` from `README.md`.
+
+Phase 4.5 lands in the same PR as Phases 1–4 so the User's Guide is exercisable against `fellows_local_db` immediately in Phase 5.
 
 ### Phase 5 — Archival tooling and first design record
 
