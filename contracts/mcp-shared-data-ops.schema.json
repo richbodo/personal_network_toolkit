@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://pna-spec.example/v0.1/mcp-shared-data-ops.schema.json",
   "title": "MCP server — Shared Data Ops",
+  "$comment": "Realizes: AC-17.",
   "description": "Tool surface for the canonical Shared Data Ops MCP server. Exposes read-only access to the Shared DB so an AI client (Claude Desktop, Cursor, a local-Ollama-backed agent) can answer 'what's in this directory' questions and look up specific records. Conforming implementations expose exactly these four tools with the input/output shapes defined below. Does NOT return Private DB rows; AC-MCP-A (cloud-client consent) is not triggered by this server. See spec/PNA_Spec.md § Vision (canonical MCP servers) and AC-17 (mirrored data is sourced).",
   "type": "object",
   "required": ["server_name", "transport", "tools"],

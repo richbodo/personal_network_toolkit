@@ -1,3 +1,5 @@
+-- Realizes: AC-1, AC-9.
+
 -- Private schema interface — canonical SQL DDL for a conforming Private DB.
 --
 -- Sub-contracts PR-1 through PR-5 from spec/PNA_Spec.md § Slot map. The Private DB

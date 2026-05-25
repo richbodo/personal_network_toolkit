@@ -1,3 +1,5 @@
+# Realizes: AC-2, AC-5, AC-8.
+
 # Distribution slot — auth, install, and sanitized-error endpoints.
 #
 # Sub-contracts DI-3 (auth) and DI-4 (anti-enum + rate limit) from

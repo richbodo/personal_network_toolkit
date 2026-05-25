@@ -1,6 +1,17 @@
 # PNA Spec Changelog
 
-## v0.1 (draft — in progress)
+## v0.1 alpha (in progress)
+
+### Formalization pass (Phase 3 of the reorg plan)
+
+- **RFC 2119 normative language.** Every AC and every sub-contract in `spec/PNA_Spec.md` and `spec/axes.md` was reworded so that conformance-bearing statements use MUST / MUST NOT / SHOULD / SHOULD NOT / MAY. Readable prose around the keywords preserved (motivation, examples, why-it-matters). A short "Normative language" note added at the top of each AC-bearing section.
+- **Bidirectional traceability (AC ↔ contract).** Every typed contract file in `contracts/` now carries a `Realizes: AC-X, AC-Y` header (as a `$comment` field in JSON Schemas; as a top-of-file comment in YAML / SQL / TypeScript). AC IDs are now the load-bearing join key between spec prose and typed contracts.
+- **Spec ID lint.** `tools/lint-spec-ids.py` checks (a) every AC has a stable ID, (b) every contract names at least one AC, (c) every claimed AC exists in the spec. Wired into CI via `.github/workflows/spec-lint.yml`.
+- **Software Heritage SWHID declared in the spec.** Added to the reference-design vocabulary entry: v0.1 commits to SWHIDs as the canonical permanent identifier for accepted reference designs.
+- **Vision future-direction note.** Added a paragraph about conformance evaluation as a potential precondition for runtime interop between PNAs in a multi-PNA ecosystem (a systems-level test requiring spec rethinking; flagged direction for a later version).
+- **Variable-language pass.** Numeric axis counts ("six Axes") replaced with variable language ("the Axes", "these Axes", "the independent Axes") so the spec doesn't drift if the axis set evolves.
+
+### v0.1 baseline
 
 Initial release of the PNA Spec. Establishes:
 

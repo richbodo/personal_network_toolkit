@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://pna-spec.example/v0.1/mcp-comms.schema.json",
   "title": "MCP server — Communications",
+  "$comment": "Realizes: AC-MCP-B, AC-18, AC-19.",
   "description": "Tool surface for the canonical Communications MCP server. Stages outreach for workspace-mediated user confirmation; does NOT directly launch transports (AC-MCP-B). The server returns a mailto: URL plus a full payload preview; the user's mail client — acting as the workspace for this outreach — opens the URL with the composition pre-populated, and the user reviews and clicks send. AC-18 (transport eligibility): mailto: passes — the mechanism can't read message content, and the downstream mail client is the user's choice. AC-19 (user-visible payload before send): the `preview` field exposes recipients + subject + body explicitly so the AI client can show the full composition to the user before they open the link. State posture: staged compositions live in process memory only; nothing on disk, nothing across restarts. See spec/PNA_Spec.md § Universal architectural commitments (AC-MCP-B, AC-18, AC-19) and § Vision (canonical MCP servers).",
   "type": "object",
   "required": ["server_name", "transport", "tools"],

@@ -221,24 +221,26 @@ Universal ACs (in this file) and flavor-derived ACs (in `axes.md`) share a singl
 
 The wording in the universal table below is substrate-neutral; specific *forms* (URL parameter vs CLI flag, OPFS vs native filesystem) are flavor-derived realizations of universal contracts.
 
+**Normative language.** Conformance-bearing statements in the AC table below (and in the sub-contract definitions that follow, and in the flavor-derived ACs in `axes.md`) use RFC 2119 / RFC 8174 keywords — MUST, MUST NOT, SHOULD, SHOULD NOT, MAY — when, and only when, capitalized. Surrounding prose is plain English (motivation, examples, why-it-matters notes).
+
 | ID | Commitment | Serves |
 |---|---|---|
-| AC-1 | **Two-store ownership split.** Shared data is read-only and externally managed; private data is read-write and locally owned. Separate storage namespaces, separate privacy postures. fellows_local_db realizes this as two SQLite databases via OPFS; a CLI / native PNA might realize it as two SQLite files on the filesystem. | Goal 1 |
-| AC-4 | **Versioned cross-boundary handshake.** Every PNA with a storage boundary (worker ↔ workspace in a browser bundle, CLI ↔ DB module in a TUI/CLI tool, native shell ↔ DB process) version-checks at init; mutating ops refused on mismatch; reads still work. Build label is *not* the gate. | Goal 4 |
-| AC-6 | **Always-reachable diagnostic escape.** A force-reset / force-unlock affordance is reachable regardless of stuck app state. Form depends on the workspace shell: URL parameter for web SPAs (`?gate=1`), CLI flag for terminal apps (`--reset`), key chord for native shells. | Goal 5 |
-| AC-7 | **Self-service field-debug substrate.** Build label, sanitized error capture, diagnostic state-dump, bug-report flow, escape hatch (AC-6), boot watchdog with named phase marks, slow-boot persistence. Specific affordances are shell-derived (badge in a web UI; `--diag` subcommand in a CLI; native diagnostic menu); the substrate is required everywhere. | Goal 5 |
-| AC-9 | **Auto-backup of private data on user-edit cadence.** Snapshot the Private store on a per-boot debounced schedule (not per-deploy); rotate to keep a small ring of recoverable points. | Goal 4 |
-| AC-10 | **Re-imports of the Shared store are opt-in and non-destructive.** Whether refreshed from the original source (a directory operator pushes an update) or re-mirrored from a centralized platform (the user re-exports their Google contacts), the workspace previews any private references that would be orphaned by the update before the user commits. | Goal 2, Goal 4 |
-| AC-11 | **Storage substrate detects concurrent access.** Multi-tab in browsers, multi-process in native — when something else holds the data layer, surface it cleanly with a specific message (not a generic "unsupported"). | Goal 4 |
-| AC-15 | **Build label tied to source revision, substituted at build *and* serve time.** Each delivered artifact carries a runtime-visible unique label tied to the source revision. Format is implementation-specific (`<YYYY-MM-DD>-<short-sha>` in fellows_local_db; whatever `--version` reports in CLI tools). | Goal 5 |
-| AC-16 | **Communication-transport selection is user-driven.** The workspace surfaces multiple transports — including secure / decentralized options when configured — and the user chooses per outreach. No transport is hardcoded. | Goal 3 |
-| AC-17 | **Mirrored data is sourced.** Every record in the Shared store traces to a specific external source the user has explicitly configured. The toolkit doesn't introduce contact data the user hasn't approved. | Goal 2 |
-| AC-18 | **Transports cannot read message contents.** A transport's acceptability is about the transport mechanism itself, not the chain it kicks off. `mailto:` passes (hands off to whichever client the user has configured; the downstream provider's behavior — Gmail, Outlook — is outside the toolkit's enforcement). Signal-class protocols pass (encryption-in-protocol). Centralized message-broker SaaS that decodes payloads as part of operating (Slack, Discord) does not pass. Contact-graph retention by the transport is *not* part of the rule — too hard to enforce uniformly across protocols, and varies by user threat model. | Goal 3 |
-| AC-19 | **User-visible payload before send.** Any workspace-initiated communication shows the user the full payload — recipients, body, and any data merged in from the Shared or Private store — before the transport is launched. The user can edit or cancel. This applies even to bulk operations (e.g., "email this group of 50"). Workspaces never auto-blast data through transports without the user seeing the composition. | Goal 3 |
-| AC-PRM-A | **LLM calls over user data are transports.** Any LLM invocation over Private or Shared data is treated as a transport: local-model is default; cloud-model is opt-in per call; the user sees the prompt and merged data before send. Extension of AC-18 and AC-19 to a new transport class. | Goal 3 |
-| AC-PRM-D | **Re-ingestion is always user-initiated.** No background polling of source services (Google Contacts, IMAP, organizational directories). Strengthens AC-10: the user always knows when fresh data is being fetched. | Goal 1, Goal 4 |
-| AC-MCP-A | **Cloud AI clients require per-call consent for Private DB access via MCP.** Any MCP tool that returns Private DB rows must either refuse, or require explicit per-session opt-in, when the consuming MCP client is not locally hosted. Local clients (Claude Desktop with a local model, Cursor + local Ollama) are the default green path; cloud clients (Claude API direct, OpenAI API, etc.) are opt-in per call. In practice this targets the Private Data Ops server; the Shared / Private split at the MCP surface lets a user wire a cloud client to Shared Data Ops alone without triggering this AC. Concrete realization of AC-PRM-A at the MCP surface. | Goal 1, Goal 3 |
-| AC-MCP-B | **MCP Communications tools stage outreach; the workspace launches.** A Communications MCP tool call must not directly fire a transport. It returns a staging ID with the full payload preview; the user confirms via the workspace before the transport launches. The MCP server proposes; the workspace disposes. AC-19 is enforced at the workspace boundary and cannot be bypassed by AI clients. | Goal 3 |
+| AC-1 | **Two-store ownership split.** Shared data MUST be read-only and externally managed; private data MUST be read-write and locally owned. The two stores MUST occupy separate storage namespaces with separate privacy postures. (Example realizations: two SQLite databases via OPFS in fellows_local_db; two SQLite files on the filesystem in a CLI / native PNA.) | Goal 1 |
+| AC-4 | **Versioned cross-boundary handshake.** Every PNA with a storage boundary (worker ↔ workspace in a browser bundle, CLI ↔ DB module in a TUI/CLI tool, native shell ↔ DB process) MUST version-check at init. On version mismatch the boundary MUST refuse mutating operations; read operations MUST continue to work. The build label MUST NOT be used as the gate. | Goal 4 |
+| AC-6 | **Always-reachable diagnostic escape.** A force-reset / force-unlock affordance MUST be reachable regardless of stuck app state. The specific form is shell-derived (URL parameter for web SPAs, e.g., `?gate=1`; CLI flag for terminal apps, e.g., `--reset`; key chord for native shells); the substrate is required everywhere. | Goal 5 |
+| AC-7 | **Self-service field-debug substrate.** Every PNA MUST provide a field-debug substrate consisting of: a build label (AC-15), sanitized error capture, a diagnostic state-dump, a bug-report flow, the escape hatch from AC-6, a boot watchdog with named phase marks, and slow-boot persistence. Specific affordances are shell-derived (badge in a web UI; `--diag` subcommand in a CLI; native diagnostic menu); the substrate is required everywhere. | Goal 5 |
+| AC-9 | **Auto-backup of private data on user-edit cadence.** The PNA MUST snapshot the Private store on a per-boot debounced schedule (not per-deploy). It MUST rotate snapshots to keep a small ring of recoverable points. | Goal 4 |
+| AC-10 | **Re-imports of the Shared store are opt-in and non-destructive.** Re-imports MUST be opt-in — whether refreshed from the original source (a directory operator pushes an update) or re-mirrored from a centralized platform (the user re-exports their Google contacts). Before the user commits a re-import, the workspace MUST preview any private references that would be orphaned by the update. | Goal 2, Goal 4 |
+| AC-11 | **Storage substrate detects concurrent access.** When another tab or process holds the data layer, the storage substrate MUST detect the conflict and surface it with a specific message (multi-tab in browsers, multi-process in native); a generic "unsupported" message MUST NOT be used. | Goal 4 |
+| AC-15 | **Build label tied to source revision, substituted at build *and* serve time.** Each delivered artifact MUST carry a runtime-visible unique label tied to the source revision. The label MUST be substituted at both build time and serve time. Format is implementation-specific (`<YYYY-MM-DD>-<short-sha>` in fellows_local_db; whatever `--version` reports in CLI tools). | Goal 5 |
+| AC-16 | **Communication-transport selection is user-driven.** The workspace MUST surface multiple transports — including secure / decentralized options when configured — and the user MUST choose per outreach. No transport MAY be hardcoded as the only available option. | Goal 3 |
+| AC-17 | **Mirrored data is sourced.** Every record in the Shared store MUST trace to a specific external source the user has explicitly configured. The toolkit MUST NOT introduce contact data the user hasn't approved. | Goal 2 |
+| AC-18 | **Transports cannot read message contents.** A transport's acceptability is determined by the transport mechanism itself, not by the downstream chain it kicks off. `mailto:` passes (hands off to whichever client the user has configured; the downstream provider's behavior — Gmail, Outlook — is outside the toolkit's enforcement). Signal-class protocols pass (encryption-in-protocol). Workspaces MUST NOT offer centralized message-broker SaaS that decodes payloads as part of operating (Slack, Discord) as a PNA-eligible transport. Contact-graph retention by the transport is *not* part of the rule (too hard to enforce uniformly across protocols; varies by user threat model). | Goal 3 |
+| AC-19 | **User-visible payload before send.** Any workspace-initiated communication MUST show the user the full payload — recipients, body, and any data merged in from the Shared or Private store — before the transport is launched. The user MUST be able to edit or cancel. This MUST apply even to bulk operations (e.g., "email this group of 50"). Workspaces MUST NOT auto-blast data through transports without the user seeing the composition. | Goal 3 |
+| AC-PRM-A | **LLM calls over user data are transports.** Any LLM invocation over Private or Shared data MUST be treated as a transport: a local model is the default; a cloud model MUST be opt-in per call; the user MUST see the prompt and any merged data before send. Extension of AC-18 and AC-19 to a new transport class. | Goal 3 |
+| AC-PRM-D | **Re-ingestion is always user-initiated.** Re-ingestion MUST be triggered by an explicit user action; the PNA MUST NOT background-poll source services (Google Contacts, IMAP, organizational directories). Strengthens AC-10: the user always knows when fresh data is being fetched. | Goal 1, Goal 4 |
+| AC-MCP-A | **Cloud AI clients require per-call consent for Private DB access via MCP.** Any MCP tool that returns Private DB rows MUST either refuse, or MUST require explicit per-session opt-in, when the consuming MCP client is not locally hosted. Local clients (Claude Desktop with a local model, Cursor + local Ollama) are the default green path; cloud clients (Claude API direct, OpenAI API, etc.) are opt-in per call. In practice this targets the Private Data Ops server; the Shared / Private split at the MCP surface lets a user wire a cloud client to Shared Data Ops alone without triggering this AC. Concrete realization of AC-PRM-A at the MCP surface. | Goal 1, Goal 3 |
+| AC-MCP-B | **MCP Communications tools stage outreach; the workspace launches.** A Communications MCP tool call MUST NOT directly fire a transport. It MUST return a staging ID with the full payload preview; the user MUST confirm via the workspace before the transport launches. The MCP server proposes; the workspace disposes. AC-19 is enforced at the workspace boundary and MUST NOT be bypassable by AI clients. | Goal 3 |
 
 ---
 
@@ -276,98 +278,98 @@ Sub-contracts cite the universal ACs they realize where appropriate; the AC tabl
 
 #### Workspace (`WS-`)
 
-- **WS-1: Boot persona.** Function that decides "directory mode" vs "distribution gate" given standalone-display, persistence marker, and force-gate URL. Drives the entire boot flow.
-- **WS-2: Routing.** Hash-based or equivalent; per-route focus modes; URL-shareable filter state where applicable.
-- **WS-3: Render contracts.** Per-route contracts on what each view shows. Includes orphan-row rendering after Shared DB updates.
-- **WS-4: Data provider abstraction.** Three-tier provider (worker / api+idb / api) with mid-boot hot-swap on auth failure (per AC-5). Single source of truth at `window.__dataProvider` (the JS-specific realization; non-browser PNAs realize it differently).
-- **WS-5: Boot orchestration.** Named `bootMarks` at meaningful transitions; watchdog timeout surfaces a recovery panel naming the last-completed mark; slow-boot persistence to localStorage across sessions.
-- **WS-6: Capability-failure panel.** `renderLocalDataUnavailablePanel(feature)`-style for OPFS / version-skew / multi-tab-conflict failures.
-- **WS-7: Persistence-marker.** Exactly one localStorage key preserved across Clear App Cache (the "this origin authenticated once" marker; spelled `fellows_authenticated_once` in fellows_local_db).
-- **WS-8: Local-search fallback.** Search over cached Shared DB when network is offline.
-- **WS-9: Sanitization discipline.** `escapeHtml` for all user-supplied data; parameterized `?` placeholders for all SQL; image path traversal validation.
-- **WS-10: User-visible payload before send (AC-19).** Workspace shows full composition before any communication launches.
+- **WS-1: Boot persona.** The workspace MUST implement a function that decides "directory mode" vs "distribution gate" given standalone-display, persistence marker, and force-gate URL. This function drives the entire boot flow.
+- **WS-2: Routing.** Routing MUST be hash-based or equivalent. The workspace MUST support per-route focus modes; URL-shareable filter state SHOULD be supported where applicable.
+- **WS-3: Render contracts.** Each view MUST honor a per-route render contract specifying what the view shows. Render contracts MUST include orphan-row rendering after Shared DB updates (per AC-10).
+- **WS-4: Data provider abstraction.** The workspace MUST expose a three-tier provider (worker / api+idb / api) with mid-boot hot-swap on auth failure (per AC-5). The active provider MUST be reachable via a single source of truth (`window.__dataProvider` in the JS-specific realization; non-browser PNAs realize this differently).
+- **WS-5: Boot orchestration.** The workspace MUST emit named `bootMarks` at meaningful transitions. On watchdog timeout it MUST surface a recovery panel naming the last-completed mark. Slow-boot persistence to localStorage across sessions MUST be implemented.
+- **WS-6: Capability-failure panel.** The workspace MUST render a capability-failure panel (`renderLocalDataUnavailablePanel(feature)`-style) for OPFS / version-skew / multi-tab-conflict failures.
+- **WS-7: Persistence-marker.** The workspace MUST preserve exactly one localStorage key across Clear App Cache (the "this origin authenticated once" marker; spelled `fellows_authenticated_once` in fellows_local_db).
+- **WS-8: Local-search fallback.** The workspace MUST provide search over the cached Shared DB when the network is offline.
+- **WS-9: Sanitization discipline.** The workspace MUST escape HTML (`escapeHtml`) for all user-supplied data, MUST use parameterized `?` placeholders for all SQL, and MUST validate image paths against traversal.
+- **WS-10: User-visible payload before send (AC-19).** The workspace MUST show the full composition before any communication launches.
 
 Cross-slot: WS-4 sits at the boundary with Storage (the `worker` tier is RPC into ST-3); WS-5 implements the boot side of DB-3.
 
 #### Storage (`ST-`)
 
-- **ST-1: Substrate.** Single dedicated worker; OPFS-SAH-Pool VFS; sqlite-wasm runtime (or the substrate-equivalent for non-browser flavors). Only context that calls `navigator.storage.getDirectory` or opens a `FileSystemSyncAccessHandle` (per AC-3).
-- **ST-2: Init handshake.** First RPC must be `op='init'`. Returns `{workerRpcVersion, schemaVersion, buildLabel, opfsCapable, hasSharedDb, hasPrivateDb, poolFiles, trace}`. Capability detection happens here (per AC-12). Typed contract: [`contracts/worker-init-handshake.schema.json`](../contracts/worker-init-handshake.schema.json).
-- **ST-3: RPC protocol.** `{id, op, args}` ↔ `{id, ok, result|error}`. Fan-in dispatch via sequence-numbered pending Map. `worker.onerror` rejects all pending RPCs so callers can fall back instead of hanging. Typed contract: [`contracts/worker-rpc-protocol.schema.json`](../contracts/worker-rpc-protocol.schema.json).
-- **ST-4: Two-database management.** Private DB (RW), Shared DB (RO). Cross-DB joins via `ATTACH ?mode=ro`, attached once per init in the worker.
-- **ST-5: Schema bootstrap.** `CREATE IF NOT EXISTS` for both schemas. `PRAGMA foreign_keys=ON` per connection. `PRAGMA user_version` set to schema version. Idempotent so older backups gain newer tables on restore.
-- **ST-6: Auto-backup.** Per-boot debounced snapshots of Private DB to OPFS root (outside SAH-pool dir, so survives sqlite-wasm operations). Rotation by sorted ISO filename. Per AC-9.
-- **ST-7: Restore.** From a user-supplied file or a recent auto-backup. Validates via `PRAGMA quick_check` + schema check. Snapshots pre-restore state to the same rotation. Atomic swap.
-- **ST-8: Opt-in update flow.** `compareSha → previewSwap → applySwap | cancelSwap`. Opaque per-session `stagingId` so a stale page can't accidentally commit. Affected-member preview computed from joined Private DB references. Per AC-10.
-- **ST-9: Multi-tab detection.** `OWNERSHIP_CONFLICT` tagged on `installOpfsSAHPoolVfs()` failure so WS-6 can render a specific multi-tab panel (per AC-11). Non-browser flavors realize the equivalent file-lock detection via AC-PRM-C.
-- **ST-10: Reset Everything.** `wipeAll` RPC: close both DBs, `removeVfs()`, iterate OPFS root and remove every entry. Caller reloads after.
-- **ST-11: Diagnostics.** `getOpfsInventory`, `getTrace`, `getVersions`, `getSharedDbMeta`. Read-only; pure reads, no fetches.
+- **ST-1: Substrate.** The Storage slot MUST use a single dedicated worker, the OPFS-SAH-Pool VFS, and a sqlite-wasm runtime (or the substrate-equivalent for non-browser flavors). The worker MUST be the only context that calls `navigator.storage.getDirectory` or opens a `FileSystemSyncAccessHandle` (per AC-3).
+- **ST-2: Init handshake.** The first RPC across the boundary MUST be `op='init'`. Init MUST return `{workerRpcVersion, schemaVersion, buildLabel, opfsCapable, hasSharedDb, hasPrivateDb, poolFiles, trace}`. Capability detection MUST happen inside this op (per AC-12). Typed contract: [`contracts/worker-init-handshake.schema.json`](../contracts/worker-init-handshake.schema.json).
+- **ST-3: RPC protocol.** The RPC envelope MUST be `{id, op, args}` ↔ `{id, ok, result|error}`. Fan-in dispatch MUST be sequence-numbered via a pending Map. On `worker.onerror`, all pending RPCs MUST be rejected so callers can fall back instead of hanging. Typed contract: [`contracts/worker-rpc-protocol.schema.json`](../contracts/worker-rpc-protocol.schema.json).
+- **ST-4: Two-database management.** The Storage slot MUST manage a Private DB (RW) and a Shared DB (RO). Cross-DB joins MUST use `ATTACH ?mode=ro`, attached once per init in the worker.
+- **ST-5: Schema bootstrap.** Storage MUST use `CREATE IF NOT EXISTS` for both schemas, MUST set `PRAGMA foreign_keys=ON` per connection, and MUST set `PRAGMA user_version` to the schema version. The bootstrap MUST be idempotent so older backups gain newer tables on restore.
+- **ST-6: Auto-backup.** Storage MUST take per-boot debounced snapshots of the Private DB to OPFS root (outside the SAH-pool dir, so snapshots survive sqlite-wasm operations). Rotation MUST be by sorted ISO filename. Per AC-9.
+- **ST-7: Restore.** Restore MUST accept either a user-supplied file or a recent auto-backup. It MUST validate via `PRAGMA quick_check` plus schema check. The pre-restore state MUST be snapshotted to the same rotation. The swap MUST be atomic.
+- **ST-8: Opt-in update flow.** The update flow MUST be `compareSha → previewSwap → applySwap | cancelSwap`. An opaque per-session `stagingId` MUST be used so a stale page can't accidentally commit. The affected-member preview MUST be computed from joined Private DB references. Per AC-10.
+- **ST-9: Multi-tab detection.** `OWNERSHIP_CONFLICT` MUST be tagged on `installOpfsSAHPoolVfs()` failure so WS-6 can render a specific multi-tab panel (per AC-11). Non-browser flavors realize the equivalent file-lock detection per AC-PRM-C.
+- **ST-10: Reset Everything.** A `wipeAll` RPC MUST be exposed that closes both DBs, calls `removeVfs()`, and iterates the OPFS root removing every entry. The caller MUST reload after.
+- **ST-11: Diagnostics.** Storage MUST expose `getOpfsInventory`, `getTrace`, `getVersions`, `getSharedDbMeta`. These MUST be read-only — pure reads, no fetches.
 
 Cross-slot: ST-2/3 are the contract WS-4 calls; ST-7's schema re-bootstrap respects PR-3.
 
 #### Ingestion (`IN-`)
 
-- **IN-1: Source adapter.** Produces bytes conforming to the Shared schema (SH-1 through SH-3). App-specific.
-- **IN-2: Output validation.** `PRAGMA quick_check` passes; primary record table has ≥1 row (zero-row guard prevents catastrophic orphaning of every Private DB reference).
-- **IN-3: Sourced provenance (AC-17).** Every record traces to a specific external source the user has configured.
-- **IN-4: Re-ingestion mechanics.** Atomic stage → validate → swap. Non-destructive of Private DB references; orphan preview required (per AC-10, surfaced via ST-8 + WS-3).
+- **IN-1: Source adapter.** The Ingestion slot MUST produce bytes conforming to the Shared schema (SH-1 through SH-3). The adapter is app-specific.
+- **IN-2: Output validation.** Output MUST pass `PRAGMA quick_check`. The primary record table MUST have ≥1 row (zero-row guard prevents catastrophic orphaning of every Private DB reference).
+- **IN-3: Sourced provenance (AC-17).** Every record MUST trace to a specific external source the user has configured.
+- **IN-4: Re-ingestion mechanics.** Re-ingestion MUST be atomic stage → validate → swap. It MUST be non-destructive of Private DB references. An orphan preview MUST be provided (per AC-10, surfaced via ST-8 + WS-3).
 
 Cross-slot: IN-4 hands off to ST-8 for the actual stage/swap; SH-5 is the Shared-side view of the same transition.
 
 #### Communications (`CO-`)
 
-- **CO-1: Transport interface.** `canHandle(action) → bool`, `launch(action, payload) → Promise<launchResult>`, `descriptor() → {id, name, secureLevel?, …}`. Typed contract: [`contracts/transport-interface.d.ts`](../contracts/transport-interface.d.ts).
-- **CO-2: Action set.** Fixed enum: `email_one`, `email_group_cc`, `email_group_bcc`, `direct_message_one`, `share_link_one`, `share_link_group`. Extensible — new actions can be added with toolkit version bumps.
-- **CO-3: Transport eligibility (AC-18).** Mechanism cannot read message contents.
-- **CO-4: User-driven selection (AC-16).** Workspace surfaces multiple transports; user picks per outreach.
-- **CO-5: User-visible payload (AC-19).** Workspace shows full payload (recipients, body, merged data) before launch.
-- **CO-6: Distinction from distribution-mechanism transports.** A distribution flavor's auth-link transport (e.g., Postmark in fellows_local_db's magic-link distribution) is governed by Distribution slot contracts, not CO-3.
+- **CO-1: Transport interface.** Each transport MUST implement `canHandle(action) → bool`, `launch(action, payload) → Promise<launchResult>`, and `descriptor() → {id, name, secureLevel?, …}`. Typed contract: [`contracts/transport-interface.d.ts`](../contracts/transport-interface.d.ts).
+- **CO-2: Action set.** The action enum MUST include `email_one`, `email_group_cc`, `email_group_bcc`, `direct_message_one`, `share_link_one`, `share_link_group`. New actions MAY be added in future toolkit version bumps.
+- **CO-3: Transport eligibility (AC-18).** A transport's mechanism MUST NOT read message contents.
+- **CO-4: User-driven selection (AC-16).** The workspace MUST surface multiple transports; the user MUST pick per outreach.
+- **CO-5: User-visible payload (AC-19).** The workspace MUST show the full payload (recipients, body, merged data) before launch.
+- **CO-6: Distinction from distribution-mechanism transports.** A distribution flavor's auth-link transport (e.g., Postmark in fellows_local_db's magic-link distribution) is governed by Distribution slot contracts, not by CO-3.
 
 Cross-slot: CO-4 is observable from WS (the shell renders the picker); CO-5 is the same contract as WS-10, dual-listed because both slots co-implement.
 
 #### Distribution (`DI-`) — optional
 
-- **DI-1: Install path.** Bundle delivery + verified initial Shared DB + session bootstrap.
-- **DI-2: Update path.** Shell + worker file via SW + cache versioning. Shared DB updates user-driven (per AC-10), not automatic.
-- **DI-3: Auth contract.** `GET /api/auth/status`, `POST /api/send-unlock`, `POST /api/verify-token`, `POST /api/logout`. Session cookie HMAC-signed, version-prefixed (so prior versions reject cleanly post-deploy). Typed contract: [`contracts/distribution-auth.openapi.yaml`](../contracts/distribution-auth.openapi.yaml).
-- **DI-4: Anti-enum + rate limit (AC-8).** Always-200 / 204 on send-unlock and client-errors. Per-IP and per-email-hash rate limits. Distinct expired/invalid error strings on verify-token.
-- **DI-5: Server hardening.** TLS terminator on :443 → 127.0.0.1 origin. COOP/COEP (AC-13). 16KB POST cap. No per-user RW endpoints (AC-2). Status-aware caching (4xx/5xx never long-cached).
-- **DI-6: PWA-specific gotchas (when distribution medium is a PWA).** Minimal manifest, no `related_applications`, no `share_target` POST. SW network-first for HTML/JS/CSS/SW + worker file; cache-first for vendored runtime. Separate asset cache. Shared DB URL bypassed in SW fetch (AC-14).
+- **DI-1: Install path.** The Distribution slot MUST provide bundle delivery, a verified initial Shared DB, and a session bootstrap.
+- **DI-2: Update path.** The update path MUST cover the shell and worker file via the service worker plus cache versioning. Shared DB updates MUST be user-driven (per AC-10), not automatic.
+- **DI-3: Auth contract.** The Distribution slot MUST expose `GET /api/auth/status`, `POST /api/send-unlock`, `POST /api/verify-token`, and `POST /api/logout`. The session cookie MUST be HMAC-signed and version-prefixed (so prior versions reject cleanly post-deploy). Typed contract: [`contracts/distribution-auth.openapi.yaml`](../contracts/distribution-auth.openapi.yaml).
+- **DI-4: Anti-enum + rate limit (AC-8).** `send-unlock` and `client-errors` MUST always return 200 / 204. Per-IP and per-email-hash rate limits MUST be enforced. `verify-token` MUST use distinct expired/invalid error strings.
+- **DI-5: Server hardening.** The Distribution server MUST terminate TLS on :443 → 127.0.0.1 origin. It MUST send COOP/COEP headers (AC-13). POST body MUST be capped at 16KB. The server MUST NOT expose per-user RW endpoints (AC-2). Caching MUST be status-aware (4xx/5xx MUST NOT be long-cached).
+- **DI-6: PWA-specific gotchas (when distribution medium is a PWA).** The manifest MUST be minimal — no `related_applications`, no `share_target` POST. The service worker MUST be network-first for HTML/JS/CSS/SW + worker file and cache-first for the vendored runtime. A separate asset cache MUST be used. The Shared DB URL MUST be bypassed in the SW fetch handler (AC-14).
 
 Cross-slot: DI-2's update path triggers WS's "New version available — Reload" banner; DI-3 outcomes feed WS-1's persona decision.
 
 #### Shared schema (`SH-`)
 
-- **SH-1: Primary record table.** `record_id` PK, `slug` UNIQUE, `name`, app-defined display columns, `extra_json TEXT` overflow. Typed contract: [`contracts/shared-db.schema.sql`](../contracts/shared-db.schema.sql).
-- **SH-2: Optional FTS5 virtual table.** Indexes whichever columns the workspace wants searchable.
-- **SH-3: Optional per-record asset URL convention.** `/images/<slug>.{jpg,png}` style; cacheable, immutable, slug-keyed.
-- **SH-4: Read-only enforcement.** ATTACH `?mode=ro` for cross-DB joins; stray writes raise `OperationalError`.
-- **SH-5: Atomic re-import semantics with orphan preview (AC-10).** Stage → validate → swap; pre-swap impact preview lists Private DB references that would be orphaned.
-- **SH-6: Sourced-provenance per record (AC-17).** Multi-source PNAs add a `source` column; single-source may omit.
+- **SH-1: Primary record table.** The Shared schema MUST define a primary record table with `record_id` PK, `slug` UNIQUE, `name`, app-defined display columns, and `extra_json TEXT` overflow. Typed contract: [`contracts/shared-db.schema.sql`](../contracts/shared-db.schema.sql).
+- **SH-2: Optional FTS5 virtual table.** Implementations MAY provide an FTS5 virtual table indexing whichever columns the workspace wants searchable.
+- **SH-3: Optional per-record asset URL convention.** Implementations MAY use a `/images/<slug>.{jpg,png}` style — cacheable, immutable, slug-keyed.
+- **SH-4: Read-only enforcement.** Cross-DB joins MUST use ATTACH `?mode=ro`. Stray writes MUST raise `OperationalError`.
+- **SH-5: Atomic re-import semantics with orphan preview (AC-10).** Re-imports MUST be stage → validate → swap. A pre-swap impact preview MUST list Private DB references that would be orphaned.
+- **SH-6: Sourced-provenance per record (AC-17).** Multi-source PNAs MUST add a `source` column. Single-source PNAs MAY omit it.
 
 Cross-slot: SH-5 is implemented by ST-8.
 
 #### Private schema (`PR-`)
 
-- **PR-1: Core tables.** `groups`, `group_members`, `record_tags`, `record_notes`, `settings(workspace_id, key, value)` with composite PK. Typed contract: [`contracts/private-db.schema.sql`](../contracts/private-db.schema.sql).
-- **PR-2: Opt-in tables.** `record_comms_history`. **Disabled by default** (`settings['comms_history_enabled']='1'` to enable). User has full read/edit/delete control.
-- **PR-3: Schema metadata.** `PRAGMA user_version`; `PRAGMA foreign_keys=ON` per connection.
-- **PR-4: Durability.** Never replaced on app update; survives Clear App Cache; only Reset Everything wipes.
-- **PR-5: Backup/restore conformance.** Idempotent CREATE IF NOT EXISTS lets older backups gain newer tables on restore.
+- **PR-1: Core tables.** The Private schema MUST define `groups`, `group_members`, `record_tags`, `record_notes`, and `settings(workspace_id, key, value)` with composite PK. Typed contract: [`contracts/private-db.schema.sql`](../contracts/private-db.schema.sql).
+- **PR-2: Opt-in tables.** `record_comms_history` MAY be present and MUST be disabled by default (`settings['comms_history_enabled']='1'` to enable). The user MUST have full read/edit/delete control.
+- **PR-3: Schema metadata.** Implementations MUST set `PRAGMA user_version` and MUST set `PRAGMA foreign_keys=ON` per connection.
+- **PR-4: Durability.** The Private DB MUST NOT be replaced on app update. It MUST survive Clear App Cache. Only Reset Everything (ST-10) MAY wipe it.
+- **PR-5: Backup/restore conformance.** Implementations MUST use idempotent CREATE IF NOT EXISTS so older backups gain newer tables on restore.
 
 Cross-slot: PR-4 is enforced by ST-1 (separate file from Shared DB) and ST-10 (Reset Everything is the only wipe path); PR-5 is exercised by ST-7.
 
 #### Debug contract (`DB-`)
 
-- **DB-1: Build label substitution.** Placeholder substitution at build *and* serve time (AC-15). Format `<YYYY-MM-DD>-<short-sha>` is the recommended default; implementations may pick another stable format.
-- **DB-2: Build badge.** Always-visible runtime display showing local + server labels.
-- **DB-3: Boot phase marks + watchdog.** Named `bootMarks`; watchdog timeout surfaces a recovery panel; slow-boot persistence across sessions.
-- **DB-4: Sanitized error sink.** POST endpoint; 16KB cap; rate limit; always 204; allowlisted `kind=` enum; server-side free-text sanitization. Typed contract: [`contracts/client-errors-payload.schema.json`](../contracts/client-errors-payload.schema.json).
-- **DB-5: Sink-as-analytics.** Adding a new `kind=` enum is the only widening lever. No separate analytics endpoint, no separate identifier scheme.
-- **DB-6: Bug-report dialog.** Collects DB-2 + DB-3 + DB-4 ring; opens mailto to configured maintainer.
-- **DB-7: Force-gate / force-reset escape hatch.** Reachable from `?diag` (or the substrate-equivalent diagnostics affordance) and a hardcoded URL parameter regardless of cookie / localStorage state (per AC-6).
-- **DB-8: Configurability.** Every part is configurable. Purely-personal PNAs may have an empty sink and no maintainer mailbox; the substrate still works.
-- **DB-9: Test affordance.** Workspace exposes the active data provider on a stable global (`window.__dataProvider` in fellows_local_db) so test suites can drive the contracts the same way the workspace does, without a separate test-only seam.
+- **DB-1: Build label substitution.** Build label substitution MUST happen at both build time and serve time (AC-15). The format `<YYYY-MM-DD>-<short-sha>` is RECOMMENDED; implementations MAY pick another stable format.
+- **DB-2: Build badge.** The workspace MUST provide an always-visible runtime display showing local + server labels.
+- **DB-3: Boot phase marks + watchdog.** Implementations MUST emit named `bootMarks`. A watchdog timeout MUST surface a recovery panel. Slow-boot persistence across sessions MUST be implemented.
+- **DB-4: Sanitized error sink.** A POST endpoint MUST be exposed with: 16KB cap, rate limit, always-204 response, an allowlisted `kind=` enum, and server-side free-text sanitization. Typed contract: [`contracts/client-errors-payload.schema.json`](../contracts/client-errors-payload.schema.json).
+- **DB-5: Sink-as-analytics.** Adding a new `kind=` enum value MUST be the only widening lever for analytics. No separate analytics endpoint MAY be added; no separate identifier scheme MAY be introduced.
+- **DB-6: Bug-report dialog.** The workspace MUST provide a bug-report dialog that collects DB-2 + DB-3 + DB-4 ring contents and opens mailto to the configured maintainer.
+- **DB-7: Force-gate / force-reset escape hatch.** The escape hatch MUST be reachable from `?diag` (or the substrate-equivalent diagnostics affordance) and from a hardcoded URL parameter regardless of cookie / localStorage state (per AC-6).
+- **DB-8: Configurability.** Every part of the Debug substrate MUST be configurable. Purely-personal PNAs MAY have an empty sink and no maintainer mailbox; the substrate MUST still work.
+- **DB-9: Test affordance.** The workspace MUST expose the active data provider on a stable global (`window.__dataProvider` in fellows_local_db) so test suites can drive the contracts the same way the workspace does, without a separate test-only seam.
 
 Cross-slot: every component implements DB-1; WS instantiates DB-2, DB-3, DB-6, DB-7, DB-9; DI hosts DB-4 (when present).
 

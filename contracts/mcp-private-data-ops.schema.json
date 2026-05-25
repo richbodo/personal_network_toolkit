@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://pna-spec.example/v0.1/mcp-private-data-ops.schema.json",
   "title": "MCP server — Private Data Ops",
+  "$comment": "Realizes: AC-MCP-A, AC-10.",
   "description": "Tool surface for the canonical Private Data Ops MCP server. Exposes read-only access to Private DB rows (groups + their members joined to Shared DB display fields) so an AI client can answer 'who's in this group' and 'find my X group' questions. Members are returned with orphan-tolerant nulls when a member's record_id no longer resolves in the Shared DB after a re-mirror (per AC-10). AC-MCP-A applies: cloud AI clients require explicit per-call consent before invoking tools on this server. v1 scope is groups only; tag/note CRUD will appear in a later spec version once users are writing those at scale. See spec/PNA_Spec.md § Universal architectural commitments (AC-MCP-A, AC-10) and § Vision (canonical MCP servers).",
   "type": "object",
   "required": ["server_name", "transport", "tools"],
