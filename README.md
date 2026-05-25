@@ -16,6 +16,21 @@ This toolkit augments human-AI builder teams; it doesn't auto-build applications
 
 Note: This does not quite fit into a /skill or I would make it one.  Building the reference apps feeds the spec and the apps in a virtuous loop, so there is no conventional path that makes this more accessible like adding to /skill repos.
 
+## Status
+
+**v0.1 alpha.** The spec is feature-complete for v0.1 — universal ACs, axes, use cases, slot map with sub-contracts, and typed contracts are all in place. We say "alpha" rather than "draft" because the contribution workflow described in `[plans/reorganization-plan.md](plans/reorganization-plan.md)` hasn't yet been validated against `fellows_local_db` as the first reference design.
+
+What we're working toward — success looks like:
+
+1. A new builder can read `README.md` + `CONTRIBUTING.md` and build a conformant PNA using the skill.
+2. A new user can ask an LLM (via the skill) to audit a candidate PNA's source and get an actionable AC-keyed report.
+3. A new contributor can submit a reference design end-to-end without maintainer hand-holding beyond review.
+4. Every accepted design has a permanent Software Heritage identifier that survives upstream repo deletion.
+5. The PNA Spec evolves at least one minor version based on a contributed reference design's findings.
+6. Every AC in the spec carries a stable ID; every typed contract names the AC(s) it realizes; every Architecture document maps each applicable AC to a verification mechanism.
+
+Substantive changes from v0.1 bump the spec version per `[CHANGELOG.md](CHANGELOG.md)`.
+
 ## Entry points
 
 Read in this order if you're new:
@@ -35,15 +50,9 @@ A reference design is a working, deployed PNA that demonstrates one valid combin
 
 When a second reference design (e.g. a Personal Relationship Manager) lands, it'll be linked from here.
 
-## Status
-
-**v0.1 (draft).** Spec content is feature-complete for v0.1 — all universal ACs, axes, use cases, slot map with sub-contracts, and typed contracts are in place. Substantive changes from this point bump the spec version per `[CHANGELOG.md](CHANGELOG.md)`.
-
-Reference implementations of the canonical MCP servers ship today in `[fellows_local_db/mcp_servers/](https://github.com/richbodo/fellows_local_db/tree/main/mcp_servers)` (Shared Data Ops, Private Data Ops, Communications). Ingestion and Diagnostics tool surfaces are spec-level placeholders awaiting first reference implementations.
-
 ## Plans
 
-`plans/` holds long-form proposals for toolkit extensions. Today: `[memorize-plugin-plan-v0.2.md](plans/memorize-plugin-plan-v0.2.md)` — a plugin proposal.
+`plans/` holds long-form proposals for PNT itself. Today: `[reorganization-plan.md](plans/reorganization-plan.md)` — the unified reorg plan covering repo restructure, spec formalization (RFC-style normative language, stable IDs, bidirectional traceability), per-design Architecture documents with AC attestation, Software Heritage archival, and a single skill that lets AI agents build, evaluate, and contribute PNAs.
 
 ## License
 
