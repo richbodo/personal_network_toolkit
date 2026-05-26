@@ -1,8 +1,8 @@
 # PNT User's Guide
 
-The PNA Spec is the canonical specification; this guide is the canonical how-to. It gives step-by-step instructions corresponding to each of the success criteria listed in [`README.md` § Status](../README.md#status).
+The PNA (Personal Network Application) Spec is the canonical specification; this guide is the canonical how-to. It gives step-by-step instructions corresponding to each of the success criteria listed in [`README.md` § Status](../README.md#status).
 
-PNT is built to be consumed by AI coding agents. Most of this guide assumes you have an agent (Claude Code, Cursor, an equivalent) you can ask things like *"use the PNT skill to validate my design."* The skill at [`pna-build-eval-contrib/SKILL.md`](../pna-build-eval-contrib/SKILL.md) is the agent-consumption view of everything in this guide.
+PNT (Personal Network Toolkit) is built to be consumed by AI coding agents. Most of this guide assumes you have an agent (Claude Code, Cursor, an equivalent) you can ask things like *"use the PNT skill to validate my design."* The skill at [`pna-build-eval-contrib/SKILL.md`](../pna-build-eval-contrib/SKILL.md) is the agent-consumption view of everything in this guide.
 
 ---
 
@@ -16,9 +16,9 @@ You're starting (or extending) a personal network application.
 
    > "Use the PNT skill to walk me through axis picks for a [Directory Archive | Personal Relationship Manager | …] PNA."
 
-   The agent walks each axis (distribution, storage substrate, ingestion shape, workspace shell, comms transport set, MCP-exposure) and the attested picks per axis.
+   The agent walks each axis (distribution, storage substrate, ingestion shape, workspace shell, comms transport set, MCP-exposure — where MCP = Anthropic's Model Context Protocol) and the attested picks per axis.
 
-3. **Find a reference design that shares as many of your picks as possible.** Each [`reference_designs/<name>/`](../reference_designs/) directory has a design record naming its flavor. Study the design closest to what you want. Its archived source is linked via the Software Heritage SWHID in the record.
+3. **Find a reference design that shares as many of your picks as possible.** Each [`reference_designs/<name>/`](../reference_designs/) directory has a design record naming its flavor. Study the design closest to what you want. Its archived source is linked via the Software Heritage SWHID (Persistent IDentifier) in the record.
 
 4. **Pull the typed contracts.** [`contracts/`](../contracts/) has them. Each contract opens with a `Realizes: AC-X, AC-Y` header naming the ACs it serves. Treat the contracts as load-bearing; your code conforms to them.
 
@@ -32,7 +32,7 @@ You're starting (or extending) a personal network application.
 
 ## Goal 2 — Audit a candidate PNA before installing it
 
-You have a PNA in front of you (someone else's, or your own in-progress one) and you want an LLM to check whether it actually honors the PNA Spec — whether it's safe with your data.
+You have a PNA in front of you (someone else's, or your own in-progress one) and you want an LLM (Large Language Model) to check whether it actually honors the PNA Spec — whether it's safe with your data.
 
 1. **Get the candidate's source.** Clone the repo. If you only have a bundle, ask for the source.
 

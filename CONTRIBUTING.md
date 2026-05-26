@@ -4,7 +4,7 @@ PNT (the Personal Network Toolkit) evolves through reference-driven specificatio
 
 ## Philosophy
 
-The spec is generative + evaluative. AI agents read it to build conformant PNAs, and to evaluate whether a candidate application is safe to use as one. Both modes are first-class. PNT is a thin canonical repo: spec, typed contracts, reference design records, skill, tooling. It does not host runnable application code.
+The spec is generative + evaluative. AI agents read it to build conformant PNAs (Personal Network Applications), and to evaluate whether a candidate application is safe to use as one. Both modes are first-class. PNT is a thin canonical repo: spec, typed contracts, reference design records, skill, tooling. It does not host runnable application code.
 
 A reference design is the bridge between abstract spec and working software. Spec changes without a demonstrating design are not accepted; designs without a discussion of what they contribute to the spec are not accepted either. The two co-evolve.
 
@@ -16,7 +16,7 @@ A reference design is the bridge between abstract spec and working software. Spe
   - declares the PNA Spec version the design conforms to,
   - declares per-axis picks and their versions,
   - documents per-axis implementation choices, and
-  - includes an **AC attestation table** mapping every applicable AC to (a) how the design realizes it, with code references, and (b) the specific test(s), LLM evaluation rubric, or human-review record(s) that verify it for this design. Rows without a Verification reference are not accepted.
+  - includes an **AC (Architectural Commitment) attestation table** mapping every applicable AC to (a) how the design realizes it, with code references, and (b) the specific test(s), LLM (Large Language Model) evaluation rubric, or human-review record(s) that verify it for this design. Rows without a Verification reference are not accepted.
 - With reproducibility notes sufficient for a future reader to build the archived source.
 
 See [`reference_designs/templates/ARCHITECTURE_TEMPLATE.md`](reference_designs/templates/ARCHITECTURE_TEMPLATE.md) for the full structure.
@@ -51,7 +51,7 @@ Maintainer review focuses on the judgment-and-review layer of conformance verifi
 On merge:
 
 - Spec changes land (including any new AC IDs, sub-contracts, or axis-pick additions)
-- Maintainer triggers Software Heritage archival (planned tooling: `tools/swh-save.sh <repo-url> <commit-sha>`, landing in Phase 5; until then, archival is performed manually via Software Heritage's Save Code Now) and records the returned SWHID in the design record
+- Maintainer triggers Software Heritage archival (planned tooling: `tools/swh-save.sh <repo-url> <commit-sha>`, landing in Phase 5; until then, archival is performed manually via Software Heritage's Save Code Now) and records the returned SWHID (Software Heritage Persistent IDentifier) in the design record
 - Maintainer decides whether the design warrants an additional `archive/<design-name>` fork in the `pnt-archive` GitHub organization (high-signal designs only; SWHID alone is sufficient for the archival promise)
 - Spec version bumped per the versioning rules below
 

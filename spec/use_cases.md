@@ -32,7 +32,7 @@ The use case doesn't *determine* these picks — a hypothetical Directory Archiv
 
 The user's *own* contact databases (Google + Apple + Facebook + LinkedIn + organizational directories) mirrored locally, plus rich private overlays (notes, tags, groups, comms history, message recency) and tools (LLM-mediated search, visual recall, eventual P2P). Shared data has multiple sources the user controls; ingestion involves a dedup pass. Typically single-user, not distributed onward — the PRM is for one person's contact graph.
 
-**Likely flavor (draft, PRT-inspired):**
+**Likely flavor (draft, [PRT](https://github.com/richbodo/prt)-inspired — PRT, the predecessor "Personal Network Toolkit" project, is the graveyard codebase from which this PNT and fellows_local_db grew):**
 
 `distribution:never-distributed-single-user + storage:native-sqlite-via-filesystem + ingestion:multi-source-merge-with-dedup + workspace-shell:tui-textual + comms:shell-out-to-cli-clients + mcp-exposure:full`
 

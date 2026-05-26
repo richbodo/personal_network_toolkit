@@ -2,6 +2,12 @@
 
 > Universal specification for personal network applications (PNAs). Defines vocabulary, goals, use cases, axes, composition (how PNAs get built), architectural commitments, and slot contracts. Targeted at AI agents and humans building PNAs together.
 
+## Skill (agent entry point)
+
+- [pna-build-eval-contrib/SKILL.md](pna-build-eval-contrib/SKILL.md) — canonical PNT skill for AI agents. Three flows: build a conformant PNA from the spec, evaluate a candidate PNA's conformance against the spec, contribute a design back to PNT
+- [docs/users-guide.md](docs/users-guide.md) — human-facing step-by-step instructions for each flow
+- [CONTRIBUTING.md](CONTRIBUTING.md) — how reference designs (and any spec changes they motivate) get accepted into PNT
+
 ## Spec
 
 - [PNA Spec](spec/PNA_Spec.md) — universal spec; Spec-Version 0.1 (draft)

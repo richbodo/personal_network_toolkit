@@ -1,6 +1,6 @@
 # Personal Network Toolkit
 
-The Personal Network Toolkit is a [generative application-class blueprint](docs/prior_art.md) for building and validating **[personal network applications (PNAs)](spec/PNA_Spec.md#goals)** — local-only apps for viewing contact data and working on relationship data over a firewalled private data layer. PNAs run on the user's device, never as SaaS, and bridge SaaS-held contact data into a private workspace. **[Why do this?](spec/PNA_Spec.md#preamble)**
+The Personal Network Toolkit (PNT) is a [generative application-class blueprint](docs/prior_art.md) for building and validating **[personal network applications (PNAs)](spec/PNA_Spec.md#goals)** — local-only apps for viewing contact data and working on relationship data over a firewalled private data layer. PNAs run on the user's device, never as SaaS, and bridge SaaS-held contact data into a private workspace. **[Why do this?](spec/PNA_Spec.md#preamble)**
 
 When building a PNA, specs are foundational because users will increasingly compose software by prompting AI agents, and success is measured by adherence to them.
 
@@ -8,26 +8,32 @@ Three deliverables, in dependency order:
 
 1. **Foundational specs.** Universal vocabulary, goals, axes, architectural commitments, and typed contracts for a PNA. — **shipping in v0.1 (draft)**.
 2. **Production-ready reference applications.** Working PNAs you can install, study, and adapt. — first reference design is a distributed directory archive (lives at [richbodo/fellows_local_db](https://github.com/richbodo/fellows_local_db)).
-3. **MCP servers.** Composability-layer (Software 3.0) bridges so AI clients (Claude Desktop, Cursor, local Ollama agents) can drive a PNA on the user's behalf. — three v1 stdio servers ship inside `fellows_local_db/mcp_servers/`; typed contracts for all five canonical MCP servers live here in [`contracts/`](contracts/).
+3. **AI tooling — skill + MCP (Model Context Protocol) servers.** How AI agents work with PNT. The skill at [`pna-build-eval-contrib/SKILL.md`](pna-build-eval-contrib/SKILL.md) is what an agent reads to consume the spec at design time. The MCP servers (typed contracts in [`contracts/`](contracts/); three v1 stdio implementations in `fellows_local_db/mcp_servers/`) expose an already-built PNA's capabilities at runtime so AI clients (Claude Desktop, Cursor, local Ollama agents) can drive a PNA on the user's behalf.
 
-That combination best satisfies the composability model of Software 3.0 in this context. It should ensure that both the humans and the AIs in modern human-AI builder teams can build PNAs that they understand fully and that behave as expected. The Personal Network Toolkit augments the human-AI builder teams; it doesn't automatically build applications itself.
+PNT supports three modes of use, all packaged in the [skill](pna-build-eval-contrib/SKILL.md):
 
-This toolkit augments human-AI builder teams; it doesn't auto-build applications itself; it is a blueprint for agents to implement and humans to customize and verify.  Verification is made simply by composable contract specifications made primarily for AIs, derived from goals made for humans to read.
+- **Build.** An AI agent reads the spec and helps you compose a conformant PNA against the typed contracts, adapting from a reference design that shares your axis picks.
+- **Evaluate.** An AI agent audits a candidate PNA's source against every applicable AC (Architectural Commitment) and returns a structured report — useful for deciding whether someone else's PNA is safe to install, or for self-checking your own in-progress design.
+- **Contribute.** When you find a spec gap or have a design that adds ecosystem value, the skill walks you through preflight validation (Architecture document + AC attestation table) and then opens the PR back to PNT.
 
-Note: This does not quite fit into a /skill or I would make it one.  Building the reference apps feeds the spec and the apps in a virtuous loop, so there is no conventional path that makes this more accessible like adding to /skill repos.
+See [`docs/users-guide.md`](docs/users-guide.md) for step-by-step instructions for each.
+
+PNT augments human-AI builder teams; it doesn't auto-build applications itself. It's a blueprint for AI agents to implement and humans to customize and verify. Conformance verification works at three layers: mechanical lints in `tools/` (CI-enforced), LLM (Large Language Model) architectural review via the skill above, and human PR review.
 
 ## Status
 
 **v0.1 (draft).** The spec is feature-complete for v0.1 — universal ACs, axes, use cases, slot map with sub-contracts, and typed contracts are all in place. The "draft" label reflects that the contribution workflow described in [`plans/reorganization-plan.md`](plans/reorganization-plan.md) hasn't yet been validated against `fellows_local_db` as the first reference design.
 
+*Most recent landing: reorganization Phases 1–4.5 (May 2026) — repo restructure, RFC 2119 + bidirectional AC↔contract traceability, skill packaging, User's Guide. See [`CHANGELOG.md`](CHANGELOG.md).*
+
 What we're working toward — success looks like:
 
-1. A new builder can read `README.md` + `CONTRIBUTING.md` and build a conformant PNA using the skill.
-2. A new user can ask an LLM (via the skill) to audit a candidate PNA's source and get an actionable AC-keyed report.
-3. A new contributor can submit a reference design end-to-end without maintainer hand-holding beyond review.
-4. Every accepted design has a permanent Software Heritage identifier that survives upstream repo deletion.
-5. The PNA Spec evolves at least one minor version based on a contributed reference design's findings.
-6. Every AC in the spec carries a stable ID; every typed contract names the AC(s) it realizes; every Architecture document maps each applicable AC to a verification mechanism.
+1. A new builder can read `README.md` + `CONTRIBUTING.md` and build a conformant PNA using the skill. *— Materials in place; end-to-end validation pending (Phase 5 will exercise this against `fellows_local_db`).*
+2. A new user can ask an LLM (via the skill) to audit a candidate PNA's source and get an actionable AC-keyed report. *— Skill flow documented; validation against a candidate pending.*
+3. A new contributor can submit a reference design end-to-end without maintainer hand-holding beyond review. *— Skill + CONTRIBUTING in place; awaits a first external contribution (Phase 7).*
+4. Every accepted design has a permanent Software Heritage identifier that survives upstream repo deletion. *— Awaits Phase 5 archival tooling (`tools/swh-save.sh`).*
+5. The PNA Spec evolves at least one minor version based on a contributed reference design's findings. *— Awaits a contribution.*
+6. Every AC in the spec carries a stable ID; every typed contract names the AC(s) it realizes; every Architecture document maps each applicable AC to a verification mechanism. *— First two CI-enforced via [`tools/lint-spec-ids.py`](tools/lint-spec-ids.py); `fellows_local_db` Architecture-doc backfill pending (Phase 5).*
 
 Step-by-step instructions for each of those goals live in [`docs/users-guide.md`](docs/users-guide.md).
 
@@ -35,13 +41,21 @@ Substantive changes from v0.1 bump the spec version per [`CHANGELOG.md`](CHANGEL
 
 ## Entry points
 
-Read in this order if you're new:
+Read in this first if you are new:
 
-- **[`spec/PNA_Spec.md`](spec/PNA_Spec.md)** — universal PNA specification. Vocabulary, goals, use cases, axes, composition, universal architectural commitments, slot map with 57 sub-contracts, scope/versioning. **Start here.**
-- **[`docs/users-guide.md`](docs/users-guide.md)** — step-by-step instructions for each of the success criteria in § Status (building a PNA, auditing one, submitting a reference design).
+- [`docs/users-guide.md`](docs/users-guide.md) — step-by-step instructions for each of the success criteria in § Status (building a PNA, auditing one, submitting a reference design).
+- [`spec/PNA_Spec.md`](spec/PNA_Spec.md) — universal PNA specification. Vocabulary, goals, use cases, axes, composition, universal architectural commitments, slot map with 57 sub-contracts, scope/versioning.
+
+To contribute to the spec with a new reference design or architectural finding:
+
+- [`CONTRIBUTING.md`](CONTRIBUTING.md) — how reference designs (and any spec changes they motivate) get accepted into PNT.
+
+To dig into the spec more deeply:
+
+- **[`pna-build-eval-contrib/SKILL.md`](pna-build-eval-contrib/SKILL.md)** — the skill packaging the three flows (build, evaluate, contribute) for AI agents. The agent-consumption view of the toolkit.
 - **[`spec/axes.md`](spec/axes.md)** — the Axes a PNA varies along, attested picks per Axis, and the flavor-derived ACs each pick triggers.
 - **[`spec/use_cases.md`](spec/use_cases.md)** — attested classes of PNA (Directory Archive realized; Personal Relationship Manager draft; Multi-PNA ecosystem target).
-- **[`contracts/`](contracts/)** — typed contracts for the load-bearing interfaces: JSON Schema for the worker init handshake + RPC protocol, OpenAPI for distribution auth, SQL DDL for the two database schemas, TypeScript for the Communications transport interface, JSON Schema for the five canonical MCP server tool surfaces.
+- **[`contracts/`](contracts/)** — typed contracts for the load-bearing interfaces: JSON Schema for the worker init handshake + RPC (Remote Procedure Call) protocol, OpenAPI for distribution auth, SQL DDL (Data Definition Language) for the two database schemas, TypeScript for the Communications transport interface, JSON Schema for the five canonical MCP server tool surfaces.
 - **[`CHANGELOG.md`](CHANGELOG.md)** — spec version history.
 - **[`llms.txt`](llms.txt)** — discovery file for the spec (humans + AI agents land here cold).
 
@@ -51,14 +65,15 @@ A reference design is a working, deployed PNA that demonstrates one valid combin
 
 - **[fellows_local_db](https://github.com/richbodo/fellows_local_db)** — first reference design. Directory Archive use case. Its [`docs/Architecture.md`](https://github.com/richbodo/fellows_local_db/blob/main/docs/Architecture.md) declares spec-version conformance and the per-slot specializations. Flavor:
 
-  | Axis | Pick |
-  |---|---|
-  | distribution | `web-bundle-with-magic-link` |
-  | storage substrate | `opfs-sqlite-wasm` |
-  | ingestion shape | `single-source-static-mirror` |
-  | workspace shell | `vanilla-js-spa` |
-  | comms transport set | `mailto-only` |
-  | MCP-exposure | `shared+private+comms` |
+  | Axis                | Pick                          |
+  | ------------------- | ----------------------------- |
+  | distribution        | `web-bundle-with-magic-link`  |
+  | storage substrate   | `opfs-sqlite-wasm`            |
+  | ingestion shape     | `single-source-static-mirror` |
+  | workspace shell     | `vanilla-js-spa`              |
+  | comms transport set | `mailto-only`                 |
+  | MCP-exposure        | `shared+private+comms`        |
+
 
 When a second reference design (e.g. a Personal Relationship Manager) lands, it'll be linked from here.
 
