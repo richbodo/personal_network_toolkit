@@ -8,6 +8,29 @@ PNT (Personal Network Toolkit) is built to be consumed by AI coding agents. Most
 
 ---
 
+## Install the skill
+
+The flows below are driven by the PNT skill at [`pna-build-eval-contrib/SKILL.md`](../pna-build-eval-contrib/SKILL.md). If you haven't used Claude Code skills before: they're modular agent capabilities that live in a `.claude/skills/<skill-name>/SKILL.md` layout and load automatically when a prompt matches the skill's `description` field. You install a skill once, then invoke it through natural language in any chat.
+
+**Recommended — symlink globally** (run from your PNT working directory):
+
+```bash
+mkdir -p ~/.claude/skills
+ln -s "$(pwd)/pna-build-eval-contrib" ~/.claude/skills/pna-build-eval-contrib
+```
+
+Symlinking keeps the skill in sync with your PNT clone — a `git pull` here updates the skill everywhere it's used.
+
+**Alternatives:**
+
+- **Copy instead of symlink** — replace `ln -s` with `cp -r` to pin the skill to a specific version. You'll re-copy when you want updates.
+- **Project-level install** — replace `~/.claude/skills` with `<your-project>/.claude/skills` to scope the skill to one project (useful if you want different skill versions in different projects).
+- **Run Claude Code from PNT itself** — no install required; the skill is discoverable from this directory. Adequate for one-off auditing.
+
+**Verify.** Start Claude Code in any directory and try one of the prompts below; if the skill triggers, you're set. You can also ask the agent something like *"what PNT skills do you have available?"* to check.
+
+---
+
 ## Goal 1 — Build a conformant PNA
 
 You're starting (or extending) a personal network application.
