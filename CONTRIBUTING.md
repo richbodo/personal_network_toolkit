@@ -8,6 +8,10 @@ The spec is generative + evaluative. AI agents read it to build conformant PNAs 
 
 A reference design is the bridge between abstract spec and working software. Spec changes without a demonstrating design are not accepted; designs without a discussion of what they contribute to the spec are not accepted either. The two co-evolve.
 
+## How to contribute
+
+The step-by-step procedure for a contribution — preflight your design via the skill, iterate, open the PR, address maintainer feedback, final validation after merge — lives in [`docs/users-guide.md` § Goal 3](docs/users-guide.md#goal-3-submit-your-design-as-a-reference-design). The rest of this document is the policy layer that procedure operates against: what we accept, what we don't, what artifacts your PR must include, and how acceptance, versioning, and archival work after merge.
+
 ## What we accept
 
 - Reference designs derived from working applications.
@@ -30,14 +34,12 @@ See [`reference_designs/templates/ARCHITECTURE_TEMPLATE.md`](reference_designs/t
 
 ## PR contents required
 
-A contribution PR contains:
+The skill's contribute flow (driven by [`docs/users-guide.md` § Goal 3](docs/users-guide.md#goal-3-submit-your-design-as-a-reference-design), backed by [`pna-build-eval-contrib/SKILL.md`](pna-build-eval-contrib/SKILL.md)) assembles all of these for you end-to-end. Manually-authored PRs are also fine — the artifacts a PR must contain:
 
 - **Spec diff (if any)** — changes to `spec/PNA_Spec.md`, `spec/axes.md`, `spec/use_cases.md`, or `contracts/` files
 - **A design record** at `reference_designs/<design-name>/README.md` per [`reference_designs/templates/TEMPLATE.md`](reference_designs/templates/TEMPLATE.md)
 - **A copy of the design's Architecture document** at `reference_designs/<design-name>/Architecture.md` per [`reference_designs/templates/ARCHITECTURE_TEMPLATE.md`](reference_designs/templates/ARCHITECTURE_TEMPLATE.md)
 - **The design's canonical repo URL and the commit SHA being submitted**
-
-The skill's contribute flow (see [`pna-build-eval-contrib/SKILL.md`](pna-build-eval-contrib/SKILL.md)) walks an LLM agent through producing this PR end-to-end. Manually-authored PRs are also fine.
 
 ## Acceptance process
 
@@ -73,4 +75,4 @@ PNT does not host runnable application code or maintain forks.
 
 ## Acceptance is not certification
 
-Acceptance of a reference design signals "this design contributed something to the spec, and demonstrably conforms against it." It is not a recommendation or a certification. There is no certifying body. Conformance is something you check (via the evaluate flow of the skill), not something you are awarded.
+Acceptance of a reference design signals "this design contributed something to the spec, and demonstrably conforms against it." It is not a recommendation or a certification. There is no certifying body. Conformance is something you check (via [the evaluate flow](docs/users-guide.md#goal-2-audit-a-candidate-pna-before-installing-it)), not something you are awarded.
