@@ -39,12 +39,14 @@ Inputs: a candidate PNA's source tree (or a description sufficient to read its b
    - If the candidate has an Architecture document with an AC attestation table, check that the declared verification mechanism actually runs and passes.
 2. **For each flavor-derived AC in `spec/axes.md`** triggered by the candidate's axis picks, do the same.
 3. **For each typed contract relevant to the candidate's axis picks**, check that the candidate implements the contract correctly. Contract headers (`Realizes: AC-X, AC-Y`) tell you which ACs the contract serves.
-4. **Produce a structured report keyed by AC ID**:
+4. **Produce a structured report keyed by AC ID.** The canonical form is the typed artifact at `tools/evaluate-report.schema.json` (JSON Schema). Emit an instance of that schema as the source of truth, then render the human-readable report as a *view* over it — don't hand-write the prose report and skip the artifact. Emitting the typed form is what makes two runs on the same candidate diffable (which ACs changed status). Per-AC status is one of:
    - `conformant` — with cited code locations.
    - `non-conformant` — with cited code locations showing the violation and the AC's stated requirement.
    - `not-applicable` — with reason (typically: the candidate's flavor doesn't trigger this AC).
    - `unable-to-determine` — with explanation; defaults to flagging for human review.
-5. **Summarize at the top**: overall posture and the most concerning non-conformances. Goals 1–5 are the load-bearing user-facing concerns — anything compromising private-data sovereignty (Goal 1), source-mirroring honesty (Goal 2), transport security (Goal 3), durability (Goal 4), or local diagnosability (Goal 5) leads the summary.
+
+   Each finding may also carry `evidence` entries tagged by `source` (`deterministic` / `llm` / `human`). When a deterministic check in `tools/` (e.g. the egress lint) has run against the candidate, fold its output in as a `source: deterministic` evidence entry on the AC it bears on, so the deterministic and LLM layers land on one finding.
+5. **Summarize at the top** (the artifact's `summary` object): overall posture and the most concerning non-conformances. Goals 1–5 are the load-bearing user-facing concerns — anything compromising private-data sovereignty (Goal 1), source-mirroring honesty (Goal 2), transport security (Goal 3), durability (Goal 4), or local diagnosability (Goal 5) leads the summary.
 
 Callers may ask you to emphasize specific Goals or axes at runtime (e.g., "focus on private-data sovereignty"). Treat that as a hint for the summary, not a structural variation.
 
@@ -110,6 +112,8 @@ A builder using Claude Code can drive both preflight and PR authoring end-to-end
 - `contracts/` — typed contracts (JSON Schema, OpenAPI, SQL DDL, TypeScript), each with a `Realizes: AC-X` header
 - `reference_designs/README.md` — index of accepted reference designs
 - `reference_designs/templates/` — the per-design and Architecture templates
+- `tools/evaluate-report.schema.json` — typed artifact for the evaluate flow's AC-keyed report (the canonical, diffable output; the prose report is a view over it)
+- `tools/egress-lint.py` — deterministic private-data-sovereignty check (AC-1): static scan for unsanctioned off-device egress vectors; `--json` emits evidence that folds into the report schema above. Run it against a candidate and fold its evidence into the AC-1 (and AC-2, server-side) finding.
 - `tools/lint-spec-ids.py` — checks AC ↔ contract traceability invariants
 - `CONTRIBUTING.md` — full contribution rules
 - `docs/prior_art.md` — survey of related work

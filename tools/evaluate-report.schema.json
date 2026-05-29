@@ -1,0 +1,172 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pna-spec.example/v0.1/evaluate-report.schema.json",
+  "title": "PNT evaluate-report artifact",
+  "description": "Machine-comparable form of the report produced by the skill's evaluate flow (pna-build-eval-contrib/SKILL.md § Evaluate flow). Keyed by AC ID so two runs on the same candidate can be diffed to show exactly which ACs changed status. The human-readable report is a rendering (a view) over an instance of this schema; this artifact is the source of truth. This is NOT a PNA interface contract — it realizes no AC and intentionally lives in tools/, not contracts/ (the lint-spec-ids check requires every file in contracts/ to name an AC it realizes; this one realizes none). It is the typed output of PNT's own evaluative tooling. Deterministic checks in tools/ (for example the egress lint) emit evidence entries with source=deterministic that an LLM evaluator folds into the relevant AC finding alongside its own source=llm evidence; source=human covers maintainer or reviewer judgement. Goals 1-5 (see spec/PNA_Spec.md § Goals) are the load-bearing user-facing concerns and drive the summary.",
+  "type": "object",
+  "required": ["report_schema_version", "candidate", "summary", "findings"],
+  "additionalProperties": false,
+  "properties": {
+    "report_schema_version": {
+      "const": "0.1",
+      "description": "Version of THIS report schema (not the PNA Spec version the candidate was evaluated against — that is candidate.pna_spec_version). Lets a diff tool refuse to compare incompatible report shapes."
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Optional ISO 8601 timestamp the emitter stamps when the report was produced. Informational; not used for diffing."
+    },
+    "generated_by": {
+      "type": "string",
+      "description": "Optional free-text identity of the evaluator that produced this report (agent/model/tool). Informational."
+    },
+    "candidate": {
+      "type": "object",
+      "description": "What was evaluated. Enough to know which design + revision this report describes, so two reports over the same candidate can be diffed meaningfully.",
+      "required": ["pna_spec_version", "picks_source"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string", "description": "Human-readable design name, if known." },
+        "repo_url": { "type": "string", "description": "Canonical source URL, if known." },
+        "commit": { "type": "string", "description": "Commit SHA (or other revision id) of the source that was read, if known. Two reports at different commits are expected to differ; two at the same commit should not." },
+        "pna_spec_version": { "type": "string", "description": "The PNA Spec version the candidate was evaluated against, e.g. '0.1'." },
+        "picks_source": {
+          "enum": ["declared", "inferred"],
+          "description": "Whether axis_picks came from the candidate's own Architecture document (declared) or were inferred from the source by the evaluator (inferred). Per SKILL.md § Evaluate flow, both are valid inputs."
+        },
+        "axis_picks": {
+          "type": "object",
+          "description": "The candidate's flavor: axis -> pick. Determines which flavor-derived ACs apply (see spec/axes.md). Keys are axis names (e.g. 'distribution', 'storage'); values are pick identifiers (e.g. 'web-bundle-with-magic-link').",
+          "additionalProperties": { "type": "string" }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "description": "Top-of-report posture. Per SKILL.md, anything compromising Goals 1-5 leads here.",
+      "required": ["posture", "headline"],
+      "additionalProperties": false,
+      "properties": {
+        "posture": {
+          "enum": ["conformant", "non-conformant", "mixed", "indeterminate"],
+          "description": "conformant = no non-conformances found and nothing left undetermined. non-conformant = at least one Goal 1-5 AC is non-conformant. mixed = some non-conformances but none on Goals 1-5, or non-conformances coexisting with conformant findings. indeterminate = too many unable-to-determine findings to take a posture."
+        },
+        "headline": {
+          "type": "string",
+          "description": "One- or two-sentence prose summary a human reads first. Should name the most concerning non-conformances, Goals 1-5 first."
+        },
+        "leading_concerns": {
+          "type": "array",
+          "description": "AC IDs (matching findings[].ac_id) the summary calls out as most concerning, in priority order. Typically the Goal 1-5 non-conformances.",
+          "items": { "$ref": "#/$defs/ac_id" }
+        }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "description": "One entry per AC the evaluator considered for the candidate's flavor. The diff signal: same candidate.commit + same report_schema_version should produce the same set of (ac_id -> status); a status change between two runs is the regression/improvement signal.",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/finding" }
+    }
+  },
+  "$defs": {
+    "ac_id": {
+      "type": "string",
+      "pattern": "^AC-[A-Z0-9-]+$",
+      "description": "Stable AC identifier as defined in spec/PNA_Spec.md or spec/axes.md, e.g. AC-1, AC-MCP-A, AC-PRM-C."
+    },
+    "code_location": {
+      "type": "object",
+      "required": ["path"],
+      "additionalProperties": false,
+      "properties": {
+        "path": { "type": "string", "description": "Repo-relative path to the cited source file." },
+        "lines": { "type": "string", "description": "Optional line or range within the file, e.g. '120' or '120-145'." },
+        "note": { "type": "string", "description": "Optional one-line explanation of what this location shows." }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "description": "A single piece of support for a finding's status. The layering principle (deterministic + LLM + human) shows up here as the source field.",
+      "required": ["source", "detail"],
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "enum": ["deterministic", "llm", "human"],
+          "description": "deterministic = produced by a tools/ check (e.g. the egress lint); llm = the evaluating model's own architectural reading; human = maintainer/reviewer judgement."
+        },
+        "tool": {
+          "type": "string",
+          "description": "For source=deterministic, the producing tool's identifier, e.g. 'egress-lint'. Omitted for llm/human."
+        },
+        "detail": { "type": "string", "description": "What this evidence shows, in prose." },
+        "citations": {
+          "type": "array",
+          "description": "Optional code locations this specific evidence points at (e.g. the offending call site a deterministic check flagged).",
+          "items": { "$ref": "#/$defs/code_location" }
+        }
+      }
+    },
+    "finding": {
+      "type": "object",
+      "required": ["ac_id", "status"],
+      "additionalProperties": false,
+      "properties": {
+        "ac_id": { "$ref": "#/$defs/ac_id" },
+        "ac_source": {
+          "enum": ["universal", "flavor-derived"],
+          "description": "Where the AC is defined: universal (spec/PNA_Spec.md) or flavor-derived (spec/axes.md, triggered by an axis pick)."
+        },
+        "status": {
+          "enum": ["conformant", "non-conformant", "not-applicable", "unable-to-determine"],
+          "description": "Per SKILL.md § Evaluate flow. conformant: design honors the AC. non-conformant: design violates it. not-applicable: the candidate's flavor doesn't trigger this AC. unable-to-determine: evaluator couldn't decide; flags for human review."
+        },
+        "goals": {
+          "type": "array",
+          "description": "Which top-level Goals (1-5) this AC bears on. Used to compute summary.posture and order leading_concerns.",
+          "items": { "type": "integer", "minimum": 1, "maximum": 5 }
+        },
+        "requirement": {
+          "type": "string",
+          "description": "The AC's stated normative requirement (the MUST/SHOULD text it constrains). Required when status=non-conformant so the violation is self-explaining."
+        },
+        "rationale": {
+          "type": "string",
+          "description": "The evaluator's reasoning. Required for not-applicable (the reason it doesn't apply) and unable-to-determine (what blocked a decision)."
+        },
+        "citations": {
+          "type": "array",
+          "description": "Code locations supporting the status. Required (non-empty) for conformant and non-conformant.",
+          "items": { "$ref": "#/$defs/code_location" }
+        },
+        "evidence": {
+          "type": "array",
+          "description": "Supporting evidence entries (deterministic / llm / human). A deterministic tool's output lands here so deterministic and LLM layers co-locate on one AC.",
+          "items": { "$ref": "#/$defs/evidence" }
+        },
+        "needs_human_review": {
+          "type": "boolean",
+          "description": "Defaults true semantically for unable-to-determine. Set explicitly when a conformant/non-conformant call still wants a human second look."
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "conformant" } } },
+          "then": { "required": ["citations"], "properties": { "citations": { "minItems": 1 } } }
+        },
+        {
+          "if": { "properties": { "status": { "const": "non-conformant" } } },
+          "then": { "required": ["citations", "requirement"], "properties": { "citations": { "minItems": 1 } } }
+        },
+        {
+          "if": { "properties": { "status": { "const": "not-applicable" } } },
+          "then": { "required": ["rationale"] }
+        },
+        {
+          "if": { "properties": { "status": { "const": "unable-to-determine" } } },
+          "then": { "required": ["rationale"] }
+        }
+      ]
+    }
+  }
+}

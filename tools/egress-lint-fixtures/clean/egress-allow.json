@@ -1,0 +1,9 @@
+{
+  "ac": "AC-1",
+  "allow": [
+    {
+      "origin": "https://fellows.example.org",
+      "reason": "distribution:web-bundle-with-magic-link — shared bundle + auth origin (the one sanctioned remote pick for this flavor)"
+    }
+  ]
+}

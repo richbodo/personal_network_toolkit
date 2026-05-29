@@ -1,0 +1,14 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <!-- xmlns is a namespace identifier, not a fetch — must NOT be flagged. -->
+  <head>
+    <link rel="stylesheet" href="/styles/app.css" />
+    <script src="./app.js" type="module"></script>
+  </head>
+  <body>
+    <img src="/assets/logo.png" alt="logo" />
+    <!-- Anchor href is navigation, not data egress — must NOT be flagged. -->
+    <a href="https://example.com/external-docs">docs</a>
+    <form action="/local/submit" method="post"></form>
+  </body>
+</html>

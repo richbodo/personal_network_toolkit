@@ -10,10 +10,17 @@ Three deliverables, in dependency order:
 2. **Production-ready reference applications.** Working PNAs you can install, study, and adapt. — first reference design is a distributed directory archive (lives at [richbodo/fellows_local_db](https://github.com/richbodo/fellows_local_db)).
 3. **AI tooling — skill + MCP (Model Context Protocol) servers.** How AI agents work with PNT. The skill at [`pna-build-eval-contrib/SKILL.md`](pna-build-eval-contrib/SKILL.md) is what an agent reads to consume the spec at design time. The MCP servers (typed contracts in [`contracts/`](contracts/); three v1 stdio implementations in `fellows_local_db/mcp_servers/`) expose an already-built PNA's capabilities at runtime so AI clients (Claude Desktop, Cursor, local Ollama agents) can drive a PNA on the user's behalf.
 
-PNT supports three modes of use, all packaged in the [skill](pna-build-eval-contrib/SKILL.md):
+PNT supports three modes of use, all packaged in the [skill](pna-build-eval-contrib/SKILL.md). **Install it once** so your agent auto-discovers it — symlink the skill into your skills directory (run from your PNT working directory):
 
+```bash
+mkdir -p ~/.claude/skills
+ln -s "$(pwd)/pna-build-eval-contrib" ~/.claude/skills/pna-build-eval-contrib
+```
+
+A `git pull` here then updates the skill everywhere it's used. See [`docs/users-guide.md` § Install the skill](docs/users-guide.md#install-the-skill) for copy-instead-of-symlink, project-scoped, and no-install alternatives. With the skill installed, drive any mode in natural language:
+
+- **Evaluate.** *Audit any contact app for safety before you install it.* An AI agent reads the candidate's source, checks it against every applicable AC (Architectural Commitment), and returns a structured report flagging anything that would put your data at risk. The lowest-friction way in — and it doubles as a self-check on your own in-progress design.
 - **Build.** An AI agent reads the spec and helps you compose a conformant PNA against the typed contracts, adapting from a reference design that shares your axis picks.
-- **Evaluate.** An AI agent audits a candidate PNA's source against every applicable AC (Architectural Commitment) and returns a structured report — useful for deciding whether someone else's PNA is safe to install, or for self-checking your own in-progress design.
 - **Contribute.** When you find a spec gap or have a design that adds ecosystem value, the skill walks you through preflight validation (Architecture document + AC attestation table) and then opens the PR back to PNT.
 
 See [`docs/users-guide.md`](docs/users-guide.md) for step-by-step instructions for each.

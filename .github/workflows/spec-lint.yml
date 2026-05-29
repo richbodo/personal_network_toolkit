@@ -14,3 +14,19 @@ jobs:
         with:
           python-version: "3.11"
       - run: python3 tools/lint-spec-ids.py
+
+  egress-lint-selftest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: clean fixture must pass (exit 0)
+        run: python3 tools/egress-lint.py tools/egress-lint-fixtures/clean
+      - name: dirty fixture must fail (exit 1)
+        run: |
+          if python3 tools/egress-lint.py tools/egress-lint-fixtures/dirty; then
+            echo "::error::egress-lint did not flag the dirty fixture"
+            exit 1
+          fi

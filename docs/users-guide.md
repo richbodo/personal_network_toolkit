@@ -4,7 +4,17 @@ The PNA (Personal Network Application) Spec is the canonical specification; this
 
 PNT (Personal Network Toolkit) is built to be consumed by AI coding agents. Most of this guide assumes you have an agent (Claude Code, Cursor, an equivalent) you can ask things like *"use the PNT skill to validate my design."* The skill at [`pna-build-eval-contrib/SKILL.md`](../pna-build-eval-contrib/SKILL.md) is the agent-consumption view of everything in this guide.
 
-> **Status note (May 2026).** The three skill flows below — build, evaluate, contribute — haven't been exercised end-to-end yet. The materials are in place; Phase 5 of the reorganization plan validates them against `fellows_local_db` as the first reference design. The agent prompts and output shapes below describe the intended behavior per [`pna-build-eval-contrib/SKILL.md`](../pna-build-eval-contrib/SKILL.md); expect refinement as the skill gets dogfooded.
+**The fastest way in is auditing.** If you just want to know whether a contact app is safe before you install it — without building or contributing anything — go straight to [Goal 2](#goal-2--audit-a-candidate-pna-before-installing-it). It's the lowest-friction front door to PNT: point an agent at the app's source and get back an AC-keyed safety report.
+
+> **Status note (May 2026).** PNT's deterministic tooling is now tested; the agent-driven flows are not yet exercised end-to-end.
+>
+> **Tested / CI-enforced:**
+> - [`tools/egress-lint.py`](../tools/egress-lint.py) — the deterministic AC-1 egress check, with clean/dirty self-test fixtures run in CI.
+> - [`tools/lint-spec-ids.py`](../tools/lint-spec-ids.py) — AC ↔ contract traceability lint, run in CI.
+> - [`tools/evaluate-report.schema.json`](../tools/evaluate-report.schema.json) — the audit-report schema, validated against its meta-schema and conditional rules.
+>
+> **Not yet exercised end-to-end:**
+> - The **build**, **audit**, and **contribute** skill flows. The materials are in place; Phase 5 of the reorganization plan validates them against `fellows_local_db` as the first reference design. The agent prompts and output shapes below describe the *intended* behavior per [`pna-build-eval-contrib/SKILL.md`](../pna-build-eval-contrib/SKILL.md); expect refinement as the skill gets dogfooded.
 
 ---
 
@@ -68,7 +78,7 @@ You're starting (or extending) a personal network application.
 
    The Verification field is load-bearing for Goal 3 (Contribute). See Goal 6 for what makes a good Verification entry.
 
-**7. Self-check.** Run Goal 2 (Audit) on your own in-progress code before declaring the design done. The agent walks every applicable AC and flags non-conformances.
+**7. Self-check.** Run Goal 2 (Audit) on your own in-progress code before declaring the design done. The agent walks every applicable AC and flags non-conformances. For the AC-1 (private-data-sovereignty) row in particular, add an `egress-allow.json` to your repo listing the remote origins your flavor legitimately uses, and run [`tools/egress-lint.py`](../tools/egress-lint.py) against your source — it's the deterministic half of that check and makes a ready-made Verification entry (see Goal 6). Wire it into your own CI so a future change can't silently introduce an off-device data path.
 
 ---
 
@@ -96,11 +106,15 @@ You have a PNA in front of you (someone else's, or your own in-progress one) and
 
    If the candidate ships its own Architecture document with an AC attestation table, the agent validates the document against the code (do cited code locations match the claimed realization? do declared verification mechanisms actually pass?). If there's no Architecture document, the agent infers axis picks from the source and walks every applicable AC from scratch.
 
-**4. Read the AC-keyed report.** The agent produces a structured report keyed by AC ID:
+   As part of the audit the agent also runs the deterministic checks in `tools/` — notably [`tools/egress-lint.py`](../tools/egress-lint.py), which scans for off-device data leaks (the AC-1 sovereignty concern) — and folds their results into the matching AC findings as `source: deterministic` evidence, alongside its own reading. The deterministic layer catches the one violation that's easy to miss in a large tree; the LLM layer reasons about everything the lint can't.
+
+**4. Read the AC-keyed report.** The agent produces a structured report keyed by AC ID, emitted as a typed artifact ([`tools/evaluate-report.schema.json`](../tools/evaluate-report.schema.json)) with a human-readable rendering over it. Per-AC status is one of:
    - `conformant` — design honors this AC; cited code locations included
    - `non-conformant` — design violates this AC; report names the AC requirement and the offending code
    - `not-applicable` — design's flavor doesn't trigger this AC
    - `unable-to-determine` — needs human review
+
+   Because the report is typed, two runs over the same candidate are diffable. Ask the agent to save the artifact (e.g. `eval-report.json`); when the app ships an update, re-audit and diff the two JSON files — the per-AC status changes are your drift/regression signal (the "did anything quietly stop conforming?" check). The human-readable summary you read is just a rendering over this artifact.
 
 **5. Decide.** Goals 1–5 are the load-bearing user-facing concerns — private-data sovereignty (Goal 1), source-mirroring honesty (Goal 2), transport security (Goal 3), durability (Goal 4), local diagnosability (Goal 5). If any of those are non-conformant, the design is not safe to trust with your data. Non-conformances against architectural details that don't touch Goals 1–5 are still worth fixing but aren't immediate red flags.
 
@@ -196,7 +210,7 @@ Your job as a contributor: fill in the **AC attestation table** in your Architec
 
 The Verification field is load-bearing. Three kinds are acceptable:
 
-1. **Deterministic test** — a script or test file decides conformance mechanically. Example: a script that scans the codebase for any `fetch(...)` call to a non-localhost URL on the Private DB code path.
+1. **Deterministic test** — a script or test file decides conformance mechanically. Example: [`tools/egress-lint.py`](../tools/egress-lint.py) scans the source for unsanctioned off-device egress vectors (`fetch`/`sendBeacon`/remote `src`/etc.) against an allow-list of the origins your flavor legitimately uses, and its `--json` output folds straight into the AC-1 finding of an evaluate report.
 2. **LLM evaluation rubric** — a prompt or rubric describing what an LLM should look for. Useful for posture/intent ACs that mechanical tests can't reach. Example: *"Read every code path that reads from Private DB and decide whether any of them sends data off-device. Cite specific call sites."*
 3. **Human-review note** — a short note explaining why no automated test is feasible, with the review record itself archived in the design's repo (e.g., `docs/conformance-review-2026-05.md`).
 
@@ -228,5 +242,8 @@ The skill description triggers on natural-language requests fitting any of these
 - [`reference_designs/`](../reference_designs/) — accepted designs + templates
 - [`pna-build-eval-contrib/SKILL.md`](../pna-build-eval-contrib/SKILL.md) — the agent-consumption view (what you're invoking through the agent above)
 - [`CONTRIBUTING.md`](../CONTRIBUTING.md) — full contribution rules
-- [`tools/`](../tools/) — validators
+- [`tools/`](../tools/) — validators and the audit-report schema:
+  - [`tools/egress-lint.py`](../tools/egress-lint.py) — deterministic AC-1 check for off-device data leaks (Goals 1, 2, 6)
+  - [`tools/evaluate-report.schema.json`](../tools/evaluate-report.schema.json) — typed schema for the audit report (Goal 2)
+  - [`tools/lint-spec-ids.py`](../tools/lint-spec-ids.py) — AC ↔ contract traceability lint
 - [`plans/reorganization-plan.md`](../plans/reorganization-plan.md) — the live plan tracking PNT's own evolution
