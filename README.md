@@ -1,6 +1,6 @@
 # Personal Network Toolkit
 
-The Personal Network Toolkit (PNT) is a [generative application-class blueprint](docs/prior_art.md) for building and validating **[personal network applications (PNAs)](spec/PNA_Spec.md#goals)** — local-only apps for viewing contact data and working on relationship data over a firewalled private data layer. PNAs run on the user's device, never as SaaS, and bridge SaaS-held contact data into a private workspace. **[Why do this?](spec/PNA_Spec.md#preamble)**
+The Personal Network Toolkit (PNT) is a [generative application-class blueprint](docs/PriorArt.md) for building and validating **[personal network applications (PNAs)](spec/PNA_Spec.md#goals)** — local-only apps for viewing contact data and working on relationship data over a firewalled private data layer. PNAs run on the user's device, never as SaaS, and bridge SaaS-held contact data into a private workspace. **[Why do this?](spec/PNA_Spec.md#preamble)**
 
 When building a PNA, specs are foundational because users will increasingly compose software by prompting AI agents, and success is measured by adherence to them.
 
@@ -77,9 +77,9 @@ A reference design is a working, deployed PNA that demonstrates one valid combin
 
 When a second reference design (e.g. a Personal Relationship Manager) lands, it'll be linked from here.
 
-## Plans
+## Prior Art
 
-`plans/` holds long-form proposals for PNT itself. Today: [`reorganization-plan.md`](plans/reorganization-plan.md) — the unified reorg plan covering repo restructure, spec formalization (RFC-style normative language, stable IDs, bidirectional traceability), per-design Architecture documents with AC attestation, Software Heritage archival, and a single skill that lets AI agents build, evaluate, and contribute PNAs.
+PNT is a *generative application-class blueprint*: a machine-readable spec, written for AI agents, that defines what makes an instance of a whole *class* of apps correct and lets many implementations attest conformance. [`docs/PriorArt.md`](docs/PriorArt.md) surveys the landscape — spec-driven-development tooling, agent-interface standards, conformance test suites, Common Criteria Protection Profiles, and local-first infrastructure — and finds no published artifact occupies the same quadrant: *generative + class-scoped + multi-flavor + machine-checkable*. The full annotated source list is in [`docs/PriorArtReferences.md`](docs/PriorArtReferences.md).
 
 ## License
 

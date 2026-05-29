@@ -6,6 +6,8 @@ The survey was conducted as a conversation with Claude (Anthropic) in May 2026, 
 
 The finding is that **no published artifact occupies the same position as PNT**. The closest analogs are either *evaluative* rather than *generative*, *per-project* rather than *per-application-class*, or *stack-coupled* rather than *architecture-coupled*. This justifies continued investment in PNT as a distinct category of artifact.
 
+> **References:** the full annotated source list for this survey lives in [`PriorArtReferences.md`](./PriorArtReferences.md).
+
 ## Status
 First version - May 23 2026 - [Rich and Claude learn from prior art](https://claude.ai/share/df001d9f-e700-4b8e-be4e-b28470f7f5cf) - define the class of work.
 

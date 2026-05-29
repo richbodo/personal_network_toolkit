@@ -112,4 +112,4 @@ A builder using Claude Code can drive both preflight and PR authoring end-to-end
 - `reference_designs/templates/` — the per-design and Architecture templates
 - `tools/lint-spec-ids.py` — checks AC ↔ contract traceability invariants
 - `CONTRIBUTING.md` — full contribution rules
-- `docs/prior_art.md` — survey of related work
+- `docs/PriorArt.md` — survey of related work (annotated source list in `docs/PriorArtReferences.md`)
