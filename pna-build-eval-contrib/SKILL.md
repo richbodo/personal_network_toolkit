@@ -39,14 +39,20 @@ Inputs: a candidate PNA's source tree (or a description sufficient to read its b
    - If the candidate has an Architecture document with an AC attestation table, check that the declared verification mechanism actually runs and passes.
 2. **For each flavor-derived AC in `spec/axes.md`** triggered by the candidate's axis picks, do the same.
 3. **For each typed contract relevant to the candidate's axis picks**, check that the candidate implements the contract correctly. Contract headers (`Realizes: AC-X, AC-Y`) tell you which ACs the contract serves.
-4. **Produce a structured report keyed by AC ID.** The canonical form is the typed artifact at `tools/evaluate-report.schema.json` (JSON Schema). Emit an instance of that schema as the source of truth, then render the human-readable report as a *view* over it — don't hand-write the prose report and skip the artifact. Emitting the typed form is what makes two runs on the same candidate diffable (which ACs changed status). Per-AC status is one of:
+4. **Detect and verify Exceptions** (see `spec/exceptions.md`). For each Exception the candidate can raise — declared in its Architecture document's exception attestation, or inferred from the source where undeclared:
+   - **Caught & handled?** Confirm consent is obtained *before* the raise (EX-H2), a persistent non-PNA-mode signal is shown while active (EX-H3), and a runtime active-set explainer exists (EX-H4). Cite code/UX for each.
+   - **Reversibility?** Read the `Reversible:` declaration; if `yes`, trace the `Reversal:` mechanism and decide whether the code/UX delivers a practical path back to PNA mode. Mode only — do not credit a handler that implies returning to PNA mode undoes prior disclosure (EX-H5).
+   - **Consent reaches the human?** Where an agent/proxy can drive the app, check the handler makes a best-effort attempt to propagate consent to the ultimate human and does not let an intermediary self-consent (EX-H7).
+   - **Strength profile accurate?** Check each dimension's class (EX-H8) against the code/UX; the lint already confirmed the classes are valid vocabulary — you judge whether they're truthful (e.g. nothing about the provider's behavior is claimed above `provider-asserted`).
+   - **Undeclared deviations.** You are the backstop: if the candidate departs from an AC or the PNA definition WITHOUT declaring an Exception, that is a silent (uncaught) deviation — a conformance failure. Flag it and name the `EX-*` it should have raised.
+5. **Produce a structured report keyed by AC or EX ID.** The canonical form is the typed artifact at `tools/evaluate-report.schema.json` (JSON Schema). Emit an instance of that schema as the source of truth, then render the human-readable report as a *view* over it — don't hand-write the prose report and skip the artifact. Emitting the typed form is what makes two runs on the same candidate diffable (which ACs changed status). Per-AC status is one of:
    - `conformant` — with cited code locations.
    - `non-conformant` — with cited code locations showing the violation and the AC's stated requirement.
    - `not-applicable` — with reason (typically: the candidate's flavor doesn't trigger this AC).
    - `unable-to-determine` — with explanation; defaults to flagging for human review.
 
    Each finding may also carry `evidence` entries tagged by `source` (`deterministic` / `llm` / `human`). When a deterministic check in `tools/` (e.g. the egress lint) has run against the candidate, fold its output in as a `source: deterministic` evidence entry on the AC it bears on, so the deterministic and LLM layers land on one finding.
-5. **Summarize at the top** (the artifact's `summary` object): overall posture and the most concerning non-conformances. Goals 1–5 are the load-bearing user-facing concerns — anything compromising private-data sovereignty (Goal 1), source-mirroring honesty (Goal 2), transport security (Goal 3), durability (Goal 4), or local diagnosability (Goal 5) leads the summary.
+6. **Summarize at the top** (the artifact's `summary` object): overall posture and the most concerning non-conformances. Goals 1–5 are the load-bearing user-facing concerns — anything compromising private-data sovereignty (Goal 1), source-mirroring honesty (Goal 2), transport security (Goal 3), durability (Goal 4), or local diagnosability (Goal 5) leads the summary.
 
 Callers may ask you to emphasize specific Goals or axes at runtime (e.g., "focus on private-data sovereignty"). Treat that as a hint for the summary, not a structural variation.
 
