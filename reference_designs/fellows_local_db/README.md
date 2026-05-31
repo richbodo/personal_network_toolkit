@@ -2,8 +2,18 @@
 
 **Maintainer:** Rich Bodo (https://github.com/richbodo/fellows_local_db)
 **License:** see upstream repo
-**First accepted:** Toolkit-Version 0.1, <YYYY-MM-DD pending>
-**Status:** active (Software Heritage SWHID pending maintainer archival post-merge; AC + exception attestation now present in `Architecture.md`)
+**First accepted:** Toolkit-Version 0.1, 2026-05-31
+**Status:** active
+
+## Acceptance & validation
+
+- **Accepted:** 2026-05-31, by the maintainer (Rich Bodo). As the design the toolkit was distilled from, `fellows_local_db` is accepted *by definition* for Toolkit-Version 0.1 (see [`CONTRIBUTING.md` § Acceptance process](../../CONTRIBUTING.md#acceptance-process)).
+- **Validated against:** Toolkit-Version 0.1. The AC + `EX-CLOUD-LLM` exception attestation is in [`Architecture.md`](Architecture.md); its Verification column cites real tests that are lint-green in CI.
+- **Accepted commit / tag:** [`v0.1.0`](https://github.com/richbodo/fellows_local_db/releases/tag/v0.1.0) — `046584cb61df269746d5bab2694952749971552f`.
+- **Software Heritage SWHID:**
+  - `swh:1:dir:2fff6ff966bf26ee2a041ee17cbea876a33215a2` (the archived source tree — canonical permanent identifier)
+  - `swh:1:rev:046584cb61df269746d5bab2694952749971552f` (the accepted revision)
+  - These are git-compatible (SH's `dir`/`rev` identifiers equal the git tree/commit hashes), computed at the tagged commit. Software Heritage archival (Save Code Now) for `https://github.com/richbodo/fellows_local_db` realizes the permanence promise; the identifiers are content-addressed and resolve unchanged once ingest completes. Re-run any time via [`tools/swh-save.sh`](../../tools/swh-save.sh).
 
 ## Summary
 
