@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Lint the AC/EX ↔ contract bidirectional traceability invariants.
+# Toolkit-Version: 0.1
+"""Lint the AC/EX ↔ contract traceability invariants and toolkit-version stamps.
 
 Checks:
   1. Every AC in spec/PNA_Spec.md and spec/axes.md carries a stable ID
@@ -15,10 +16,14 @@ Checks:
   6. Every "Reversible:" field is well-formed (yes|no); a "yes" requires a
      "Reversal:" field. Every value in a strength-profile column is one of the
      fixed strength classes (EX-H8).
+  7. The toolkit is versioned as a unit: a /VERSION file is the source of
+     truth, and every versioned toolkit artifact (spec, skill, lint,
+     contracts, templates, CONTRIBUTING, README) carries a "Toolkit-Version:"
+     header whose minor matches /VERSION.
 
-The lint validates the *shape* of declarations (presence + ID/vocabulary
-resolution), not their behavioral correctness — that is the LLM evaluate
-flow's job (see pna-build-eval-contrib/SKILL.md § Evaluate flow).
+The lint validates the *shape* of declarations (presence + ID/vocabulary/
+version resolution), not their behavioral correctness — that is the LLM
+evaluate flow's job (see pna-build-eval-contrib/SKILL.md § Evaluate flow).
 
 Exits 0 if clean, 1 if any violation found. Designed to be CI-friendly.
 """
@@ -49,7 +54,24 @@ STRENGTH_CLASSES = {
     "provider-asserted", "recoverable-only", "none",
 }
 
+# Matches the version stamp across every artifact format: markdown
+# (`**Toolkit-Version:** 0.1`), comments (`# / -- / //  Toolkit-Version: 0.1`),
+# and JSON `$comment` strings (`... Toolkit-Version: 0.1.`).
+TOOLKIT_VERSION_RE = re.compile(r"Toolkit-Version:\**\s*(\d+\.\d+)")
+
 EXCEPTIONS_PATH = REPO / "spec" / "exceptions.md"
+VERSION_PATH = REPO / "VERSION"
+
+# Toolkit artifacts that must carry a Toolkit-Version stamp matching /VERSION.
+# (contracts/* are added at runtime via glob.) Absent files are skipped so the
+# lint stays usable on partial checkouts.
+VERSIONED_ARTIFACTS = [
+    "spec/PNA_Spec.md", "spec/axes.md", "spec/use_cases.md", "spec/exceptions.md",
+    "pna-build-eval-contrib/SKILL.md", "CONTRIBUTING.md", "README.md",
+    "tools/lint-spec-ids.py", "tools/egress-lint.py", "tools/evaluate-report.schema.json",
+    "reference_designs/templates/TEMPLATE.md",
+    "reference_designs/templates/ARCHITECTURE_TEMPLATE.md",
+]
 
 
 def collect_spec_ac_ids() -> set[str]:
@@ -77,8 +99,7 @@ def collect_contract_realizes() -> dict[Path, list[str]]:
 
 
 def collect_exception_ids() -> set[str]:
-    """EX-* registry IDs from spec/exceptions.md. Empty if the file is absent
-    (so the lint stays green on toolkit versions that predate Exceptions)."""
+    """EX-* registry IDs from spec/exceptions.md. Empty if the file is absent."""
     if not EXCEPTIONS_PATH.exists():
         return set()
     return set(EX_RE.findall(EXCEPTIONS_PATH.read_text()))
@@ -110,18 +131,46 @@ def collect_strength_violations(text: str) -> list[str]:
                 j = i + 2  # skip header + |---| separator
                 while j < len(lines) and lines[j].lstrip().startswith("|"):
                     row = [c.strip() for c in lines[j].strip().strip("|").split("|")]
-                    if len(row) > col and row[col]:
-                        val = row[col]
-                        if val not in STRENGTH_CLASSES:
-                            violations.append(
-                                f"strength-profile names unknown class '{val}' "
-                                f"(allowed: {', '.join(sorted(STRENGTH_CLASSES))})"
-                            )
+                    if len(row) > col and row[col] and row[col] not in STRENGTH_CLASSES:
+                        violations.append(
+                            f"strength-profile names unknown class '{row[col]}' "
+                            f"(allowed: {', '.join(sorted(STRENGTH_CLASSES))})"
+                        )
                     j += 1
                 i = j
                 continue
         i += 1
     return violations
+
+
+def expected_toolkit_minor() -> str | None:
+    """The MAJOR.MINOR series from /VERSION (e.g. '0.1' from '0.1.0-draft')."""
+    if not VERSION_PATH.exists():
+        return None
+    m = re.match(r"\s*(\d+\.\d+)", VERSION_PATH.read_text())
+    return m.group(1) if m else None
+
+
+def check_toolkit_versions() -> tuple[str | None, list[str]]:
+    """Every versioned artifact must stamp a Toolkit-Version matching /VERSION."""
+    failures: list[str] = []
+    minor = expected_toolkit_minor()
+    if minor is None:
+        return None, ["/VERSION file missing or unparseable at repo root."]
+    paths = [REPO / p for p in VERSIONED_ARTIFACTS]
+    paths += [f for f in sorted((REPO / "contracts").glob("*"))
+              if f.is_file() and f.name != "README.md"]
+    for p in paths:
+        if not p.is_file():
+            continue
+        head = "\n".join(p.read_text(errors="ignore").splitlines()[:30])
+        m = TOOLKIT_VERSION_RE.search(head)
+        rel = p.relative_to(REPO)
+        if not m:
+            failures.append(f"{rel}: missing 'Toolkit-Version: {minor}' stamp in head.")
+        elif m.group(1) != minor:
+            failures.append(f"{rel}: Toolkit-Version {m.group(1)} != /VERSION {minor}.")
+    return minor, failures
 
 
 def main() -> int:
@@ -165,6 +214,10 @@ def main() -> int:
             failures.append("exceptions.md: 'Reversible: yes' present but no 'Reversal:' field.")
         failures.extend(f"exceptions.md: {v}" for v in collect_strength_violations(ex_text))
 
+    # --- Toolkit version stamps ---
+    toolkit_minor, version_failures = check_toolkit_versions()
+    failures.extend(version_failures)
+
     if failures:
         print(f"lint-spec-ids: {len(failures)} violation(s) found.")
         for line in failures:
@@ -173,6 +226,7 @@ def main() -> int:
 
     n_realizing = sum(1 for v in contract_realizes.values() if v)
     print("lint-spec-ids: OK")
+    print(f"  toolkit version {toolkit_minor} (/VERSION: {VERSION_PATH.read_text().strip()})")
     print(f"  spec defines {len(spec_ids)} AC IDs")
     print(f"  {n_realizing}/{len(contract_realizes)} contract files declare a 'Realizes:' header")
     print(f"  exceptions.md defines {len(exception_ids)} exception ID(s)")

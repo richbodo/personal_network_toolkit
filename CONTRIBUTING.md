@@ -1,5 +1,7 @@
 # Contributing to PNT
 
+> **Toolkit-Version:** 0.1 (draft) — the toolkit (spec, contracts, skill, lint, templates) is versioned as a unit; see [VERSION](VERSION).
+
 PNT (the Personal Network Toolkit) evolves through reference-driven specification: spec changes are accompanied by a working reference design that demonstrates the change in code. This document describes how to contribute a reference design — and how a spec change rides along with it.
 
 ## Philosophy
@@ -17,7 +19,7 @@ The step-by-step procedure for a contribution — preflight your design via the 
 - Reference designs derived from working applications.
 - Under any OSI-approved license.
 - With an Architecture document (the design's "Security Target") that:
-  - declares the PNA Spec version the design conforms to,
+  - declares the Toolkit-Version the design conforms to,
   - declares per-axis picks and their versions,
   - documents per-axis implementation choices, and
   - includes an **AC (Architectural Commitment) attestation table** mapping every applicable AC to (a) how the design realizes it, with code references, and (b) the specific test(s), LLM (Large Language Model) evaluation rubric, or human-review record(s) that verify it for this design. Rows without a Verification reference are not accepted.
@@ -55,7 +57,7 @@ On merge:
 - Spec changes land (including any new AC IDs, sub-contracts, or axis-pick additions)
 - Maintainer triggers Software Heritage archival (planned tooling: `tools/swh-save.sh <repo-url> <commit-sha>`, landing in Phase 5; until then, archival is performed manually via Software Heritage's Save Code Now) and records the returned SWHID (Software Heritage Persistent IDentifier) in the design record
 - Maintainer decides whether the design warrants an additional `archive/<design-name>` fork in the `pnt-archive` GitHub organization (high-signal designs only; SWHID alone is sufficient for the archival promise)
-- Spec version bumped per the versioning rules below
+- Toolkit version bumped per the versioning rules below
 
 ## Versioning
 
@@ -66,6 +68,8 @@ The PNA Spec uses linear SemVer:
 - **Major** — breaking changes (semantically altered ACs, removed picks, contract-shape changes)
 
 Individual axes carry their own version (declared per-axis in each design's Architecture document). A breaking change to an axis bumps that axis's version and the PNA Spec major.
+
+**The toolkit is versioned as a unit.** The version in `/VERSION` covers the whole toolkit — spec, contracts, skill, lint, and templates — not just the prose spec; every toolkit artifact carries a matching `Toolkit-Version:` header, enforced by `tools/lint-spec-ids.py`. A contribution is a PR against that versioned toolkit, whatever its shape — (a) a reference design, (b) a new architectural commitment, exception, or solution, or (c) a modification to the spec documents. Releases are git-tagged (`v<MAJOR.MINOR.PATCH>`). A design declares the `Toolkit-Version` it was built and validated against in its Architecture document; that is how a reader knows which toolkit version a design conforms to.
 
 ## Archival
 

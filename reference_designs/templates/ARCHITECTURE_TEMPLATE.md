@@ -1,10 +1,12 @@
 # <design-name> — Architecture
 
+> **Toolkit-Version:** 0.1 (draft) — the toolkit (spec, contracts, skill, lint, templates) is versioned as a unit; see [VERSION](../../VERSION).
+
 > The Architecture document is this design's Security Target: a declaration of its conformance against the PNA Spec (which plays the Protection Profile role). PNT requires every accepted reference design to ship one. A row missing the Verification field in the AC attestation table below is grounds for PR rejection.
 
-## PNA Spec version
+## Toolkit-Version
 
-This design conforms to PNA Spec v<X.Y.Z>.
+This design was built and validated against Toolkit-Version <X.Y> (the `/VERSION` minor, e.g. `0.1`), which fixes the version of the whole toolkit — spec, contracts, skill, lint, and templates — that this design conforms to.
 
 ## Axis picks
 
@@ -91,7 +93,7 @@ What spec changes (if any) this submission proposes, and what working code in th
 - **<change 1>**: ... — demonstrated by `<file:line>` in the canonical repo.
 - **<change 2>**: ... — demonstrated by `<file:line>` in the canonical repo.
 
-If this is an additive submission (no spec changes proposed; the design simply attests against the current spec version), say so: "No spec changes proposed; this submission attests conformance to PNA Spec v<X.Y.Z>."
+If this is an additive submission (no spec changes proposed; the design simply attests against the current Toolkit-Version), say so: "No spec changes proposed; this submission attests conformance to Toolkit-Version <X.Y>."
 
 ## Reproducibility notes
 

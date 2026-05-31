@@ -1,6 +1,6 @@
 # Use cases
 
-> **Spec-Version:** 0.1 (draft)
+> **Toolkit-Version:** 0.1 (draft) — the toolkit (spec, contracts, skill, lint, templates) is versioned as a unit; see [VERSION](../VERSION).
 
 This document catalogs the use cases the spec attests. Each use case names a coherent class of PNA from the user's perspective; it suggests default axis picks but does not determine them. The Use case concept is defined in [`PNA_Spec.md` § Vocabulary](PNA_Spec.md#vocabulary).
 
@@ -36,7 +36,7 @@ The user's *own* contact databases (Google + Apple + Facebook + LinkedIn + organ
 
 `distribution:never-distributed-single-user + storage:native-sqlite-via-filesystem + ingestion:multi-source-merge-with-dedup + workspace-shell:tui-textual + comms:shell-out-to-cli-clients + mcp-exposure:full`
 
-This is a draft — a future PRM reference design built against PNA Spec v0.1 will live in its own repo and may pick differently. The TUI shell choice in particular is PRT's current direction; a Tauri-wrapped GUI or a CLI-subcommand-only flavor are equally plausible alternatives.
+This is a draft — a future PRM reference design built against Toolkit-Version 0.1 will live in its own repo and may pick differently. The TUI shell choice in particular is PRT's current direction; a Tauri-wrapped GUI or a CLI-subcommand-only flavor are equally plausible alternatives.
 
 **Triggered flavor-derived ACs (via likely picks):** AC-PRM-B **[draft]** (ingestion-derived), AC-PRM-C **[draft]** (storage-derived). MCP-related universal ACs (AC-MCP-A, AC-MCP-B) apply when `mcp-exposure` is non-`none`.
 
@@ -64,7 +64,7 @@ The longer-arc goal introduced in [`PNA_Spec.md` § Vision](PNA_Spec.md#vision):
 
 **v0.2+ work:**
 
-Achieving the unified meta-view requires per-source database connectors, careful dedup and conflict resolution, and disciplined provenance — substantial work that's deferred to later spec versions. The eventual *ecosystem reference design* would demonstrate this; v0.1 establishes the architectural seams (the five canonical MCP server contracts, AC-10's opt-in non-destructive re-imports, AC-PRM-B's draft multi-source dedup contract, AC-MCP-A's cloud-client consent rule, AC-MCP-B's workspace-mediated outreach) that let the ecosystem grow into place.
+Achieving the unified meta-view requires per-source database connectors, careful dedup and conflict resolution, and disciplined provenance — substantial work that's deferred to later toolkit versions. The eventual *ecosystem reference design* would demonstrate this; v0.1 establishes the architectural seams (the five canonical MCP server contracts, AC-10's opt-in non-destructive re-imports, AC-PRM-B's draft multi-source dedup contract, AC-MCP-A's cloud-client consent rule, AC-MCP-B's workspace-mediated outreach) that let the ecosystem grow into place.
 
 This is the deep "why" behind defining slot contracts substrate-neutrally: when the second PNA exists, an AI agent can wire it to the first without modifying either; when the fifth PNA exists, the same. Composability isn't bolted on; it's the architecture's primary deliverable.
 

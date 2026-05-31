@@ -1,8 +1,10 @@
 # <design-name>
 
+> **Toolkit-Version:** 0.1 (draft) — the toolkit (spec, contracts, skill, lint, templates) is versioned as a unit; see [VERSION](../../VERSION).
+
 **Maintainer:** <name> (<canonical-repo-url>)
 **License:** <OSI-approved license SPDX identifier>
-**First accepted:** PNA Spec v<X.Y.Z>, <YYYY-MM-DD>
+**First accepted:** Toolkit-Version <X.Y>, <YYYY-MM-DD>
 **Status:** active | archived | superseded
 
 ## Summary
@@ -22,14 +24,14 @@ One paragraph describing what this design is and what it demonstrates.
 
 ## Contributions to the spec
 
-### PNA Spec v<X.Y.Z> — <short title> (PR #<n>)
+### Toolkit-Version <X.Y> — <short title> (PR #<n>)
 
 - Reference design version: commit `<sha>`
 - Software Heritage: `swh:1:dir:<id>`
 - Optional archive: `archive/<design-name>` at commit `<sha>` (if PNT forked for high-signal archival)
 - Summary: <2–4 sentences>
 
-### PNA Spec v<X.Y.Z+n> — <short title> (PR #<m>)
+### Toolkit-Version <X.Y+n> — <short title> (PR #<m>)
 
 (Add a section per accepted contribution from this design over time.)
 

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://pna-spec.example/v0.1/worker-init-handshake.schema.json",
   "title": "Storage slot — init handshake",
-  "$comment": "Realizes: AC-4, AC-11, AC-12.",
+  "$comment": "Realizes: AC-4, AC-11, AC-12. Toolkit-Version: 0.1.",
   "description": "Sub-contract ST-2 from the Storage slot. The first RPC across the Storage boundary must be `op='init'`, and the response carries the handshake blob defined here. Three things land in this single message: (1) the version pair that AC-4 enforces (workerRpcVersion + schemaVersion — page refuses mutating RPCs on mismatch, reads still work); (2) the capability flag AC-12 reads (opfsCapable — substrate-equivalent capability for non-browser PNAs); (3) the inventory the page needs to decide directory-mode vs distribution-gate (hasSharedDb, hasPrivateDb). Capability detection MUST happen inside this op, not on the page (AC-12 — browsers lie about main-thread support; the worker is the only context where the answer is reliable). The init response is wrapped by the standard RPC envelope from worker-rpc-protocol.schema.json — `ok` in the envelope indicates success/failure; the InitResult below is what the envelope's `result` field carries on success. Init failures surface via the envelope's error path, notably with `errorCode: 'OWNERSHIP_CONFLICT'` when AC-11 fires (multi-tab access conflict).\n\nNaming note (v0.1): the spec uses the generic field names `hasSharedDb` and `hasPrivateDb`, matching spec/PNA_Spec.md vocabulary. fellows_local_db's worker today emits `hasFellowsDb` and `hasRelationshipsDb` instead — a flavor-specific divergence pre-dating the spec. Implementations conforming to v0.1 should use the generic names; aligning fellows_local_db's field names is a clean-up task tracked separately.",
   "type": "object",
   "required": ["request", "response"],
@@ -20,7 +20,7 @@
         "op":   { "const": "init" },
         "args": {
           "type": "object",
-          "description": "v0.1: no init args. Future spec versions may add bootstrap flags (e.g. a 'skipAutoBackup' switch for test runners).",
+          "description": "v0.1: no init args. Future toolkit versions may add bootstrap flags (e.g. a 'skipAutoBackup' switch for test runners).",
           "additionalProperties": false,
           "properties": {}
         }

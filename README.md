@@ -1,5 +1,7 @@
 # Personal Network Toolkit
 
+> **Toolkit-Version:** 0.1 (draft) — the toolkit (spec, contracts, skill, lint, templates) is versioned as a unit; see [VERSION](VERSION).
+
 The Personal Network Toolkit (PNT) is a [generative application-class blueprint](docs/PriorArt.md) for building and validating **[personal network applications (PNAs)](spec/PNA_Spec.md#goals)** — local-only apps for viewing contact data and working on relationship data over a firewalled private data layer. PNAs run on the user's device, never as SaaS, and bridge SaaS-held contact data into a private workspace. **[Why do this?](spec/PNA_Spec.md#preamble)**
 
 When building a PNA, specs are foundational because users will increasingly compose software by prompting AI agents, and success is measured by adherence to them.
@@ -44,7 +46,7 @@ What we're working toward — success looks like:
 
 Step-by-step instructions for each of those goals live in [`docs/users-guide.md`](docs/users-guide.md).
 
-Substantive changes from v0.1 bump the spec version per [`CHANGELOG.md`](CHANGELOG.md).
+Substantive changes from v0.1 bump the toolkit version per [`CHANGELOG.md`](CHANGELOG.md).
 
 ## Entry points
 
@@ -63,14 +65,14 @@ To dig into the spec more deeply:
 - **[`spec/axes.md`](spec/axes.md)** — the Axes a PNA varies along, attested picks per Axis, and the flavor-derived ACs each pick triggers.
 - **[`spec/use_cases.md`](spec/use_cases.md)** — attested classes of PNA (Directory Archive realized; Personal Relationship Manager draft; Multi-PNA ecosystem target).
 - **[`contracts/`](contracts/)** — typed contracts for the load-bearing interfaces: JSON Schema for the worker init handshake + RPC (Remote Procedure Call) protocol, OpenAPI for distribution auth, SQL DDL (Data Definition Language) for the two database schemas, TypeScript for the Communications transport interface, JSON Schema for the five canonical MCP server tool surfaces.
-- **[`CHANGELOG.md`](CHANGELOG.md)** — spec version history.
+- **[`CHANGELOG.md`](CHANGELOG.md)** — toolkit version history.
 - **[`llms.txt`](llms.txt)** — discovery file for the spec (humans + AI agents land here cold).
 
 ## Reference designs
 
 A reference design is a working, deployed PNA that demonstrates one valid combination of axis picks against the spec. Each lives in its own repository so it can ship under its own release cadence.
 
-- **[fellows_local_db](https://github.com/richbodo/fellows_local_db)** — first reference design. Directory Archive use case. Its [`docs/Architecture.md`](https://github.com/richbodo/fellows_local_db/blob/main/docs/Architecture.md) declares spec-version conformance and the per-slot specializations. Flavor:
+- **[fellows_local_db](https://github.com/richbodo/fellows_local_db)** — first reference design. Directory Archive use case. Its [`docs/Architecture.md`](https://github.com/richbodo/fellows_local_db/blob/main/docs/Architecture.md) declares Toolkit-Version conformance and the per-slot specializations. Flavor:
 
   | Axis                | Pick                          |
   | ------------------- | ----------------------------- |

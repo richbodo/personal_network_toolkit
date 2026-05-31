@@ -2,12 +2,12 @@
 
 **Maintainer:** Rich Bodo (https://github.com/richbodo/fellows_local_db)
 **License:** see upstream repo
-**First accepted:** PNA Spec v0.1, <YYYY-MM-DD pending>
+**First accepted:** Toolkit-Version 0.1, <YYYY-MM-DD pending>
 **Status:** active (Software Heritage SWHID pending maintainer archival post-merge; AC + exception attestation now present in `Architecture.md`)
 
 ## Summary
 
-`fellows_local_db` is the first PNA reference design — a Directory Archive PNA realizing the Knack-export → static-PWA + magic-link distribution flavor. It is the design from which most of the v0.1 spec was distilled. The canonical repo lives at https://github.com/richbodo/fellows_local_db; its Architecture document is at `docs/Architecture.md` upstream.
+`fellows_local_db` is the first PNA reference design — a Directory Archive PNA realizing the Knack-export → static-PWA + magic-link distribution flavor. It is the design from which most of the v0.1 toolkit was distilled. The canonical repo lives at https://github.com/richbodo/fellows_local_db; its Architecture document is at `docs/Architecture.md` upstream.
 
 ## Axis picks at first acceptance
 
@@ -15,7 +15,7 @@
 
 ## Contributions to the spec
 
-The bulk of PNA Spec v0.1 — every universal AC except those flagged `[draft]`, every sub-contract under `WS-`, `ST-`, `SH-`, `PR-`, `DB-`, `IN-`, `CO-`, `DI-`, and the realized axis picks in `axes.md` — derives from learnings on this design. The detailed contribution list and the SWHID are backfilled in Phase 5 of `plans/reorganization-plan.md`.
+The bulk of the v0.1 toolkit — every universal AC except those flagged `[draft]`, every sub-contract under `WS-`, `ST-`, `SH-`, `PR-`, `DB-`, `IN-`, `CO-`, `DI-`, and the realized axis picks in `axes.md` — derives from learnings on this design. The detailed contribution list and the SWHID are backfilled in Phase 5 of `plans/reorganization-plan.md`.
 
 **The Exceptions concept (originating contribution).** `spec/exceptions.md` — the raise/catch/handle model, PNA-mode vs non-PNA-mode, the `EX-H1`–`EX-H8` handler contract, the `Relaxes:`/`Reversible:`/`Stresses:` header conventions, the per-dimension strength-profile vocabulary, and the first registry entry `EX-CLOUD-LLM` — together with the `tools/lint-spec-ids.py` traceability extension and the SKILL evaluate-flow exceptions step, were distilled from this design. They are demonstrated by its cloud-MCP consent handler: a pre-raise consent gate, the persistent "Going rogue — not a PNA" banner, the `#/exception/<id>` explainer (surfacing the strength profile), the return-to-PNA-mode control, and a best-effort consent-propagation notice in the MCP servers' `instructions`. See the `EX-CLOUD-LLM` row in this design's Architecture document (§ Exception attestation) and `docs/architectural_findings.md` upstream.
 

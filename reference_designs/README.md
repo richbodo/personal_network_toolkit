@@ -22,6 +22,6 @@ The skill at [`../pna-build-eval-contrib/SKILL.md`](../pna-build-eval-contrib/SK
 
 ## Accepted designs
 
-- [`fellows_local_db/`](fellows_local_db/) — Directory Archive PNA; magic-link distributed PWA flavor. The design from which most of PNA Spec v0.1 was distilled. *(Status: placeholder — SWHID and full AC attestation pending Phase 5 of the reorganization plan.)*
+- [`fellows_local_db/`](fellows_local_db/) — Directory Archive PNA; magic-link distributed PWA flavor. The design from which most of the v0.1 toolkit was distilled. *(Status: placeholder — SWHID and full AC attestation pending Phase 5 of the reorganization plan.)*
 
 When a second design lands, it'll be linked here.

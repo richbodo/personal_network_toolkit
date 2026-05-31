@@ -1,4 +1,4 @@
-# PNA Spec Changelog
+# PNT Changelog
 
 ## v0.1 draft (in progress)
 
@@ -13,7 +13,7 @@
 
 ### v0.1 baseline
 
-Initial release of the PNA Spec. Establishes:
+Initial release of the toolkit (PNA Spec + typed contracts). Establishes:
 
 - Vocabulary (Use case, Axis, Axis pick, Flavor, Composition model, MCP server, Universal vs flavor-derived AC).
 - Goals (1-5: private data sovereignty, mirror centralized sources locally, secure communication options, portable/durable/recoverable user data, locally diagnosable).

@@ -12,10 +12,10 @@
 
 ## Spec
 
-- [PNA Spec](spec/PNA_Spec.md) — universal spec; Spec-Version 0.1 (draft)
+- [PNA Spec](spec/PNA_Spec.md) — universal spec; Toolkit-Version 0.1 (draft)
 - [Axes](spec/axes.md) — the Axes a PNA varies along, attested picks per Axis, and the flavor-derived ACs each pick triggers
 - [Use cases](spec/use_cases.md) — attested classes of PNA (Directory Archive, Personal Relationship Manager [draft], Multi-PNA ecosystem [target v0.2+])
-- [CHANGELOG](CHANGELOG.md) — spec version history
+- [CHANGELOG](CHANGELOG.md) — toolkit version history
 
 ## Typed contracts
 

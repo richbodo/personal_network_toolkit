@@ -1,6 +1,6 @@
 # PNA Exceptions
 
-> **Spec-Version:** tracks the PNA Spec version in [`PNA_Spec.md`](PNA_Spec.md).
+> **Toolkit-Version:** 0.1 (draft) — the toolkit (spec, contracts, skill, lint, templates) is versioned as a unit; see [VERSION](../VERSION).
 >
 > This file defines **Exceptions**: stable-ID'd conditions (`EX-*`) under which a PNA deliberately
 > departs from a baseline guarantee — a named AC, or the core PNA definition ("runs local-only,

@@ -5,6 +5,8 @@ description: 'Use when building, extending, or evaluating a Personal Network App
 
 # Building, Evaluating, and Contributing to PNAs
 
+> **Toolkit-Version:** 0.1 (draft) — the toolkit (spec, contracts, skill, lint, templates) is versioned as a unit; see [VERSION](../VERSION).
+
 A PNA is a local-first application built to the PNT spec. The spec defines the architectural commitments (ACs) all PNAs share and the axes along which they legitimately differ. Conformance is satisfied by implementing the typed contracts in `contracts/` for each declared axis pick and honoring every applicable AC.
 
 PNT itself is a *generative + evaluative* application-class blueprint:
@@ -20,7 +22,7 @@ Use when the user is starting or extending a PNA.
 
 1. **Read the spec end-to-end first.** `spec/PNA_Spec.md` covers vocabulary, goals, axes, universal architectural commitments, and the slot map with 57 sub-contracts. The universal ACs are non-negotiable.
 2. **Determine axis picks with the user.** Each axis has documented options in `spec/axes.md`. The axes in v0.1: distribution, storage substrate, ingestion shape, workspace shell, comms transport set, MCP-exposure. The spec uses variable language because the set may evolve.
-3. **Author an Architecture document for the design.** Use the template at `reference_designs/templates/ARCHITECTURE_TEMPLATE.md`. It declares the PNA Spec version, axis picks and their versions, and per-axis implementation choices.
+3. **Author an Architecture document for the design.** Use the template at `reference_designs/templates/ARCHITECTURE_TEMPLATE.md`. It declares the Toolkit-Version, axis picks and their versions, and per-axis implementation choices.
 4. **Pull the typed contracts.** For each axis pick, the relevant contracts live in `contracts/`. Each contract opens with a `Realizes: AC-X, AC-Y` header naming the ACs it realizes. Treat the contracts as load-bearing — do not deviate without proposing a spec change (contribute flow).
 5. **Find a reference design that shares axis picks.** Each `reference_designs/<name>/` directory has a record with the design's flavor and a Software Heritage SWHID linking the archived source. Study the design that's closest to what the user wants.
 6. **Build against the contracts.**
@@ -67,7 +69,7 @@ Before authoring the PR, validate that the design is submission-ready. This step
 1. **Locate the design's Architecture document.** Typically at `docs/Architecture.md` (or equivalent) in the design's own repo.
    - **If it exists**, validate it against the code. For each AC attested as `conformant`, check the cited code locations and confirm the realization matches. For each AC with a Verification mechanism declared, check that the cited test/rubric/note actually exists and (where automated) passes.
    - **If it doesn't exist**, walk the user through creating one interactively. Use `reference_designs/templates/ARCHITECTURE_TEMPLATE.md` as the template. Ask about each section in turn:
-     - Which PNA Spec version does the design conform to?
+     - Which Toolkit-Version does the design conform to?
      - For each axis in `spec/axes.md`, which pick does the design use, and at which axis version?
      - For each axis, how does the design realize the pick? (Read the code to help fill this in.)
      - For each applicable AC (universal in `spec/PNA_Spec.md`, plus any flavor-derived AC in `spec/axes.md` triggered by the picks): how does the design realize it? What test/rubric/note verifies it?

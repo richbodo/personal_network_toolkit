@@ -1,6 +1,6 @@
 # Axes
 
-> **Spec-Version:** 0.1 (draft)
+> **Toolkit-Version:** 0.1 (draft) — the toolkit (spec, contracts, skill, lint, templates) is versioned as a unit; see [VERSION](../VERSION).
 
 This document catalogs the Axes a PNA picks along, the attested picks on each Axis, and the flavor-derived ACs each pick triggers.
 
@@ -43,7 +43,7 @@ What backs the data layer — the bytes on disk or in OPFS that hold the Shared 
 
 - **`opfs-sqlite-wasm`** — sqlite-wasm running in a dedicated worker, with OPFS-SAH-Pool VFS as the underlying storage. Browser-only. Attested in [fellows_local_db](https://github.com/richbodo/fellows_local_db/blob/main/docs/Architecture.md). Triggers AC-3, AC-12; combines with `dist:web-served` to trigger AC-13.
 - **`native-sqlite-via-filesystem`** — Native SQLite library (libsqlite3) opens database files directly via OS filesystem APIs. WAL mode + advisory file locks recommended. CLI / native PNAs only. PRT-inspired (not yet against this spec). Triggers AC-PRM-C **[draft]**.
-- **`idb-only-browser`** — IndexedDB without SQLite. Less expressive (no SQL); mostly hypothetical for PNA. No flavor-derived ACs in v0.1 (the relevant ACs assume sqlite); a future spec version may add IDB-specific ACs if a reference design picks this.
+- **`idb-only-browser`** — IndexedDB without SQLite. Less expressive (no SQL); mostly hypothetical for PNA. No flavor-derived ACs in v0.1 (the relevant ACs assume sqlite); a future toolkit version may add IDB-specific ACs if a reference design picks this.
 - **`native-sqlcipher`** — Encrypted-at-rest variant of `native-sqlite-via-filesystem`. Inherits AC-PRM-C **[draft]** plus additional commitments about key storage and rotation that v0.1 doesn't yet name. Deferred ACs land when a SQLCipher-flavored reference design is built.
 
 ### Triggered flavor-derived ACs
@@ -64,7 +64,7 @@ How the Shared DB is filled and refreshed — whether from a single export, a si
 ### Picks
 
 - **`single-source-static-mirror`** — One external source produces a complete Shared DB on each refresh; ingestion stages → validates → atomically swaps. No dedup needed. Re-imports are opt-in per AC-10. Attested in [fellows_local_db](https://github.com/richbodo/fellows_local_db/blob/main/docs/Architecture.md) (Knack-JSON ETL). Triggers no axis-specific ACs.
-- **`single-source-live-pull`** — One external source queried live (REST API, OAuth, etc.). Same single-source dedup story (none needed). Triggers no axis-specific ACs in v0.1; a future spec version may add live-pull contracts (rate limiting, partial-failure handling, etc.).
+- **`single-source-live-pull`** — One external source queried live (REST API, OAuth, etc.). Same single-source dedup story (none needed). Triggers no axis-specific ACs in v0.1; a future toolkit version may add live-pull contracts (rate limiting, partial-failure handling, etc.).
 - **`multi-source-merge-with-dedup`** — Multiple external sources (Google + Apple + Facebook + organizational directories) merged into one Shared DB. Dedup wizard surfaces conflicts; per-field provenance preserved. PRT-inspired (not yet against this spec). Triggers AC-PRM-B **[draft]**.
 - **`federated-read`** *(deferred)* — Reading from peer PNAs. Out of scope for v0.1.
 

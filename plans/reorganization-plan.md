@@ -54,7 +54,7 @@ The *specifics* of which test verifies which AC live per-design, in each Archite
 
 3. Spec changes must be accompanied by a reference design that demonstrates the change in working code.
 
-4. Each accepted design ships an Architecture document declaring conformance to a specific PNA Spec version, declaring per-axis picks and their versions, attesting per-AC conformance, and **mapping each applicable AC to the specific test(s) or review mechanism(s) that verify it in the design**. Test coverage of the AC list is an acceptance criterion.
+4. Each accepted design ships an Architecture document declaring conformance to a specific Toolkit-Version, declaring per-axis picks and their versions, attesting per-AC conformance, and **mapping each applicable AC to the specific test(s) or review mechanism(s) that verify it in the design**. Test coverage of the AC list is an acceptance criterion.
 
 5. Archival is robust to upstream repo deletion. PNT does not undertake routine maintenance of contributed code.
 
@@ -88,13 +88,13 @@ These are settled here so subsequent work doesn't relitigate.
 
 **No first-party in-repo designs.** All reference designs — including those Rich maintains personally, such as `fellows_local_db` — are external. PNT references snapshots, never bundles code.
 
-**Software Heritage SWHID is the canonical permanent identifier (v0.1).** When a design is accepted, Save Code Now is triggered on the contributor's repo at the submitted commit; the resulting SWHID is recorded in the design entry. Software Heritage archives source permanently with content-addressed identifiers. The PNA Spec itself states this v0.1 commitment; future spec versions may revise.
+**Software Heritage SWHID is the canonical permanent identifier (v0.1).** When a design is accepted, Save Code Now is triggered on the contributor's repo at the submitted commit; the resulting SWHID is recorded in the design entry. Software Heritage archives source permanently with content-addressed identifiers. The PNA Spec itself states this v0.1 commitment; future toolkit versions may revise.
 
 **Optional secondary fork for high-signal designs.** A `pnt-archive` GitHub-organization fork is at maintainer discretion for designs PNT wants belt-and-braces archival on. SWHID alone is sufficient for the archival promise.
 
 **Linear SemVer for the PNA Spec; per-axis versioning declared in each design's Architecture document.** Patch for clarifications, minor for additive, major for breaking. Individual axes can evolve at different rates; a design declares which axis version it implements for each axis it picks.
 
-**Every accepted contribution ships an Architecture document with a complete AC attestation table.** It declares conformance to a specific PNA Spec version, declares per-axis picks and versions, documents implementation choices per axis, and includes an AC attestation table that maps every applicable AC to (a) how the design realizes it and (b) the specific test(s) or review mechanism(s) that verify it. A row missing the verification field is a rejected PR. This is the load-bearing acceptance check.
+**Every accepted contribution ships an Architecture document with a complete AC attestation table.** It declares conformance to a specific Toolkit-Version, declares per-axis picks and versions, documents implementation choices per axis, and includes an AC attestation table that maps every applicable AC to (a) how the design realizes it and (b) the specific test(s) or review mechanism(s) that verify it. A row missing the verification field is a rejected PR. This is the load-bearing acceptance check.
 
 **Architecture document = Security Target in role.** The Common Criteria Protection Profile / Security Target model maps cleanly: the PNA Spec acts as the Protection Profile (class-level requirements); each design's Architecture document acts as the Security Target (this design's declared conformance, with implementation details and test pointers). PNT keeps its own terminology — no rename — but the model is what we're building.
 
@@ -182,7 +182,7 @@ The spec-formalization work is the largest single addition over the prior commun
 
 **Maintainer:** <name> (<canonical-repo-url>)
 **License:** <OSI-approved license SPDX identifier>
-**First accepted:** PNA Spec v<X.Y.Z>, <YYYY-MM-DD>
+**First accepted:** Toolkit-Version <X.Y>, <YYYY-MM-DD>
 **Status:** active | archived | superseded
 
 ## Summary
@@ -198,7 +198,7 @@ One paragraph describing what this design is and what it demonstrates.
 
 ## Contributions to the spec
 
-### PNA Spec v<X.Y.Z> — <short title> (PR #<n>)
+### Toolkit-Version <X.Y> — <short title> (PR #<n>)
 - Reference design version: commit `<sha>`
 - Software Heritage: `swh:1:dir:<id>`
 - Optional archive: `archive/<design-name>` at commit `<sha>`
@@ -224,7 +224,7 @@ See [Architecture.md](./Architecture.md), the design's Security Target, copied a
 
 The Architecture document plays the Security Target role: it is the design's declared conformance against the PNA Spec (the Protection Profile). To be accepted, it must contain:
 
-1. **PNA Spec version declaration.** "This design conforms to PNA Spec v0.7."
+1. **Toolkit-Version declaration.** "This design conforms to Toolkit-Version 0.7."
 2. **Axis pick declaration with per-axis versions.** A table naming each axis the design exercises and the version it implements.
 3. **Per-axis implementation notes.** A short section per axis explaining the implementation choices.
 4. **AC attestation table — the load-bearing artifact.** For each AC that applies to the design's flavor, a row stating:
@@ -255,7 +255,7 @@ A row missing the verification field is a rejected PR. This is the mechanical ch
    - Spec changes land (including any new AC IDs, sub-contracts, or axis-pick additions)
    - Maintainer runs `tools/swh-save.sh <repo-url> <commit-sha>` and records the returned SWHID in the design record
    - Maintainer decides whether the design warrants an `archive/` fork
-   - Spec version bumped per SemVer rules
+   - Toolkit version bumped per SemVer rules
 
 **Automated contribution path.** The skill (see below) walks an LLM through steps 3–4 end-to-end. A builder using Claude Code can ask the agent to "open a PR adding this design to PNT" and the skill guides the agent through authoring the Architecture document, generating the AC attestation table from the design's source, and producing the PR. Maintainer review at step 5 is the human-judgment gate that's intentionally not automated.
 
@@ -275,7 +275,7 @@ A PNA is a local-first application built to the PNT spec. The spec defines the a
 
 1. Read `spec/PNA_Spec.md` end-to-end.
 2. Determine the user's axis picks. Each axis has options in `spec/axes/`.
-3. Author an Architecture document for the design declaring PNA Spec version, axis picks, and per-axis implementation choices.
+3. Author an Architecture document for the design declaring Toolkit-Version, axis picks, and per-axis implementation choices.
 4. Pull the typed contracts from `contracts/` for each axis pick.
 5. Find a reference design in `reference_designs/` that shares as many axis picks as possible. Visit its archived source (SWHID linked in the design record) and study its implementation.
 6. Build against the contracts. Treat them as load-bearing. Do not deviate without proposing a spec change per the contribute flow below.
@@ -360,7 +360,7 @@ Phases are sized for Claude Code sessions. Each ends in a committable, working s
 - [x] Write `reference_designs/templates/ARCHITECTURE_TEMPLATE.md`, including the AC attestation table format with the Verification field.
 - [x] Audit existing spec prose for numeric axis counts and replace with variable language.
 - [x] Add to `spec/PNA_Spec.md`: declaration that v0.1 uses Software Heritage SWHIDs as the permanent identifier for reference designs.
-- [x] Add to `spec/PNA_Spec.md § Vision`: forward note about conformance evaluation as a potential precondition for multi-PNA ecosystem interop in a future spec version, framed as a systems-level test that will require rethinking the spec at that level.
+- [x] Add to `spec/PNA_Spec.md § Vision`: forward note about conformance evaluation as a potential precondition for multi-PNA ecosystem interop in a future toolkit version, framed as a systems-level test that will require rethinking the spec at that level.
 
 ### Phase 3 — Spec formalization pass
 
