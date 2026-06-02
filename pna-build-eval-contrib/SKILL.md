@@ -54,7 +54,7 @@ Inputs: a candidate PNA's source tree (or a description sufficient to read its b
    - `unable-to-determine` — with explanation; defaults to flagging for human review.
 
    Each finding may also carry `evidence` entries tagged by `source` (`deterministic` / `llm` / `human`). When a deterministic check in `tools/` (e.g. the egress lint) has run against the candidate, fold its output in as a `source: deterministic` evidence entry on the AC it bears on, so the deterministic and LLM layers land on one finding.
-6. **Summarize at the top** (the artifact's `summary` object): overall posture and the most concerning non-conformances. Goals 1–5 are the load-bearing user-facing concerns — anything compromising private-data sovereignty (Goal 1), source-mirroring honesty (Goal 2), transport security (Goal 3), durability (Goal 4), or local diagnosability (Goal 5) leads the summary.
+6. **Summarize at the top** (the artifact's `summary` object): overall posture and the most concerning non-conformances. Goals 1–5 are the load-bearing user-facing concerns — anything compromising private-data sovereignty (Goal 1), sourced-data honesty (Goal 2), user-controlled communication (Goal 3), durability (Goal 4), or local diagnosability (Goal 5) leads the summary.
 
 Callers may ask you to emphasize specific Goals or axes at runtime (e.g., "focus on private-data sovereignty"). Treat that as a hint for the summary, not a structural variation.
 

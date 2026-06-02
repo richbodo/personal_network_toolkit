@@ -70,7 +70,7 @@ Mixed verification is fine — for example, "deterministic test (file-presence l
 | AC-11 (concurrent-access detection) | | | |
 | AC-15 (build label tied to source revision) | | | |
 | AC-16 (user-driven transport selection) | | | |
-| AC-17 (mirrored data is sourced) | | | |
+| AC-17 (sourced provenance) | | | |
 | AC-18 (transports cannot read message contents) | | | |
 | AC-19 (user-visible payload before send) | | | |
 | AC-PRM-A (LLM calls over user data are transports) | | | |

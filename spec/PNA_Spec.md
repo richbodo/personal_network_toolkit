@@ -16,6 +16,8 @@ v0.1 PNAs all operate downstream of SaaS systems of record — they do not modif
 
 With PNAs, we have **credible interop** between SaaS systems and user-owned software.  Contact and relationship data is the **root** of personal networks and personal social network graphs - we have to get that local before we can take control of the whole graph.
 
+And taking control is the point, not the endpoint. Once that root is local and the private layer over it stays sovereign, local AI can finally do serious work over your own relationship graph — search, recall, reaching out — and you compound a private store of relationship knowledge that grows more valuable over time, even as the SaaS services it was sourced from stay replaceable. The goals below are the preconditions; *working your own graph* is the payoff they make possible.
+
 Without PNAs, or something like them, we often go to a list of contacts in linkedin or facebook and are overwhelmed by the noise.  The number of non-relationships in the contact list, manipulation through feeds, and notifications keep us on those sites as long as possible, often never solving any relational need, even if it is extremely urgent and sensitive.  This makes it much harder for many to improve individual and community health.
 
 ---
@@ -117,29 +119,31 @@ Worked examples below cite `fellows_local_db` as the first reference design — 
 
 ## Goals
 
-### Goal 1 — Private data sovereignty
+### Goal 1 — Private data
 
 The PNA stores two databases: a Shared DB (data the user is OK with external systems mirroring) and a Private DB (data that must stay only on the user's device). The Private DB is protected forever — it never leaves the device, never lands on any server, and is durable across app updates and routine cache clears. The Shared DB doesn't need that lifetime protection. Further decomposition and isolation of data according to privacy constraints is reasonable but unnecessary for the first PNAs envisioned.
 
-> **Why it matters:** Private data — who you confide in, your private notes on people, your communication history — is what most exposes you to surveillance, social-graph mining, and platform abuse. Keeping it on the user's device is the only durable defense. The architectural job of the PNA is to keep the line between shared and private data unmistakably bright.
+> **Why it matters:** The Private DB is the one space where privacy is *guaranteed by the architecture, not merely hoped for*. Private data — who you confide in, your private notes on people, your communication history — is what most exposes you to surveillance, social-graph mining, and platform abuse. Keeping it on the user's device is the only durable defense, and the architectural job of the PNA is to keep the line between shared and private data unmistakably bright.
 
-### Goal 2 — Mirror centralized data sources locally
+### Goal 2 — A local root for your personal networks
 
-v0.1 PNAs all operate downstream of SaaS systems of record. This goal exists due to the transitional period we are in — where it is not possible to take back data from centralized SaaS over time, but necessary to continue to interact with those platforms for some time. Users keep contacts in centralized platforms — Google, Apple, Facebook, work directories, organizational directories. A PNA mirrors those locally, producing a Shared DB the workspace can browse offline. Mirroring runs from exports today and may grow to richer pipelines (federated reads, multi-source dedup wizards) as the toolkit matures.
+Take control of your contact data. A PNA brings the root of your personal network — the contact and relationship data everything else hangs off — onto the user's own device, under the user's own ownership, as a local store the workspace can browse offline and work over. Owning that root is the first order of business; it is the foundation the private overlay (Goal 1), durable storage (Goal 4), and outreach (Goal 3) all build on top of.
 
-> **Why it matters:** We're in a transitional period. Users won't migrate cold. The bridge from "my contacts are scattered across Google + Apple + Facebook + my fellowship's directory" to "my contacts are local-first" runs through ingesting their existing data, not asking them to maintain a parallel master list. The toolkit makes that ingestion a swappable component so a PNA can mirror one source or many.
+*How* a PNA fills that root is an implementation choice, not part of the goal. Mirroring an export is the easiest path today and the one v0.1 reference designs take; live pulls, multi-source merges, and federated reads are equally legitimate ingestion shapes (see the Ingestion axis in [`axes.md`](axes.md)). As a v0.1 scope choice, PNAs operate *downstream* of SaaS systems of record — they take local custody of contact data but do not modify it at the source. That is transitional, not permanent: today it is not yet practical to fully repatriate data from centralized platforms, so a PNA mirrors what is there and gives the user a far better place to work over it.
 
-### Goal 3 — Secure communication options from inside workspaces
+> **Why it matters:** Contact and relationship data is the *root* of your personal network. The pain is current and concrete: your contacts live in someone else's system — scattered across Google, Apple, Facebook, a fellowship's directory — surveilled and outside your control. Pull that root onto your own device and you can finally build on it; leave it where it is and you can't. Everything else a PNA offers — a private overlay, durable storage, your own outreach — assumes you own the root first.
 
-When the user wants to reach out to a contact, the workspace offers a choice of transports — including more secure / decentralized options like Signal, not just `mailto:` and `tel:`.
+### Goal 3 — User-controlled communication
 
-> **Why it matters:** A user who demands sovereignty of their local data has the same high bar for the private transfer of that data. Defaulting every outreach to email — routed through whoever runs their mail server — is inconsistent with Goal 1. The architectural commitment is that transports are pluggable and the user picks per outreach.  Contacts who demand "only talk to me about that over a secure channel!" can have that demand satisfied by a check against their contact record.
+When the user wants to reach out to a contact, the workspace offers a *choice* of transports — `mailto:` and `tel:`, and more secure / decentralized options like Signal where configured. The user picks per outreach and sees the full payload before anything is sent. The PNA does not promise to encrypt the user's messages — it hands off to whatever channel the user chose — but it guarantees the user is never *forced* onto an insecure or content-reading channel, and that no data is ever sent on the user's behalf without the user seeing it first.
 
-### Goal 4 — Portable, durable, recoverable user data
+> **Why it matters:** This is the sanctioned-egress counterpart to Goal 1. Goal 1 says private data never leaves the device on its own; communication is the *one* place data deliberately leaves — the user reaching out to someone. A user who holds their local data to a high bar holds the same bar for how that data travels: defaulting every outreach to email, routed through whoever runs their mail server, is inconsistent with that. So transports are pluggable, the user chooses per outreach, and a contact who says "only reach me over a secure channel" can have that honored against their record. Security is something the user can *achieve* by plugging in a secure channel — and that the PNA promises never to undermine.
 
-Private data travels with the user across devices, browsers, and PNA versions. Auto-backup, restore-from-file, and explicit opt-in update flows ensure no silent data loss.
+### Goal 4 — Portable, durable data
 
-> **Why it matters:** Local-first only delivers on Goal 1 if "local" doesn't mean "trapped on this exact installation forever." Users replace devices, switch browsers, reinstall PNAs. The Private DB has to be exportable, importable, and resilient against accidental wipes — otherwise sovereignty becomes fragility.
+Private data travels with the user across devices, browsers, and PNA versions, and survives the routine churn of app updates and cache clears. When loss does happen, the data is recoverable — not merely resisted.
+
+> **Why it matters:** Local-first only delivers on Goal 1 if "local" doesn't mean "trapped on this exact installation forever." Users replace devices, switch browsers, reinstall PNAs. The Private DB has to be exportable, importable, and resilient against accidental wipes — otherwise local-first becomes fragility. Durability *resists* loss; recoverability *remedies* it when it happens anyway; portability keeps the data from being trapped in the first place — the goal needs all three.
 
 ### Goal 5 — Locally diagnosable
 
@@ -236,7 +240,7 @@ The wording in the universal table below is substrate-neutral; specific *forms* 
 | AC-11 | **Storage substrate detects concurrent access.** When another tab or process holds the data layer, the storage substrate MUST detect the conflict and surface it with a specific message (multi-tab in browsers, multi-process in native); a generic "unsupported" message MUST NOT be used. | Goal 4 |
 | AC-15 | **Build label tied to source revision, substituted at build *and* serve time.** Each delivered artifact MUST carry a runtime-visible unique label tied to the source revision. The label MUST be substituted at both build time and serve time. Format is implementation-specific (`<YYYY-MM-DD>-<short-sha>` in fellows_local_db; whatever `--version` reports in CLI tools). | Goal 5 |
 | AC-16 | **Communication-transport selection is user-driven.** The workspace MUST surface multiple transports — including secure / decentralized options when configured — and the user MUST choose per outreach. No transport MAY be hardcoded as the only available option. | Goal 3 |
-| AC-17 | **Mirrored data is sourced.** Every record in the Shared store MUST trace to a specific external source the user has explicitly configured. The toolkit MUST NOT introduce contact data the user hasn't approved. | Goal 2 |
+| AC-17 | **Sourced provenance.** Every record in the Shared store MUST trace to a specific external source the user has explicitly configured. The toolkit MUST NOT introduce contact data the user hasn't approved. | Goal 2 |
 | AC-18 | **Transports cannot read message contents.** A transport's acceptability is determined by the transport mechanism itself, not by the downstream chain it kicks off. `mailto:` passes (hands off to whichever client the user has configured; the downstream provider's behavior — Gmail, Outlook — is outside the toolkit's enforcement). Signal-class protocols pass (encryption-in-protocol). Workspaces MUST NOT offer centralized message-broker SaaS that decodes payloads as part of operating (Slack, Discord) as a PNA-eligible transport. Contact-graph retention by the transport is *not* part of the rule (too hard to enforce uniformly across protocols; varies by user threat model). | Goal 3 |
 | AC-19 | **User-visible payload before send.** Any workspace-initiated communication MUST show the user the full payload — recipients, body, and any data merged in from the Shared or Private store — before the transport is launched. The user MUST be able to edit or cancel. This MUST apply even to bulk operations (e.g., "email this group of 50"). Workspaces MUST NOT auto-blast data through transports without the user seeing the composition. | Goal 3 |
 | AC-PRM-A | **LLM calls over user data are transports.** Any LLM invocation over Private or Shared data MUST be treated as a transport: a local model is the default; a cloud model MUST be opt-in per call; the user MUST see the prompt and any merged data before send. Extension of AC-18 and AC-19 to a new transport class. | Goal 3 |

@@ -131,7 +131,7 @@ You have a PNA in front of you (someone else's, or your own in-progress one) and
 
    Because the report is typed, two runs over the same candidate are diffable. Ask the agent to save the artifact (e.g. `eval-report.json`); when the app ships an update, re-audit and diff the two JSON files — the per-AC status changes are your drift/regression signal (the "did anything quietly stop conforming?" check). The human-readable summary you read is just a rendering over this artifact.
 
-**5. Decide.** Goals 1–5 are the load-bearing user-facing concerns — private-data sovereignty (Goal 1), source-mirroring honesty (Goal 2), transport security (Goal 3), durability (Goal 4), local diagnosability (Goal 5). If any of those are non-conformant, the design is not safe to trust with your data. Non-conformances against architectural details that don't touch Goals 1–5 are still worth fixing but aren't immediate red flags.
+**5. Decide.** Goals 1–5 are the load-bearing user-facing concerns — private-data sovereignty (Goal 1), sourced-data honesty (Goal 2), user-controlled communication (Goal 3), durability (Goal 4), local diagnosability (Goal 5). If any of those are non-conformant, the design is not safe to trust with your data. Non-conformances against architectural details that don't touch Goals 1–5 are still worth fixing but aren't immediate red flags.
 
 **Optional: emphasize a specific concern.** E.g.: *"Focus on Goal 1 — make sure my Private DB rows can't leave my device."* This shapes the summary, not the underlying check.
 
