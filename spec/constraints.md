@@ -119,7 +119,6 @@ design's constraint-attestation declaration.
 | CST-PWA-SANDBOX-SEALED | OPFS store invisible + non-interoperable | storage:opfs-sqlite-wasm | AC-1, Goal-4, AC-MCP-A | Solved-on-chromium | feature-detect |
 | CST-PWA-STORAGE-EVICTABLE | Script storage is evictable | storage:opfs-sqlite-wasm | Goal-4 | Mitigated | empirical-probe |
 | CST-PWA-NO-SYNC | Origin/device-local silos; no built-in portability | distribution:web-bundle, storage:opfs-sqlite-wasm | Goal-4 | Open | feature-detect |
-| CST-PWA-DURABLE-SQL-ARCH | Durable SQL forces worker-owned single-connection arch | storage:opfs-sqlite-wasm | (build space — see entry) | Inherent | feature-detect |
 | CST-PWA-SINGLE-OWNER | Multi-tab contention, no OS file lock | storage:opfs-sqlite-wasm | AC-11 | Solved-on-chromium | empirical-probe |
 | CST-PWA-NO-BACKGROUND | No reliable scheduled background execution | distribution:web-bundle | Goal-4 | Mitigated | feature-detect |
 | CST-PWA-SERVER-FLOOR | Origin + TLS + secure context required | distribution:web-bundle | PNA-DEFINITION | Inherent | feature-detect |
@@ -204,23 +203,6 @@ store between a user's devices or browsers, and no authority to reconcile diverg
 write-generation + a human device label) so the user (and a re-pick chooser) can answer "which copy is
 canonical?" by content; offer a manual `.db` export/import as the cross-device bridge. Declare sync
 explicitly out of scope rather than implying it. Demonstrated by `fellows_local_db`.
-
-### CST-PWA-DURABLE-SQL-ARCH — Durable SQL forces a worker-owned single-connection architecture
-
-**Triggered-by:** storage:opfs-sqlite-wasm
-**Bounds:** (none — this entry bounds the *build space*, not a user-facing Goal/AC. It is the one
-builder-facing-rather-than-user-facing constraint in the registry.)
-**Frontier:** Inherent — it cannot be removed; it is a property of the medium.
-**Detectability:** feature-detect (in-worker capability check).
-
-**Ceiling:** Durable SQL in a browser (sqlite-wasm + OPFS-SAH-Pool) requires `crossOriginIsolated`, a
-single dedicated worker that owns every OPFS handle, and a single writer connection. The architecture
-is forced; you do not get to choose a multi-connection or main-thread design.
-
-**Recommended handling:** accept the cost; adopt the worker-owned-OPFS convention (the workspace is an
-RPC client, never touches OPFS directly) — exactly the realization AC-3 already requires for this
-substrate. This is a constraint a builder must *know* up front, not a defect to fix. Demonstrated by
-`fellows_local_db`.
 
 ### CST-PWA-SINGLE-OWNER — Multi-tab contention with no OS file lock
 
