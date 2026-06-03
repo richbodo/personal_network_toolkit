@@ -30,3 +30,19 @@ jobs:
             echo "::error::egress-lint did not flag the dirty fixture"
             exit 1
           fi
+
+  export-readable-lint-selftest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: clean fixture must pass (exit 0)
+        run: python3 tools/export-readable-lint.py tools/export-readable-lint-fixtures/clean
+      - name: dirty fixture must fail (exit 1)
+        run: |
+          if python3 tools/export-readable-lint.py tools/export-readable-lint-fixtures/dirty; then
+            echo "::error::export-readable-lint did not flag the dirty fixture"
+            exit 1
+          fi

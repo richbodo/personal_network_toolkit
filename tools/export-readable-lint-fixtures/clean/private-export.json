@@ -1,0 +1,14 @@
+{
+  "schema": {
+    "groups": ["group_id", "name", "created_at"],
+    "record_notes": ["record_id", "note", "updated_at"],
+    "record_tags": ["record_id", "tag"]
+  },
+  "exported_at": "2026-06-03",
+  "records": {
+    "record_tags": [
+      {"record_id": "r-0007", "tag": "mentor"},
+      {"record_id": "r-0012", "tag": "secure-channel-only"}
+    ]
+  }
+}

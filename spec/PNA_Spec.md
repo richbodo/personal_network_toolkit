@@ -362,8 +362,9 @@ Cross-slot: SH-5 is implemented by ST-8.
 - **PR-3: Schema metadata.** Implementations MUST set `PRAGMA user_version` and MUST set `PRAGMA foreign_keys=ON` per connection.
 - **PR-4: Durability.** The Private DB MUST NOT be replaced on app update. It MUST survive Clear App Cache. Only Reset Everything (ST-10) MAY wipe it.
 - **PR-5: Backup/restore conformance.** Implementations MUST use idempotent CREATE IF NOT EXISTS so older backups gain newer tables on restore.
+- **PR-6: Human-readable export (recommended).** Implementations SHOULD provide an export of the Private DB to a flat, human-readable format in addition to the canonical SQLite file — for example CSV per table, JSON with the schema embedded, or a Markdown vault keyed by `record_id`. The export MUST be readable without any PNA tooling (a generic CSV / JSON / Markdown reader suffices). The canonical SQLite file remains the authoritative form; the human-readable export is a portability escape hatch, not a sync surrogate — implementations MUST NOT treat it as a guaranteed re-import surface, and re-import stays on the PR-5 SQLite path. *Verification: a deterministic check that every exported file parses with a standard-library reader and requires no project code — see [`tools/export-readable-lint.py`](../tools/export-readable-lint.py).*
 
-Cross-slot: PR-4 is enforced by ST-1 (separate file from Shared DB) and ST-10 (Reset Everything is the only wipe path); PR-5 is exercised by ST-7.
+Cross-slot: PR-4 is enforced by ST-1 (separate file from Shared DB) and ST-10 (Reset Everything is the only wipe path); PR-5 is exercised by ST-7; PR-6 is produced by Storage (export bytes) and surfaced by the Workspace (export action).
 
 #### Debug contract (`DB-`)
 
@@ -388,6 +389,7 @@ Sub-contracts that span slots, formalized:
 - **Opt-in directory update (AC-10):** IN-4 → ST-8 → SH-5 → WS-3 (orphan render).
 - **Storage RPC boundary:** WS-4 calls ST-3 / ST-4 / etc.; ST-2's handshake gates whether mutations are allowed (AC-4).
 - **Restore data flow:** WS (file picker / backup picker UI) → ST-7 → PR-5 (re-bootstrap).
+- **Human-readable export (PR-6):** ST produces the export bytes; WS exposes the export action. One-way — re-import stays on the PR-5 SQLite path.
 - **User-aware payload (AC-19):** WS-10 ↔ CO-5 — dual-listed because both slots co-implement.
 - **Capability-failure surfacing:** ST-2 (`opfsCapable=false`) → WS-6 (panel render); ST-9 (`OWNERSHIP_CONFLICT`) → WS-6 (multi-tab variant).
 - **Diagnostic substrate (DB-\*):** every slot logs to DB-4; WS surfaces DB-2/3/6/7/9.
