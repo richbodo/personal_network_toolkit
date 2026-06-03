@@ -19,7 +19,13 @@ PNT (Personal Network Toolkit) is built to be consumed by AI coding agents. Most
 
 ## Install the skill
 
-The flows below are driven by the PNT skill at [`pna-build-eval-contrib/SKILL.md`](../pna-build-eval-contrib/SKILL.md). If you haven't used Claude Code skills before: they're modular agent capabilities that live in a `.claude/skills/<skill-name>/SKILL.md` layout and load automatically when a prompt matches the skill's `description` field. You install a skill once, then invoke it through natural language in any chat.
+The flows below are driven by the PNT skill at [`pna-build-eval-contrib/SKILL.md`](../pna-build-eval-contrib/SKILL.md). If you haven't used Claude Code skills before: they're modular agent capabilities that live in a `.claude/skills/<skill-name>/SKILL.md` layout. You install one once, then use it through natural language in any chat.
+
+### How Claude decides to use the skill
+
+At session start Claude Code loads every installed skill's **name and `description`** into context — not the full body, which loads only when the skill actually runs. Claude then **auto-discovers** the skill: when your prompt matches the triggers in its `description`, it invokes the skill on its own, without you naming it. The PNT skill's description is written to fire on phrases like *"is this app safe to install?"*, *"does my app conform?"*, or "build a local-first contact app", so a request like *"audit this contact app before I install it"* trips it automatically.
+
+You don't have to rely on that, though. You can always invoke it explicitly — `/pna-build-eval-contrib`, or just *"Use the PNT skill to…"*. Auto-discovery is a match against prose, so it's a strong default but not a guarantee; for a deliberate task like validating that a repo conforms, naming the skill (or the flow) is the most reliable path — and that's how the prompts in this guide are phrased. In practice you'll lean on auto-discovery for casual asks and explicit invocation when you want to be sure. Both are first-class.
 
 **Recommended — symlink globally** (run from your PNT working directory):
 
@@ -52,7 +58,9 @@ When a PNA repo actively contributes back (it's a reference design, or you drive
 
 Pick the symlink for local iteration; pick the vendored copy when the design repo should carry the skill for everyone working on it.
 
-**Verify.** Start Claude Code and try one of the prompts below; if the skill triggers, you're set. You can also ask *"what PNT skills do you have available?"*. **Note:** skills load at **session start** — if you just installed the skill, restart Claude Code (or open a fresh session) before it becomes invocable; a mid-session install is not picked up.
+> **Precedence gotcha — a global install shadows the repo copy.** When the same skill name exists at more than one scope, Claude Code resolves in the order **enterprise → personal (`~/.claude/skills`) → project (`<repo>/.claude/skills`)**, and the higher scope wins *silently* — no collision warning. So if you've done the recommended global install **and** vendored a pinned copy into a design repo, the global copy wins, and your pinned, reproducible copy is never used. When a contribution depends on validating against a specific pinned Toolkit-Version, remove or rename the global install for that work — or simply don't install globally on the machine you use to finalize contributions.
+
+**Verify.** Start Claude Code and try one of the prompts below; if the skill triggers, you're set. You can also ask *"what PNT skills do you have available?"*. **Note:** a restart is only needed the **first** time — when you create a top-level skills directory that didn't exist when the session started (e.g. the `mkdir -p ~/.claude/skills` above), restart Claude Code so it starts watching that directory. Once the directory exists, later edits, additions, or removals of skills under it are picked up live, without a restart.
 
 ---
 
