@@ -87,6 +87,36 @@ for the upstream-contribution plan (the handler contract `EX-H1..EX-H8`).
 
 ---
 
+## Constraint attestation
+
+fellows inherits the `CST-PWA-*` family by its `distribution:web-bundle-with-magic-link` ×
+`storage:opfs-sqlite-wasm` picks (see [`constraints.md`](../../spec/constraints.md) and the
+cross-references in [`axes.md`](../../spec/axes.md)). A **Constraint** is a platform-imposed ceiling;
+handling one honestly does **not** exit PNA mode. The realization is the **private-data capability
+gate** ([`../plans/private_data_capability_gate.md`](../plans/private_data_capability_gate.md)):
+private data is live only when a verified folder is attached; off-folder the app is browse-only with
+no durable private store. See [`./architectural_findings.md`](./architectural_findings.md) § 2026-06-01
+for the discovery and [`../plans/pna_toolkit_constraints_contribution.md`](../plans/pna_toolkit_constraints_contribution.md)
+for this upstream-contribution plan.
+
+| CST | Inherited by | Handling (capability reduction) | Frontier | Verification | Status |
+|---|---|---|---|---|---|
+| CST-PWA-PRIVATE-SNAPSHOT | web-bundle × opfs | Folder mode (real file) on Chromium desktop; off-folder there is **no durable private store** — durable private writes are refused at the worker (load-bearing) + page (defense-in-depth), so off-folder is browse-only, not false durability. Manual `.db` export is the portability bridge. Code: `app/static/vendor/sqlite-worker.js` (folder write path + browse-only refusal), `app/static/app.js` (`privateDataEnabled()`, gate). | Open | `tests/e2e/test_private_data_enforcement.py`, `test_browse_only_durability.py`, `test_user_folder_storage.py`, `test_unsupported_browser.py`; `docs/browser_support.md` | handled (frontier Open) |
+| CST-PWA-SANDBOX-SEALED | opfs | Folder mode dissolves the boundary — the private MCP server reads the live file. Off-folder there is no folder-resident private store for an external tool to read; the shared MCP server still reads `fellows.db`; the setup flow warns. Code: folder write path; `mcp_servers/private_data_ops.py` reads an external file `mode=ro`. | Solved-on-chromium | `tests/e2e/test_sandbox_sealed_mcp.py`; `tests/test_private_data_ops.py`; `docs/architectural_findings.md` § 2026-06-01 | handled |
+| CST-PWA-STORAGE-EVICTABLE | opfs | Avoided for the private store: the canonical store is a real on-disk file (folder mode) outside evictable storage; off-folder, only localStorage-grade prefs ride browser storage (durable private writes refused). `navigator.storage.persist()` best-effort; 5-slot backup ring; manual export. Code: persist path + `sqlite-worker.js` backup ring + browse-only refusal. | Mitigated | `tests/e2e/test_private_data_enforcement.py`; backup/restore e2e; AC-9 row | handled |
+| CST-PWA-NO-SYNC | web-bundle × opfs | In-db workspace identity (`workspace_uuid` + monotonic `write_generation` + `device_label`) disambiguates the canonical copy for the content-previewed re-pick chooser; `.db` export is the manual cross-device bridge. Sync explicitly out of scope. Code: `app.js` identity stamp; `sqlite-worker.js`. | Open | `tests/e2e/test_user_folder_storage.py` (reconnect/chooser); `tests/e2e/test_folder_probe.py` (identity stamp) | handled (frontier Open) |
+| CST-PWA-SINGLE-OWNER | opfs | Web Lock `fellows-relationships-folder-write` + `OWNERSHIP_CONFLICT` panel. Code: `sqlite-worker.js` (`isOwnershipConflictError`, locks). | Solved-on-chromium | `tests/e2e/test_user_folder_storage.py::TestPhase2WriteLock`; AC-11 row | handled |
+| CST-PWA-NO-BACKGROUND | web-bundle | Per-boot debounced auto-backup; no scheduled-protection promise. Code: `maybeBackupRelationshipsDb`. | Mitigated | AC-9 row; code inspection | handled |
+| CST-PWA-SERVER-FLOOR | web-bundle | Server bounded to distribution/update only (Never-SaaS); no per-user RW endpoints. Code: `deploy/server.py`. | Inherent | `tests/test_deploy_auth_round_trip.py`; AC-2 row | handled (by bounding) |
+
+> **Honest frontiers.** `Open` rows (`CST-PWA-PRIVATE-SNAPSHOT`, `CST-PWA-NO-SYNC`) are *not solved* —
+> the gate and the identity stamp are honest *handlings*, and the underlying ceilings stand until a
+> future version beats them and documents *how*. fellows claims only what it has done (capability
+> reduction, avoidance, bounding), never that it overcame a ceiling it merely reduced — over-reach
+> (false durability) would itself be a silent conformance failure.
+
+---
+
 ## HTTP API
 
 Read-only fellow data (served from `app/fellows.db`):

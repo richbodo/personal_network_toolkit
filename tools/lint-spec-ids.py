@@ -16,6 +16,15 @@ Checks:
   6. Every "Reversible:" field is well-formed (yes|no); a "yes" requires a
      "Reversal:" field. Every value in a strength-profile column is one of the
      fixed strength classes (EX-H8).
+  6b. Every Constraint in spec/constraints.md carries a stable ID (CST-*) in a
+     registry table row AND a matching '### CST-...' detail block (same set of
+     IDs on both sides). On both the table and the blocks: every "Triggered-by:"
+     token resolves to a pick of the *named* axis (axis prefix + pick family
+     from axes.md — a cross-axis pick does not resolve); every "Bounds:" token
+     is a valid AC/Goal-N/PNA-DEFINITION; every "Frontier:" is well-formed
+     (Open|Mitigated|Solved-on-<platform>|Inherent), and Mitigated/Solved-* each
+     require a "Workaround:"; every "Detectability:" is one of the fixed classes.
+     The table and the blocks must agree on every field per entry (no drift).
   7. The toolkit is versioned as a unit: a /VERSION file is the source of
      truth, and every versioned toolkit artifact (spec, skill, lint,
      contracts, templates, CONTRIBUTING, README) carries a "Toolkit-Version:"
@@ -48,11 +57,61 @@ RELAXES_RE = re.compile(
     r"Relaxes:\s*((?:(?:AC-[A-Z0-9-]+|EX-[A-Z0-9-]+|PNA-DEFINITION)(?:\s*,\s*)?)+)",
     re.IGNORECASE,
 )
-REVERSIBLE_RE = re.compile(r"Reversible:\s*([A-Za-z]+)", re.IGNORECASE)
+# `\**` tolerates the markdown-bold field form (`**Reversible:** yes`); without
+# it this matched nothing against the bold form actually used in exceptions.md,
+# leaving the well-formedness + coupling checks below dead. The backtick header-
+# convention mention (`**`Reversible:`**`) is not followed by a letter, so it is
+# correctly NOT captured as a value.
+REVERSIBLE_RE = re.compile(r"Reversible:\**\s*([A-Za-z]+)", re.IGNORECASE)
+# The actual `**Reversal:**` field (line-anchored), distinct from the literal
+# "Reversal:" that also appears in the header-conventions prose — a bare
+# substring test was satisfied by that prose and so never enforced the coupling.
+REVERSAL_FIELD_RE = re.compile(r"^\**Reversal:", re.MULTILINE | re.IGNORECASE)
 STRENGTH_CLASSES = {
     "enforced", "verifiable", "best-effort",
     "provider-asserted", "recoverable-only", "none",
 }
+
+# --- Constraints (spec/constraints.md) ---
+# Constraint registry IDs live in `| CST-... |` table rows (mirrors AC_RE / EX_RE).
+CST_RE = re.compile(r"^\| (CST-[A-Z0-9-]+?)(?=\s|\*|\|)", re.MULTILINE)
+# Detail blocks open with a '### CST-...' heading.
+CST_BLOCK_RE = re.compile(r"^### (CST-[A-Z0-9-]+)", re.MULTILINE)
+# Field value extractors operate on a single source string (one registry-table
+# cell, or the line that follows a '**Field:**' label in a detail block). Each
+# pulls the well-formed tokens out of free text, so prose like "(build space —
+# see entry)" simply yields no tokens rather than a false positive.
+TRIGGERED_TOKEN_RE = re.compile(r"[a-z0-9-]+:[a-z0-9-]+", re.IGNORECASE)
+BOUNDS_TOKEN_RE = re.compile(r"AC-[A-Z0-9-]+|Goal-[0-9]+|PNA-DEFINITION", re.IGNORECASE)
+# Frontier: Open | Mitigated | Solved-on-<platform> | Inherent. Mitigated and
+# Solved-* require a Workaround: field (cross-checked below). Anchored at the
+# value's start (a registry-table cell, or the text after a '**Frontier:**'
+# label) so trailing prose ("Open — no workaround …") doesn't matter and a
+# malformed value can't be salvaged from mid-string.
+FRONTIER_VALUE_RE = re.compile(
+    r"^\s*(Open|Mitigated|Solved-on-[a-z0-9-]+|Inherent)\b", re.IGNORECASE
+)
+# The full hyphen-chain at the value's start, so `feature-detect-extra` is
+# captured whole (and rejected) rather than truncated to a valid prefix.
+DETECT_VALUE_RE = re.compile(r"^\s*([a-z]+(?:-[a-z]+)+)", re.IGNORECASE)
+DETECT_CLASSES = {"feature-detect", "empirical-probe", "ua-sniff"}
+# Triggered-by `<axis>:<pick>` tokens resolve against the picks of the *named
+# axis only* (per-axis, not a global pool — so `comms:opfs-sqlite-wasm` is caught
+# as a cross-axis error). Maps the axis-prefix token a constraint may use to the
+# axes.md section heading whose '### Picks' bullets define that axis's picks.
+AXIS_PREFIX_TO_HEADING = {
+    "distribution": "distribution",
+    "storage": "storage substrate",
+    "ingestion": "ingestion shape",
+    "workspace": "workspace shell",
+    "comms": "comms transport set",
+    "mcp-exposure": "mcp-exposure",
+}
+# Pick IDs in axes.md appear as the leading bolded code span of a Picks bullet:
+#   - **`opfs-sqlite-wasm`** — …
+AXES_PICK_RE = re.compile(r"^- \*\*`([a-z0-9-]+)`", re.MULTILINE)
+# Section headings in axes.md: '## Storage substrate'.
+AXES_SECTION_RE = re.compile(r"^## (.+)$", re.MULTILINE)
 
 # Matches the version stamp across every artifact format: markdown
 # (`**Toolkit-Version:** 0.1`), comments (`# / -- / //  Toolkit-Version: 0.1`),
@@ -60,6 +119,8 @@ STRENGTH_CLASSES = {
 TOOLKIT_VERSION_RE = re.compile(r"Toolkit-Version:\**\s*(\d+\.\d+)")
 
 EXCEPTIONS_PATH = REPO / "spec" / "exceptions.md"
+CONSTRAINTS_PATH = REPO / "spec" / "constraints.md"
+AXES_PATH = REPO / "spec" / "axes.md"
 VERSION_PATH = REPO / "VERSION"
 
 # Toolkit artifacts that must carry a Toolkit-Version stamp matching /VERSION.
@@ -67,6 +128,7 @@ VERSION_PATH = REPO / "VERSION"
 # lint stays usable on partial checkouts.
 VERSIONED_ARTIFACTS = [
     "spec/PNA_Spec.md", "spec/axes.md", "spec/use_cases.md", "spec/exceptions.md",
+    "spec/constraints.md",
     "pna-build-eval-contrib/SKILL.md", "CONTRIBUTING.md", "README.md",
     "tools/lint-spec-ids.py", "tools/egress-lint.py", "tools/export-readable-lint.py",
     "tools/evaluate-report.schema.json", "tools/swh-save.sh",
@@ -144,6 +206,172 @@ def collect_strength_violations(text: str) -> list[str]:
     return violations
 
 
+def collect_constraint_ids() -> set[str]:
+    """CST-* registry IDs from spec/constraints.md. Empty if the file is absent
+    (the lint stays green on checkouts that haven't adopted constraints)."""
+    if not CONSTRAINTS_PATH.exists():
+        return set()
+    return set(CST_RE.findall(CONSTRAINTS_PATH.read_text()))
+
+
+def collect_axis_picks_by_axis() -> dict[str, set[str]]:
+    """Map each axis-prefix (the token a constraint's Triggered-by uses, e.g.
+    `storage`) to the set of pick IDs catalogued under that axis's section in
+    axes.md. Per-axis (not a global pool) so a Triggered-by token must name a
+    pick that actually belongs to the axis it cites."""
+    by_axis: dict[str, set[str]] = {}
+    if not AXES_PATH.exists():
+        return by_axis
+    text = AXES_PATH.read_text()
+    heading_to_prefix = {h: p for p, h in AXIS_PREFIX_TO_HEADING.items()}
+    # re.split keeps captured headings interleaved: [pre, head1, body1, ...].
+    parts = AXES_SECTION_RE.split(text)
+    for i in range(1, len(parts), 2):
+        heading, body = parts[i].strip().lower(), parts[i + 1]
+        prefix = heading_to_prefix.get(heading)
+        if prefix:
+            by_axis[prefix] = set(AXES_PICK_RE.findall(body))
+    return by_axis
+
+
+def _triggered_by_resolves(token: str, picks_by_axis: dict[str, set[str]]) -> bool:
+    """A Triggered-by token `<axis>:<pick>` resolves iff the axis prefix is known
+    AND the pick belongs to *that* axis — as an exact pick ID or a family prefix
+    of one (so `distribution:web-bundle` matches `web-bundle-with-magic-link`).
+    A pick from a different axis (`comms:opfs-sqlite-wasm`) does not resolve."""
+    axis, sep, pick = token.partition(":")
+    axis = axis.lower()
+    if not sep or not pick or axis not in AXIS_PREFIX_TO_HEADING:
+        return False
+    picks = picks_by_axis.get(axis, set())
+    return any(p == pick or p.startswith(pick + "-") for p in picks)
+
+
+def _constraint_fields(triggered: str, bounds: str, frontier: str, detect: str) -> dict:
+    """Normalize one entry's four field sources (registry-table cells, or the
+    lines after the `**Field:**` labels in a detail block) into comparable
+    tokens. Free-text prose around a value simply yields no extra tokens."""
+    fm = FRONTIER_VALUE_RE.search(frontier or "")
+    dm = DETECT_VALUE_RE.search(detect or "")
+    return {
+        "triggered": [t.lower() for t in TRIGGERED_TOKEN_RE.findall(triggered or "")],
+        "bounds": [b.upper() if b.upper().startswith(("AC-", "PNA")) else b
+                   for b in BOUNDS_TOKEN_RE.findall(bounds or "")],
+        "frontier": fm.group(1).lower() if fm else None,
+        "detect": dm.group(1).lower() if dm else None,
+    }
+
+
+def parse_constraint_table(text: str) -> dict[str, dict]:
+    """The summary registry table, keyed by CST id → normalized fields. Columns:
+    CST | Name | Triggered-by | Bounds | Frontier | Detectability."""
+    out: dict[str, dict] = {}
+    for line in text.splitlines():
+        if not line.lstrip().startswith("| CST-"):
+            continue
+        cells = [c.strip() for c in line.split("|")]  # ['', id, name, trig, bounds, front, detect, '']
+        if len(cells) < 8:
+            continue
+        cid, _name, trig, bounds, front, detect = cells[1:7]
+        out[cid] = _constraint_fields(trig, bounds, front, detect)
+    return out
+
+
+def parse_constraint_blocks(text: str) -> dict[str, dict]:
+    """The per-constraint detail blocks (each opening with '### CST-...'), keyed
+    by CST id → normalized fields plus `has_workaround`."""
+    out: dict[str, dict] = {}
+    parts = CST_BLOCK_RE.split(text)  # [pre, id1, body1, id2, body2, ...]
+
+    def field_line(body: str, name: str) -> str:
+        m = re.search(rf"(?mi)^\**{re.escape(name)}:\**[ \t]*(.*)$", body)
+        return m.group(1).strip() if m else ""
+
+    for i in range(1, len(parts), 2):
+        cid, body = parts[i], parts[i + 1]
+        fields = _constraint_fields(
+            field_line(body, "Triggered-by"), field_line(body, "Bounds"),
+            field_line(body, "Frontier"), field_line(body, "Detectability"),
+        )
+        fields["has_workaround"] = bool(re.search(r"(?mi)^\**Workaround:", body))
+        out[cid] = fields
+    return out
+
+
+def _validate_constraint_fields(label: str, f: dict, picks_by_axis: dict,
+                                known_bounds: set[str]) -> list[str]:
+    """Shape-validate one entry's normalized fields (table row or detail block)."""
+    v: list[str] = []
+    for tok in f["triggered"]:
+        if not _triggered_by_resolves(tok, picks_by_axis):
+            v.append(f"{label}: Triggered-by names {tok!r}, not a pick of the named "
+                     "axis in axes.md.")
+    for tok in f["bounds"]:
+        if tok == "PNA-DEFINITION" or re.fullmatch(r"Goal-[0-9]+", tok, re.IGNORECASE):
+            continue
+        if tok not in known_bounds:
+            v.append(f"{label}: Bounds names {tok}, not a known AC, Goal-N, or PNA-DEFINITION.")
+    if f["frontier"] is None:
+        v.append(f"{label}: no well-formed 'Frontier:' "
+                 "(Open|Mitigated|Solved-on-<platform>|Inherent).")
+    elif (f["frontier"] == "mitigated" or f["frontier"].startswith("solved-on")) \
+            and f.get("has_workaround") is False:
+        v.append(f"{label}: Frontier '{f['frontier']}' requires a 'Workaround:' field.")
+    if f["detect"] is None:
+        v.append(f"{label}: no 'Detectability:' field.")
+    elif f["detect"] not in DETECT_CLASSES:
+        v.append(f"{label}: Detectability '{f['detect']}' is not one of "
+                 f"{', '.join(sorted(DETECT_CLASSES))}.")
+    return v
+
+
+def collect_constraint_violations(spec_ids: set[str]) -> list[str]:
+    """Shape-validate spec/constraints.md and keep its human-facing summary table
+    honest against the authoritative detail blocks:
+      - Triggered-by resolves to a pick of the *named* axis; Bounds tokens are
+        valid; Frontier is well-formed (Mitigated/Solved-* need a Workaround);
+        Detectability is a known class — checked on BOTH the table and the blocks.
+      - the table and the blocks declare the same set of CST IDs, and agree on
+        every field per entry (no silent table-vs-block drift).
+    Absent file → no violations (the lint stays green on pre-constraints checkouts)."""
+    if not CONSTRAINTS_PATH.exists():
+        return []
+    text = CONSTRAINTS_PATH.read_text()
+    violations: list[str] = []
+    picks_by_axis = collect_axis_picks_by_axis()
+    known_bounds = spec_ids | {"PNA-DEFINITION"}
+    table = parse_constraint_table(text)
+    blocks = parse_constraint_blocks(text)
+
+    # Registry table ↔ detail blocks: same set of IDs.
+    for cid in sorted(table.keys() - blocks.keys()):
+        violations.append(f"{cid}: in the registry table but has no '### {cid}' detail block.")
+    for cid in sorted(blocks.keys() - table.keys()):
+        violations.append(f"{cid}: has a detail block but no registry-table row.")
+
+    for cid in sorted(table.keys() | blocks.keys()):
+        if cid in table:
+            violations += _validate_constraint_fields(
+                f"{cid} (registry table)", table[cid], picks_by_axis, known_bounds)
+        if cid in blocks:
+            violations += _validate_constraint_fields(
+                f"{cid} (detail block)", blocks[cid], picks_by_axis, known_bounds)
+        if cid in table and cid in blocks:
+            t, b = table[cid], blocks[cid]
+            for field, what in (("triggered", "Triggered-by"), ("bounds", "Bounds")):
+                if set(t[field]) != set(b[field]):
+                    violations.append(
+                        f"{cid}: {what} differs between the registry table "
+                        f"({', '.join(t[field]) or '∅'}) and the detail block "
+                        f"({', '.join(b[field]) or '∅'}).")
+            for field, what in (("frontier", "Frontier"), ("detect", "Detectability")):
+                if t[field] != b[field]:
+                    violations.append(
+                        f"{cid}: {what} differs between the registry table "
+                        f"({t[field]}) and the detail block ({b[field]}).")
+    return violations
+
+
 def expected_toolkit_minor() -> str | None:
     """The MAJOR.MINOR series from /VERSION (e.g. '0.1' from '0.1.0-draft')."""
     if not VERSION_PATH.exists():
@@ -211,9 +439,13 @@ def main() -> int:
         for v in rev_values:
             if v not in ("yes", "no"):
                 failures.append(f"exceptions.md: malformed 'Reversible: {v}' (want yes|no).")
-        if "yes" in rev_values and "Reversal:" not in ex_text:
+        if "yes" in rev_values and not REVERSAL_FIELD_RE.search(ex_text):
             failures.append("exceptions.md: 'Reversible: yes' present but no 'Reversal:' field.")
         failures.extend(f"exceptions.md: {v}" for v in collect_strength_violations(ex_text))
+
+    # --- Constraints (spec/constraints.md) ---
+    constraint_ids = collect_constraint_ids()
+    failures.extend(f"constraints.md: {v}" for v in collect_constraint_violations(spec_ids))
 
     # --- Toolkit version stamps ---
     toolkit_minor, version_failures = check_toolkit_versions()
@@ -231,6 +463,7 @@ def main() -> int:
     print(f"  spec defines {len(spec_ids)} AC IDs")
     print(f"  {n_realizing}/{len(contract_realizes)} contract files declare a 'Realizes:' header")
     print(f"  exceptions.md defines {len(exception_ids)} exception ID(s)")
+    print(f"  constraints.md defines {len(constraint_ids)} constraint ID(s)")
     return 0
 
 
