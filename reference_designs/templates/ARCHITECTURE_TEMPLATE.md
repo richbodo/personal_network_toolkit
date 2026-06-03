@@ -57,6 +57,14 @@ The Verification field is load-bearing — a row missing this field is grounds f
 
 Mixed verification is fine — for example, "deterministic test (file-presence lint) plus LLM rubric (read transport handlers and confirm no SaaS broker is reachable)". Whichever combination, the Verification cell names them concretely.
 
+**A `conformant` row needs executable evidence — a doc pointer is not evidence.** A doc that *asserts* a property does not *prove* it. If the only Verification you can name for a `conformant` row is a `*.md` file, either add a test, declare one of the three verification kinds above explicitly, or downgrade the row to `partial`/`Open`.
+
+**Negative invariants need negative tests.** A row whose realization *forbids* something — "off-folder there is no durable private store", "no transport reads message contents", "the gated capability's write does not happen" — must cite a test that asserts the thing does **NOT** happen. The happy-path test ("X happens when enabled") does not cover the negative; over-claiming a negative is a silent conformance failure, the most dangerous kind because the suite stays green.
+
+**Deferrals are strict-xfail tests, never code comments.** When an invariant is designed but not yet enforced, encode it as `@pytest.mark.xfail(strict=True, reason="…PR-N…")` naming the PR that will satisfy it: it goes red the day the enforcement lands (prompting promotion to a hard guard), and `grep "xfail(strict"` is the live list of claimed-but-unproven invariants. A deferral parked in a `// TODO` or an `INERT` comment is unowned and evaporates — the only other home for one is an honest `partial`/`Open` status in this table.
+
+**Mechanical check (recommended).** Ship a checker that parses this table and fails CI when a `conformant` row has no resolvable test and no declared review kind — so the table can't drift back into asserting properties the code never proved. Reference implementation (stdlib-only, ~90 lines): `test_attestation_has_evidence.py` — parse every table with `Verification` + `Status` columns; for each row whose Status contains `conformant` and not `partial`, require a resolvable `path/to/test.py[::name]` ref (file exists; if `::name`, a `def`/`class name` exists) or one of the declared review-kind keywords; a doc-only cell fails. The first PNT reference design (fellows_local_db) ships this checker alongside a Stop-hook that blocks a commit touching the attestation without touching tests, and a CLAUDE.md "Conformance discipline" stanza.
+
 ### Universal architectural commitments
 
 | AC | Realization | Verification | Status |
