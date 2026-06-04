@@ -2,6 +2,14 @@
 
 ## v0.1 draft (in progress)
 
+### ID columns moved to the right + header-aware lint + deep-link anchors (toolkit fix)
+
+- **The ID column now sits last** in every ID-bearing spec table — the Universal AC table (`Commitment | Serves | ID`), the axes "Extra commitments these picks add" tables (`Commitment | Applies when you pick | AC`), and the constraints + exceptions registries — so a human reads the commitment before the ID. **No AC/EX/CST ID changed and every `<a id>` deep-link anchor is preserved** (verified), so PR #27's external references (which `fellows_local_db` relies on) still resolve.
+- **`tools/lint-spec-ids.py` is now header-aware.** It locates each ID column by *header name* (not position) via a shared `iter_tables()` helper, so column order no longer matters; `parse_constraint_table` is likewise keyed by header. Self-tests stay green (22/22).
+- **Deep-link anchors extended.** Slots (`#slot-storage`), interfaces (`#iface-shared-schema`), and all 58 sub-contracts (`#ws-1` … `#db-9`) now carry `<a id>` anchors so conformance reports can link to them the way they already link to ACs (`fellows_local_db` cites `PR-6` etc. by name with no link today).
+- **Editing notes.** Each spec file with a machine-parsed table carries a top-of-file note that its tables are read by the lint *and* external report writers, and must be updated in lockstep if their columns / headers / IDs change.
+- **Note for report writers:** because the table column *order* changed, any *positional* parser of these tables (e.g. a conformance-report builder) must be updated; the IDs and anchors themselves are unchanged.
+
 ### Spec readability pass — PNA_Spec.md + axes.md (toolkit fix)
 
 - **`spec/PNA_Spec.md` restructured for readability**, with no change to any AC, anchor, or ID (the lint and the external `#ac-*`/`#vocab-*` deep links from #27 are untouched): merged Vision into the Preamble; relocated "Building a PNA" into Composition and tied it to the skill's three flows; demoted the misnamed "Target environments for one PNA" to an informal "Common axis clusters" note; renamed "Slot map" → "**Slots, Interfaces, and Sub-contracts**" (old `#slot-map` anchor preserved) with a "reference — skip unless implementing" signpost; alphabetized the Vocabulary.
