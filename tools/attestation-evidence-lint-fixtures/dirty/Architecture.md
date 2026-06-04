@@ -1,6 +1,6 @@
 # Architecture (dirty fixture)
 
-Three `conformant` rows with bad evidence. The lint must exit 1 and name each.
+Four `conformant` rows with bad evidence. The lint must exit 1 and name each.
 
 ### AC attestation table
 
@@ -10,3 +10,4 @@ Three `conformant` rows with bad evidence. The lint must exit 1 and name each.
 | AC-2 (xfail as evidence) | Claimed enforced. | `tests/test_sample.py::test_deferred` | conformant |
 | AC-3 (doc-only) | Asserted in the design notes. | see design-notes.md | conformant |
 | AC-4 (dangling) | Claimed covered. | `tests/test_missing.py::test_nope` | conformant |
+| AC-5 (pytestmark xfail) | Claimed enforced. | `tests/test_module_marked.py::test_hoisted` | conformant |

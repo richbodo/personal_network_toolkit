@@ -4,7 +4,7 @@
 and a `conformant` claim with no executable evidence is a finding.
 
 This is the portable reference implementation the
-`reference_designs/templates/ARCHITECTURE_TEMPLATE.md` § "Mechanical check"
+`reference_designs/templates/ARCHITECTURE_TEMPLATE.md` "Mechanical check" note
 points at. A design copies it into its own repo and runs it against its own
 Architecture document + test tree (PNT runs it here only against fixtures —
 it hosts no application code). It is the deterministic half of the evaluate
@@ -32,8 +32,12 @@ Two failure modes it catches that a bare existence check does not:
      it's a legitimate environment guard that runs in real CI; whether it ran is
      a runtime fact, not a static one.
 
-`partial` / `Open` / `not-applicable` rows are exempt from resolution — they
-carry an honest, non-conformant status by design.
+Marker detection covers per-test and per-class decorators and a module-level
+`pytestmark = …` global (so a deferred test can't dodge the rule by hoisting its
+marker out of the decorator). Per-parameter `parametrize(marks=…)` is not
+separately resolved — cite the specific deferred test, not a parametrized
+umbrella. `partial` / `Open` / `not-applicable` rows are exempt from resolution
+— they carry an honest, non-conformant status by design.
 
 Output: human-readable (row: reason), exit 1 on any finding, exit 0 if clean —
 the same CI contract as egress-lint.py / export-readable-lint.py. With --json,
@@ -115,8 +119,12 @@ def parse_attestation_rows(md_text: str):
 
 
 def is_full_conformant(status_cell: str) -> bool:
+    # "non-conformant" / "not conformant" both *contain* "conformant" — exclude
+    # them explicitly so a genuinely non-conformant row isn't treated as a
+    # conformant claim and dunned for missing evidence.
     s = status_cell.lower()
-    return "conformant" in s and "partial" not in s
+    return ("conformant" in s and "partial" not in s
+            and "non-conformant" not in s and "not conformant" not in s)
 
 
 # --- test-ref resolution + marker detection ----------------------------------
@@ -144,6 +152,20 @@ def _marker_names(decorator: ast.AST):
             yield node.attr
         elif isinstance(node, ast.Name):
             yield node.id
+
+
+def _module_marker_hits(tree: ast.Module) -> set:
+    """Disqualifying markers applied to *every* test in a file via a module-level
+    `pytestmark = …` global — the common way to xfail/skip a whole file without a
+    per-def decorator, and an easy way to slip a deferred test past a
+    decorator-only check. Same exact-name match as `_marker_names`, so a
+    conditional `skipif` global stays exempt."""
+    hits: set = set()
+    for node in tree.body:
+        if isinstance(node, ast.Assign) and any(
+                isinstance(t, ast.Name) and t.id == "pytestmark" for t in node.targets):
+            hits |= set(_marker_names(node.value)) & set(DISQUALIFYING_MARKERS)
+    return hits
 
 
 def _named_nodes(tree: ast.Module, name: str):
@@ -174,15 +196,17 @@ def classify_ref(ref: str, root: Path, py_index: dict):
             tree = ast.parse(c.read_text(encoding="utf-8"))
         except (OSError, SyntaxError):
             continue
+        module_hits = _module_marker_hits(tree)  # pytestmark applies file-wide
         for class_node, fn in _named_nodes(tree, name):
             found_def = True
             decos = list(fn.decorator_list)
             if class_node is not None:
                 decos += list(class_node.decorator_list)
+            hits = set(module_hits)
             for d in decos:
-                hit = set(_marker_names(d)) & set(DISQUALIFYING_MARKERS)
-                if hit:
-                    return sorted(hit)[0], ""
+                hits |= set(_marker_names(d)) & set(DISQUALIFYING_MARKERS)
+            if hits:
+                return sorted(hits)[0], ""
     if not found_def:
         return "dangling", f"no `def {name}` / `class {name}` in {ref_path!r}"
     return "live", ""
@@ -286,7 +310,7 @@ def main() -> int:
         print(f"  - {f.row}: {f.reason}")
     print("\nA `conformant` attestation row is a Security-Target claim; it needs a "
           "resolvable, non-xfail/skip test or a declared verification kind. See "
-          "reference_designs/templates/ARCHITECTURE_TEMPLATE.md § Mechanical check.")
+          "reference_designs/templates/ARCHITECTURE_TEMPLATE.md (the \"Mechanical check\" note).")
     return 1
 
 

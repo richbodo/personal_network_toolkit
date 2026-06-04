@@ -12,3 +12,4 @@ evidence. The lint must exit 0 against this design root.
 | AC-3 (review kind) | Holds structurally; no test, an explicitly declared kind. | by construction | conformant |
 | AC-4 (file-level ref) | Covered across the file's cases. | `tests/test_sample.py` | conformant |
 | AC-5 (honest deferral) | Designed but not yet enforced. | `tests/test_sample.py::test_deferred` (xfail) | partial-conformance (Open) |
+| AC-6 (honest non-conformance) | Known gap; not yet enforced. | (none — fix pending) | non-conformant |

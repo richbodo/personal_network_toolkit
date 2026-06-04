@@ -6,8 +6,24 @@
 
 ## Type
 
-- [ ] Reference design (new or updated), or a spec/contracts change → complete the checklists below
-- [ ] Toolkit fix / docs / tooling (no reference-design attestation needed)
+- [ ] Reference design (new or updated), or a spec/contracts change that imposes a new obligation on designs → complete the Reference-design checklist
+- [ ] Toolkit fix / docs / tooling, or a spec note that clarifies/declines a commitment (no reference-design attestation) → complete the Toolkit-fix checklist
+
+<!-- Routing: does a design have to do anything new to stay conformant after this change? Yes → reference design. Nothing does → toolkit fix. See CONTRIBUTING.md § Contribution types. -->
+
+## Every PR
+
+- [ ] **Docs current** — if this changes a developer-visible behavior (a `just` recipe, a lint check or its message, a skill flow, a contract/AC/manifest field, or a contribution step), [`docs/users-guide.md`](../docs/users-guide.md) is updated in this PR. *(See `CLAUDE.md` § Keep the docs current.)*
+- [ ] **Local gate green** — `just ci` passes (lint + self-tests); any new lint check has a fault-injection self-test.
+- [ ] **Manual test/QA steps** for the reviewer are in the PR description (when applicable).
+
+## Toolkit-fix checklist
+
+<!-- Only if this PR is a toolkit fix / docs / tooling change (no reference design). Delete if not applicable. -->
+
+- [ ] **No new design obligation** — this change imposes no new contract a conformant design must satisfy. *(If it does, it's a reference-design contribution — use the checklist below instead.)*
+- [ ] **CHANGELOG entry** added.
+- [ ] **Design note** appended to `docs/PriorArt.md § Design notes` if this PR embodies a decision (added or declined a direction, with rationale worth preserving). Mechanical/typo fixes don't need one.
 
 ## Reference-design / spec contribution checklist
 

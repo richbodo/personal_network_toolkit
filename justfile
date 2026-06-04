@@ -48,6 +48,11 @@ egress-lint target *args:
 export-lint target *args:
     {{python}} tools/export-readable-lint.py {{target}} {{args}}
 
+# Check a design's `conformant` attestation rows cite live, non-deferred evidence (args pass through).
+[group('evaluate')]
+attestation-lint target *args:
+    {{python}} tools/attestation-evidence-lint.py {{target}} {{args}}
+
 
 # ---- design --------------------------------------------------------------
 

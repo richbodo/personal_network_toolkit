@@ -191,6 +191,18 @@ def case_attestation_marker_message(results: list) -> None:
             ok, "" if ok else f"exit={d.returncode}, missing xfail message in:\n{out}")
 
 
+def case_attestation_pytestmark(results: list) -> None:
+    """A deferred test must not dodge the marker-state rule by hoisting its
+    marker to a module-level `pytestmark` global. The dirty fixture cites such a
+    test; the lint must name it (catching the file-wide xfail, not just decorators)."""
+    d = _run(REPO, "tools/attestation-evidence-lint.py",
+             "tools/attestation-evidence-lint-fixtures/dirty")
+    out = d.stdout + d.stderr
+    ok = d.returncode != 0 and "test_module_marked.py" in out and "xfail" in out
+    _record(results, "attestation-evidence-lint: flags module-level pytestmark xfail",
+            ok, "" if ok else f"exit={d.returncode}, missing pytestmark finding in:\n{out}")
+
+
 def _record(results: list, name: str, ok: bool, detail: str) -> None:
     results.append((name, ok, detail))
     print(f"  {'PASS' if ok else 'FAIL'}  {name}")
@@ -215,6 +227,7 @@ def main() -> int:
                       "tools/attestation-evidence-lint-fixtures/clean",
                       "tools/attestation-evidence-lint-fixtures/dirty")
     case_attestation_marker_message(results)
+    case_attestation_pytestmark(results)
 
     passed = sum(1 for _, ok, _ in results if ok)
     total = len(results)
