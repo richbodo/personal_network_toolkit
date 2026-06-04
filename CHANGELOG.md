@@ -2,6 +2,12 @@
 
 ## v0.1 draft (in progress)
 
+### Spec readability pass — PNA_Spec.md + axes.md (toolkit fix)
+
+- **`spec/PNA_Spec.md` restructured for readability**, with no change to any AC, anchor, or ID (the lint and the external `#ac-*`/`#vocab-*` deep links from #27 are untouched): merged Vision into the Preamble; relocated "Building a PNA" into Composition and tied it to the skill's three flows; demoted the misnamed "Target environments for one PNA" to an informal "Common axis clusters" note; renamed "Slot map" → "**Slots, Interfaces, and Sub-contracts**" (old `#slot-map` anchor preserved) with a "reference — skip unless implementing" signpost; alphabetized the Vocabulary.
+- **`spec/axes.md` plain-English pass**: each per-axis "Triggered flavor-derived ACs" table is now "**Extra commitments these picks add**"; the cryptic "Triggered by" `[dist:server-backed]` column becomes a plain-English "**Applies when you pick**" column, and the tables now lead with the commitment (the AC ID stays in column 1 for the lint). "flavor-derived AC" is **glossed** as a *conditional commitment*, not renamed (the term is load-bearing in the skill and artifacts).
+- **Editor notes** added above every lint-parsed table (`PNA_Spec.md` AC table; `axes.md` AC tables; `constraints.md` registry) warning that the table is machine-parsed — a column reorder must be matched by a `tools/lint-spec-ids.py` update plus a `tools/tests/lint_selftest.py` case. IDs/columns are kept consistent precisely because the lints depend on them.
+
 ### Stable per-ID anchors for AC / CST / EX (additive)
 
 - **Every AC, CST, and EX now carries a stable HTML anchor** so a reference design's conformance report (and any cross-reference) can deep-link to the *specific* commitment/constraint/exception instead of dumping the reader at the top of a multi-section spec. The anchor id is the lowercased ID: `#ac-1`, `#ac-prm-a`, `#cst-pwa-sandbox-sealed`, `#ex-cloud-llm`, etc. Added as `<a id="…"></a>` inside the ID cell of each AC table row (`spec/PNA_Spec.md` ×16, `spec/axes.md` ×9) and on the line above each `### CST-…` / `### EX-…` detail heading (`spec/constraints.md` ×7, `spec/exceptions.md` ×1) — 33 anchors, no prose change.

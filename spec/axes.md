@@ -2,11 +2,11 @@
 
 > **Toolkit-Version:** 0.1 (draft) — the toolkit (spec, contracts, skill, lint, templates) is versioned as a unit; see [VERSION](../VERSION).
 
-This document catalogs the Axes a PNA picks along, the attested picks on each Axis, and the flavor-derived ACs each pick triggers.
+This document catalogs the Axes a PNA picks along, the attested picks on each Axis, and the extra (conditional, "flavor-derived") architectural commitments each pick adds.
 
-The Axis concept is defined in [`PNA_Spec.md` § Vocabulary](PNA_Spec.md#vocabulary). The Axes overview in `PNA_Spec.md` lists picks at a glance; this file is the authoritative catalog with full descriptions and AC triggers.
+The Axis concept is defined in [`PNA_Spec.md` § Vocabulary](PNA_Spec.md#vocabulary). The Axes overview in `PNA_Spec.md` lists picks at a glance; this file is the authoritative catalog with full descriptions and the commitments each pick adds.
 
-For each Axis below: a description of what the Axis decides, the attested picks (each with a short note on what it implies, where it's attested, and which other axis-picks it commonly correlates with), and a `Triggered flavor-derived ACs` subsection when any picks on that axis fire flavor-derived ACs (Architectural Commitments).
+For each Axis below: a description of what the Axis decides, the attested picks (each with a short note on what it implies, where it's attested, and which other axis-picks it commonly correlates with), and — when a pick adds commitments beyond the universal set — an **Extra commitments these picks add** subsection (these are the *conditional* / *flavor-derived* ACs: they apply only when your flavor includes the triggering pick).
 
 **Normative language.** Conformance-bearing statements in the AC tables below use RFC 2119 / RFC 8174 keywords — MUST, MUST NOT, SHOULD, SHOULD NOT, MAY — when, and only when, capitalized. Surrounding prose is plain English. Same convention as `PNA_Spec.md`.
 
@@ -24,14 +24,15 @@ How the PNA reaches a user's device. The distribution pick shapes whether the PN
 - **`app-store-native`** — Packaged native app distributed via a platform store (Mac App Store, Google Play, etc.). The store is the install path; no PNA-operated server. None of this axis's flavor-derived ACs fire.
 - **`sideloaded-native`** — Packaged native app distributed directly (download a binary, install). Same: no PNA-operated server; none of this axis's flavor-derived ACs fire.
 
-### Triggered flavor-derived ACs
+### Extra commitments these picks add
 
-| AC | Triggered by | Commitment |
+<!-- EDITOR NOTE — machine-parsed: tools/lint-spec-ids.py reads each AC ID from the FIRST column. Keep the AC ID in column 1; if you reorder/reformat, update the lint + tools/tests/lint_selftest.py. -->
+| AC | Commitment | Applies when you pick |
 |---|---|---|
-| <a id="ac-2"></a>AC-2 | `[dist:server-backed]` (any `web-bundle-*` pick) | **No SaaS surface.** The server, when present, MUST be a delivery channel, not a service. The server MUST NOT expose per-user RW endpoints, MUST NOT persist private data, MUST NOT host an admin console, and MUST NOT operate cross-device sync. |
-| <a id="ac-5"></a>AC-5 | `[dist:auth-gated]` (`web-bundle-with-magic-link`) | **Stale session never locks users out of cached data.** A 401/403 from any shared-side fetch MUST fall through to the local cache. Fresh data MUST require explicit user action. |
-| <a id="ac-8"></a>AC-8 | `[dist:auth-server]` + `[debug:has-error-sink]` | **Anti-enumeration on auth + abuse-bounded analytics.** Distribution-channel auth endpoints MUST always return neutral payloads. Per-IP rate limits MUST be enforced. The sanitized error sink MAY double as the analytics pipe (`kind=install`, `kind=worker`, …) but MUST NOT widen the privacy boundary. |
-| <a id="ac-14"></a>AC-14 | `[dist:pwa]` (any `web-bundle-*` PWA pick) | **Service worker never owns SQLite.** The SW MUST be app-shell + update detection only — SW lifecycle (idle eviction, multi-instance, restart on push) is hostile to data ownership. The Shared store URL MUST be bypassed in the SW fetch handler. |
+| <a id="ac-2"></a>AC-2 | **No SaaS surface.** The server, when present, MUST be a delivery channel, not a service. The server MUST NOT expose per-user RW endpoints, MUST NOT persist private data, MUST NOT host an admin console, and MUST NOT operate cross-device sync. | Any server-backed (`web-bundle-*`) distribution. |
+| <a id="ac-5"></a>AC-5 | **Stale session never locks users out of cached data.** A 401/403 from any shared-side fetch MUST fall through to the local cache. Fresh data MUST require explicit user action. | Auth-gated distribution (`web-bundle-with-magic-link`). |
+| <a id="ac-8"></a>AC-8 | **Anti-enumeration on auth + abuse-bounded analytics.** Distribution-channel auth endpoints MUST always return neutral payloads. Per-IP rate limits MUST be enforced. The sanitized error sink MAY double as the analytics pipe (`kind=install`, `kind=worker`, …) but MUST NOT widen the privacy boundary. | An auth-gated server **and** a configured error sink. |
+| <a id="ac-14"></a>AC-14 | **Service worker never owns SQLite.** The SW MUST be app-shell + update detection only — SW lifecycle (idle eviction, multi-instance, restart on push) is hostile to data ownership. The Shared store URL MUST be bypassed in the SW fetch handler. | Any PWA (`web-bundle-*`) distribution. |
 
 ---
 
@@ -46,14 +47,15 @@ What backs the data layer — the bytes on disk or in OPFS that hold the Shared 
 - **`idb-only-browser`** — IndexedDB without SQLite. Less expressive (no SQL); mostly hypothetical for PNA. No flavor-derived ACs in v0.1 (the relevant ACs assume sqlite); a future toolkit version may add IDB-specific ACs if a reference design picks this.
 - **`native-sqlcipher`** — Encrypted-at-rest variant of `native-sqlite-via-filesystem`. Inherits AC-PRM-C **[draft]** plus additional commitments about key storage and rotation that v0.1 doesn't yet name. Deferred ACs land when a SQLCipher-flavored reference design is built.
 
-### Triggered flavor-derived ACs
+### Extra commitments these picks add
 
-| AC | Triggered by | Commitment |
+<!-- EDITOR NOTE — machine-parsed: tools/lint-spec-ids.py reads each AC ID from the FIRST column. Keep the AC ID in column 1; if you reorder/reformat, update the lint + tools/tests/lint_selftest.py. -->
+| AC | Commitment | Applies when you pick |
 |---|---|---|
-| <a id="ac-3"></a>AC-3 | `[storage:opfs-sqlite-wasm]` | **Single OPFS owner.** All OPFS handles and SQLite-WASM instances MUST live in one dedicated worker. The workspace MUST act as an RPC client. Parallel main-thread OPFS MUST NOT exist. *Realizes AC-1 + AC-11 for this substrate.* This worker-owned, single-writer architecture is **forced by the substrate**, not a stylistic choice: durable SQL in a browser (sqlite-wasm + OPFS-SAH-Pool) requires `crossOriginIsolated`, one worker owning every OPFS handle, and a single writer connection — a multi-connection or main-thread design is not available. Builders must know this up front; it is a property of the medium, not a defect to fix. |
-| <a id="ac-12"></a>AC-12 | `[storage:opfs-sqlite-wasm]` | **Capability detection inside the worker, UA-parsing for messaging only.** Browsers lie about main-thread OPFS support; the worker MUST be the only context that performs capability detection. UA strings MAY inform error messages but MUST NOT gate. |
-| <a id="ac-13"></a>AC-13 | `[storage:opfs-sqlite-wasm]` + `[dist:web-served]` | **COOP/COEP required.** OPFS-SAH-Pool needs `crossOriginIsolated`; both dev server and prod reverse proxy MUST send `Cross-Origin-Opener-Policy: same-origin` and `Cross-Origin-Embedder-Policy: require-corp`. Without this the storage substrate silently fails to install. |
-| <a id="ac-prm-c"></a>AC-PRM-C **[draft]** | `[storage:native-sqlite-via-filesystem]` | **Single-instance file-lock.** Native SQLite demands one writer; a second process MUST refuse cleanly with a specific message naming the holding process. *Realizes AC-11 for this substrate.* **[draft — no reference design yet]** |
+| <a id="ac-3"></a>AC-3 | **Single OPFS owner.** All OPFS handles and SQLite-WASM instances MUST live in one dedicated worker. The workspace MUST act as an RPC client. Parallel main-thread OPFS MUST NOT exist. *Realizes AC-1 + AC-11 for this substrate.* This worker-owned, single-writer architecture is **forced by the substrate**, not a stylistic choice: durable SQL in a browser (sqlite-wasm + OPFS-SAH-Pool) requires `crossOriginIsolated`, one worker owning every OPFS handle, and a single writer connection — a multi-connection or main-thread design is not available. Builders must know this up front; it is a property of the medium, not a defect to fix. | `storage:opfs-sqlite-wasm`. |
+| <a id="ac-12"></a>AC-12 | **Capability detection inside the worker, UA-parsing for messaging only.** Browsers lie about main-thread OPFS support; the worker MUST be the only context that performs capability detection. UA strings MAY inform error messages but MUST NOT gate. | `storage:opfs-sqlite-wasm`. |
+| <a id="ac-13"></a>AC-13 | **COOP/COEP required.** OPFS-SAH-Pool needs `crossOriginIsolated`; both dev server and prod reverse proxy MUST send `Cross-Origin-Opener-Policy: same-origin` and `Cross-Origin-Embedder-Policy: require-corp`. Without this the storage substrate silently fails to install. | `storage:opfs-sqlite-wasm` **and** a web-served distribution. |
+| <a id="ac-prm-c"></a>AC-PRM-C **[draft]** | **Single-instance file-lock.** Native SQLite demands one writer; a second process MUST refuse cleanly with a specific message naming the holding process. *Realizes AC-11 for this substrate.* **[draft — no reference design yet]** | `storage:native-sqlite-via-filesystem`. |
 
 ---
 
@@ -68,11 +70,12 @@ How the Shared DB is filled and refreshed — whether from a single export, a si
 - **`multi-source-merge-with-dedup`** — Multiple external sources (Google + Apple + Facebook + organizational directories) merged into one Shared DB. Dedup wizard surfaces conflicts; per-field provenance preserved. PRT-inspired (not yet against this spec). Triggers AC-PRM-B **[draft]**.
 - **`federated-read`** *(deferred)* — Reading from peer PNAs. Out of scope for v0.1.
 
-### Triggered flavor-derived ACs
+### Extra commitments these picks add
 
-| AC | Triggered by | Commitment |
+<!-- EDITOR NOTE — machine-parsed: tools/lint-spec-ids.py reads each AC ID from the FIRST column. Keep the AC ID in column 1; if you reorder/reformat, update the lint + tools/tests/lint_selftest.py. -->
+| AC | Commitment | Applies when you pick |
 |---|---|---|
-| <a id="ac-prm-b"></a>AC-PRM-B **[draft]** | `[ingestion:multi-source-merge-with-dedup]` | **Multi-source dedup contract.** A stable `record_id` MUST survive merge across sources. The dedup flow MUST surface conflicts via a wizard. Per-source provenance MUST be recorded *per field*, not just per record. Lifts the deferred "multi-source dedup contract" from § Scope into v0.1 for PRM-flavor PNAs. **[draft — no reference design yet]** |
+| <a id="ac-prm-b"></a>AC-PRM-B **[draft]** | **Multi-source dedup contract.** A stable `record_id` MUST survive merge across sources. The dedup flow MUST surface conflicts via a wizard. Per-source provenance MUST be recorded *per field*, not just per record. Lifts the deferred "multi-source dedup contract" from § Scope into v0.1 for PRM-flavor PNAs. **[draft — no reference design yet]** | `ingestion:multi-source-merge-with-dedup`. |
 
 ---
 
