@@ -1,5 +1,7 @@
 # Axes
 
+<!-- EDITING NOTE — machine-parsed tables: the per-axis "Extra commitments these picks add" tables are read by tools/lint-spec-ids.py AND by external report writers (reference-design conformance reports), and their `<a id>` row anchors are deep-linked from those reports. Treat each such table's columns, headers, and IDs as an API: if you change one, update those consumers — and the lint's self-tests (tools/tests/lint_selftest.py) — in the same change. The lint finds columns by header name, so the AC ID may sit in any column; it currently lives in the last column. -->
+
 > **Toolkit-Version:** 0.1 (draft) — the toolkit (spec, contracts, skill, lint, templates) is versioned as a unit; see [VERSION](../VERSION).
 
 This document catalogs the Axes a PNA picks along, the attested picks on each Axis, and the extra (conditional, "flavor-derived") architectural commitments each pick adds.
@@ -26,13 +28,13 @@ How the PNA reaches a user's device. The distribution pick shapes whether the PN
 
 ### Extra commitments these picks add
 
-<!-- EDITOR NOTE — machine-parsed: tools/lint-spec-ids.py reads each AC ID from the FIRST column. Keep the AC ID in column 1; if you reorder/reformat, update the lint + tools/tests/lint_selftest.py. -->
-| AC | Commitment | Applies when you pick |
+<!-- machine-parsed table — see the EDITING NOTE at the top of this file before changing its columns, headers, or IDs. -->
+| Commitment | Applies when you pick | AC |
 |---|---|---|
-| <a id="ac-2"></a>AC-2 | **No SaaS surface.** The server, when present, MUST be a delivery channel, not a service. The server MUST NOT expose per-user RW endpoints, MUST NOT persist private data, MUST NOT host an admin console, and MUST NOT operate cross-device sync. | Any server-backed (`web-bundle-*`) distribution. |
-| <a id="ac-5"></a>AC-5 | **Stale session never locks users out of cached data.** A 401/403 from any shared-side fetch MUST fall through to the local cache. Fresh data MUST require explicit user action. | Auth-gated distribution (`web-bundle-with-magic-link`). |
-| <a id="ac-8"></a>AC-8 | **Anti-enumeration on auth + abuse-bounded analytics.** Distribution-channel auth endpoints MUST always return neutral payloads. Per-IP rate limits MUST be enforced. The sanitized error sink MAY double as the analytics pipe (`kind=install`, `kind=worker`, …) but MUST NOT widen the privacy boundary. | An auth-gated server **and** a configured error sink. |
-| <a id="ac-14"></a>AC-14 | **Service worker never owns SQLite.** The SW MUST be app-shell + update detection only — SW lifecycle (idle eviction, multi-instance, restart on push) is hostile to data ownership. The Shared store URL MUST be bypassed in the SW fetch handler. | Any PWA (`web-bundle-*`) distribution. |
+| **No SaaS surface.** The server, when present, MUST be a delivery channel, not a service. The server MUST NOT expose per-user RW endpoints, MUST NOT persist private data, MUST NOT host an admin console, and MUST NOT operate cross-device sync. | Any server-backed (`web-bundle-*`) distribution. | <a id="ac-2"></a>AC-2 |
+| **Stale session never locks users out of cached data.** A 401/403 from any shared-side fetch MUST fall through to the local cache. Fresh data MUST require explicit user action. | Auth-gated distribution (`web-bundle-with-magic-link`). | <a id="ac-5"></a>AC-5 |
+| **Anti-enumeration on auth + abuse-bounded analytics.** Distribution-channel auth endpoints MUST always return neutral payloads. Per-IP rate limits MUST be enforced. The sanitized error sink MAY double as the analytics pipe (`kind=install`, `kind=worker`, …) but MUST NOT widen the privacy boundary. | An auth-gated server **and** a configured error sink. | <a id="ac-8"></a>AC-8 |
+| **Service worker never owns SQLite.** The SW MUST be app-shell + update detection only — SW lifecycle (idle eviction, multi-instance, restart on push) is hostile to data ownership. The Shared store URL MUST be bypassed in the SW fetch handler. | Any PWA (`web-bundle-*`) distribution. | <a id="ac-14"></a>AC-14 |
 
 ---
 
@@ -49,13 +51,13 @@ What backs the data layer — the bytes on disk or in OPFS that hold the Shared 
 
 ### Extra commitments these picks add
 
-<!-- EDITOR NOTE — machine-parsed: tools/lint-spec-ids.py reads each AC ID from the FIRST column. Keep the AC ID in column 1; if you reorder/reformat, update the lint + tools/tests/lint_selftest.py. -->
-| AC | Commitment | Applies when you pick |
+<!-- machine-parsed table — see the EDITING NOTE at the top of this file before changing its columns, headers, or IDs. -->
+| Commitment | Applies when you pick | AC |
 |---|---|---|
-| <a id="ac-3"></a>AC-3 | **Single OPFS owner.** All OPFS handles and SQLite-WASM instances MUST live in one dedicated worker. The workspace MUST act as an RPC client. Parallel main-thread OPFS MUST NOT exist. *Realizes AC-1 + AC-11 for this substrate.* This worker-owned, single-writer architecture is **forced by the substrate**, not a stylistic choice: durable SQL in a browser (sqlite-wasm + OPFS-SAH-Pool) requires `crossOriginIsolated`, one worker owning every OPFS handle, and a single writer connection — a multi-connection or main-thread design is not available. Builders must know this up front; it is a property of the medium, not a defect to fix. | `storage:opfs-sqlite-wasm`. |
-| <a id="ac-12"></a>AC-12 | **Capability detection inside the worker, UA-parsing for messaging only.** Browsers lie about main-thread OPFS support; the worker MUST be the only context that performs capability detection. UA strings MAY inform error messages but MUST NOT gate. | `storage:opfs-sqlite-wasm`. |
-| <a id="ac-13"></a>AC-13 | **COOP/COEP required.** OPFS-SAH-Pool needs `crossOriginIsolated`; both dev server and prod reverse proxy MUST send `Cross-Origin-Opener-Policy: same-origin` and `Cross-Origin-Embedder-Policy: require-corp`. Without this the storage substrate silently fails to install. | `storage:opfs-sqlite-wasm` **and** a web-served distribution. |
-| <a id="ac-prm-c"></a>AC-PRM-C **[draft]** | **Single-instance file-lock.** Native SQLite demands one writer; a second process MUST refuse cleanly with a specific message naming the holding process. *Realizes AC-11 for this substrate.* **[draft — no reference design yet]** | `storage:native-sqlite-via-filesystem`. |
+| **Single OPFS owner.** All OPFS handles and SQLite-WASM instances MUST live in one dedicated worker. The workspace MUST act as an RPC client. Parallel main-thread OPFS MUST NOT exist. *Realizes AC-1 + AC-11 for this substrate.* This worker-owned, single-writer architecture is **forced by the substrate**, not a stylistic choice: durable SQL in a browser (sqlite-wasm + OPFS-SAH-Pool) requires `crossOriginIsolated`, one worker owning every OPFS handle, and a single writer connection — a multi-connection or main-thread design is not available. Builders must know this up front; it is a property of the medium, not a defect to fix. | `storage:opfs-sqlite-wasm`. | <a id="ac-3"></a>AC-3 |
+| **Capability detection inside the worker, UA-parsing for messaging only.** Browsers lie about main-thread OPFS support; the worker MUST be the only context that performs capability detection. UA strings MAY inform error messages but MUST NOT gate. | `storage:opfs-sqlite-wasm`. | <a id="ac-12"></a>AC-12 |
+| **COOP/COEP required.** OPFS-SAH-Pool needs `crossOriginIsolated`; both dev server and prod reverse proxy MUST send `Cross-Origin-Opener-Policy: same-origin` and `Cross-Origin-Embedder-Policy: require-corp`. Without this the storage substrate silently fails to install. | `storage:opfs-sqlite-wasm` **and** a web-served distribution. | <a id="ac-13"></a>AC-13 |
+| **Single-instance file-lock.** Native SQLite demands one writer; a second process MUST refuse cleanly with a specific message naming the holding process. *Realizes AC-11 for this substrate.* **[draft — no reference design yet]** | `storage:native-sqlite-via-filesystem`. | <a id="ac-prm-c"></a>AC-PRM-C **[draft]** |
 
 ---
 
@@ -72,10 +74,10 @@ How the Shared DB is filled and refreshed — whether from a single export, a si
 
 ### Extra commitments these picks add
 
-<!-- EDITOR NOTE — machine-parsed: tools/lint-spec-ids.py reads each AC ID from the FIRST column. Keep the AC ID in column 1; if you reorder/reformat, update the lint + tools/tests/lint_selftest.py. -->
-| AC | Commitment | Applies when you pick |
+<!-- machine-parsed table — see the EDITING NOTE at the top of this file before changing its columns, headers, or IDs. -->
+| Commitment | Applies when you pick | AC |
 |---|---|---|
-| <a id="ac-prm-b"></a>AC-PRM-B **[draft]** | **Multi-source dedup contract.** A stable `record_id` MUST survive merge across sources. The dedup flow MUST surface conflicts via a wizard. Per-source provenance MUST be recorded *per field*, not just per record. Lifts the deferred "multi-source dedup contract" from § Scope into v0.1 for PRM-flavor PNAs. **[draft — no reference design yet]** | `ingestion:multi-source-merge-with-dedup`. |
+| **Multi-source dedup contract.** A stable `record_id` MUST survive merge across sources. The dedup flow MUST surface conflicts via a wizard. Per-source provenance MUST be recorded *per field*, not just per record. Lifts the deferred "multi-source dedup contract" from § Scope into v0.1 for PRM-flavor PNAs. **[draft — no reference design yet]** | `ingestion:multi-source-merge-with-dedup`. | <a id="ac-prm-b"></a>AC-PRM-B **[draft]** |
 
 ---
 

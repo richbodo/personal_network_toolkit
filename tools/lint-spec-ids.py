@@ -52,17 +52,23 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent.parent
 
 # A table-cell ID may be preceded by a stable deep-link anchor
-# (`| <a id="ac-1"></a>AC-1 |`) so reference-design conformance reports can
-# link to a specific row. The registry regexes tolerate that optional prefix.
-_CELL_ANCHOR = r'(?:<a id="[^"]*"></a>)?'
-
-AC_RE = re.compile(r"^\| " + _CELL_ANCHOR + r"(AC-[A-Z0-9-]+?)(?=\s|\*|\|)", re.MULTILINE)
+# (`<a id="ac-1"></a>AC-1`) so reference-design conformance reports can link to a
+# specific row. ID columns are located by HEADER NAME, not position, so the ID
+# can sit in any column (it lives in the last column as of the readability pass);
+# see iter_tables() / _ids_by_header() below.
+ANCHOR_PREFIX = re.compile(r'<a id="[^"]*"></a>\s*')
+AC_ID_RE = re.compile(r"AC-[A-Z0-9-]+")
+EX_ID_RE = re.compile(r"EX-[A-Z0-9-]+")
+CST_ID_RE = re.compile(r"CST-[A-Z0-9-]+")
 REALIZES_RE = re.compile(r"Realizes:\s*((?:AC-[A-Z0-9-]+(?:\s*,\s*)?)+)", re.IGNORECASE)
 
-# Exception registry IDs live in `| EX-... |` table rows (mirrors AC_RE). The
-# handler-clause IDs (EX-H1..EX-H8) are list items, not table rows, so they are
-# deliberately NOT collected here as registry exceptions.
-EX_RE = re.compile(r"^\| " + _CELL_ANCHOR + r"(EX-[A-Z0-9-]+?)(?=\s|\*|\|)", re.MULTILINE)
+# ID-column headers per family (lowercased). The PNA_Spec AC table heads its ID
+# column "ID"; the axes AC tables head theirs "AC"; the registries use "EX"/"CST".
+# Handler-clause IDs (EX-H1..EX-H8) are list items, not table rows, so they are
+# deliberately never collected as registry exceptions.
+AC_ID_HEADERS = {"id", "ac"}
+EX_ID_HEADERS = {"ex"}
+CST_ID_HEADERS = {"cst"}
 # Inverse of REALIZES_RE. Tokens may be AC-*, EX-*, or the PNA-DEFINITION
 # sentinel (the PNA definition is prose in vocab-pna, not an `| AC-X |` row).
 RELAXES_RE = re.compile(
@@ -85,9 +91,8 @@ STRENGTH_CLASSES = {
 }
 
 # --- Constraints (spec/constraints.md) ---
-# Constraint registry IDs live in `| CST-... |` table rows (mirrors AC_RE / EX_RE).
-CST_RE = re.compile(r"^\| " + _CELL_ANCHOR + r"(CST-[A-Z0-9-]+?)(?=\s|\*|\|)", re.MULTILINE)
-# Detail blocks open with a '### CST-...' heading.
+# Constraint registry IDs are read from the "CST" column of the registry table
+# (see CST_ID_HEADERS / iter_tables). Detail blocks open with a '### CST-...' heading.
 CST_BLOCK_RE = re.compile(r"^### (CST-[A-Z0-9-]+)", re.MULTILINE)
 # Field value extractors operate on a single source string (one registry-table
 # cell, or the line that follows a '**Field:**' label in a detail block). Each
@@ -160,14 +165,61 @@ VERSIONED_ARTIFACTS = [
 ]
 
 
+def _split_cells(line: str) -> list[str]:
+    return [c.strip() for c in line.strip().strip("|").split("|")]
+
+
+def _is_table_sep(line: str) -> bool:
+    return bool(re.match(r"^\s*\|?[\s:|-]+\|[\s:|-]*$", line)) and "-" in line
+
+
+def iter_tables(text: str):
+    """Yield (headers_lowercased, [data_row_cells, …]) for every GitHub-flavored
+    markdown table. The basis for all header-aware (column-order-independent)
+    table parsing in this lint."""
+    lines = text.splitlines()
+    i = 0
+    while i < len(lines):
+        if (lines[i].lstrip().startswith("|") and i + 1 < len(lines)
+                and _is_table_sep(lines[i + 1])):
+            headers = [h.lower() for h in _split_cells(lines[i])]
+            rows, j = [], i + 2
+            while (j < len(lines) and lines[j].lstrip().startswith("|")
+                   and not _is_table_sep(lines[j])):
+                rows.append(_split_cells(lines[j]))
+                j += 1
+            yield headers, rows
+            i = j
+        else:
+            i += 1
+
+
+def _ids_by_header(text: str, id_headers: set[str], id_re) -> set[str]:
+    """IDs read from whichever column is headed by one of `id_headers`, in every
+    table that has such a column. Anchor prefix stripped; column order-agnostic.
+    Tables without that header (Slots, Interfaces, strength profiles, …) are
+    skipped, so an ID mentioned in a prose cell is never miscollected."""
+    out: set[str] = set()
+    for headers, rows in iter_tables(text):
+        col = next((k for k, h in enumerate(headers) if h in id_headers), None)
+        if col is None:
+            continue
+        for cells in rows:
+            if col < len(cells):
+                m = id_re.match(ANCHOR_PREFIX.sub("", cells[col]))
+                if m:
+                    out.add(m.group(0))
+    return out
+
+
 def collect_spec_ac_ids() -> set[str]:
-    """All AC IDs from the AC tables in the spec."""
+    """All AC IDs from the AC tables in the spec (PNA_Spec.md + axes.md)."""
     ids: set[str] = set()
     for path in (REPO / "spec" / "PNA_Spec.md", REPO / "spec" / "axes.md"):
         if not path.exists():
             print(f"FAIL: spec file missing: {path}")
             sys.exit(1)
-        ids.update(AC_RE.findall(path.read_text()))
+        ids |= _ids_by_header(path.read_text(), AC_ID_HEADERS, AC_ID_RE)
     return ids
 
 
@@ -188,7 +240,7 @@ def collect_exception_ids() -> set[str]:
     """EX-* registry IDs from spec/exceptions.md. Empty if the file is absent."""
     if not EXCEPTIONS_PATH.exists():
         return set()
-    return set(EX_RE.findall(EXCEPTIONS_PATH.read_text()))
+    return _ids_by_header(EXCEPTIONS_PATH.read_text(), EX_ID_HEADERS, EX_ID_RE)
 
 
 def collect_relaxes() -> list[str]:
@@ -234,7 +286,7 @@ def collect_constraint_ids() -> set[str]:
     (the lint stays green on checkouts that haven't adopted constraints)."""
     if not CONSTRAINTS_PATH.exists():
         return set()
-    return set(CST_RE.findall(CONSTRAINTS_PATH.read_text()))
+    return _ids_by_header(CONSTRAINTS_PATH.read_text(), CST_ID_HEADERS, CST_ID_RE)
 
 
 def collect_axis_picks_by_axis() -> dict[str, set[str]]:
@@ -286,17 +338,26 @@ def _constraint_fields(triggered: str, bounds: str, frontier: str, detect: str) 
 
 
 def parse_constraint_table(text: str) -> dict[str, dict]:
-    """The summary registry table, keyed by CST id → normalized fields. Columns:
-    CST | Name | Triggered-by | Bounds | Frontier | Detectability."""
+    """The summary registry table, keyed by CST id → normalized fields. Columns
+    are located by header name (CST / Triggered-by / Bounds / Frontier /
+    Detectability), so their order in the table doesn't matter."""
     out: dict[str, dict] = {}
-    for line in text.splitlines():
-        if not line.lstrip().startswith("| CST-"):
+    for headers, rows in iter_tables(text):
+        idx = {h: k for k, h in enumerate(headers)}
+        if "cst" not in idx:
             continue
-        cells = [c.strip() for c in line.split("|")]  # ['', id, name, trig, bounds, front, detect, '']
-        if len(cells) < 8:
-            continue
-        cid, _name, trig, bounds, front, detect = cells[1:7]
-        out[cid] = _constraint_fields(trig, bounds, front, detect)
+
+        def cell(cells, name, idx=idx):
+            k = idx.get(name)
+            return cells[k] if k is not None and k < len(cells) else ""
+
+        for cells in rows:
+            m = CST_ID_RE.match(ANCHOR_PREFIX.sub("", cell(cells, "cst")))
+            if not m:
+                continue
+            out[m.group(0)] = _constraint_fields(
+                cell(cells, "triggered-by"), cell(cells, "bounds"),
+                cell(cells, "frontier"), cell(cells, "detectability"))
     return out
 
 

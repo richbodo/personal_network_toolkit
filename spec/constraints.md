@@ -1,5 +1,7 @@
 # PNA Constraints
 
+<!-- EDITING NOTE — machine-parsed tables: the constraint registry table (and the per-constraint detail blocks it cross-checks against) are read by tools/lint-spec-ids.py AND by external report writers (reference-design conformance reports), and the `<a id>` row anchors are deep-linked from those reports. Treat the registry's columns, headers, and IDs as an API: if you change one, update those consumers — and the lint's self-tests (tools/tests/lint_selftest.py) — in the same change. The lint finds columns by header name, so the CST ID may sit in any column; it currently lives in the last column. -->
+
 > **Toolkit-Version:** 0.1 (draft) — the toolkit (spec, contracts, skill, lint, templates) is versioned as a unit; see [VERSION](../VERSION).
 >
 > This file defines **Constraints**: stable-ID'd ceilings (`CST-*`) that a platform or storage
@@ -113,16 +115,16 @@ design's constraint-attestation declaration.
 
 ## Constraint registry
 
-<!-- EDITOR NOTE — machine-parsed by COLUMN POSITION: tools/lint-spec-ids.py reads this registry table's columns in order (CST id, Name, Triggered-by, Bounds, Frontier, Detectability) and cross-checks them against the per-constraint detail blocks below. Do NOT reorder or insert columns without updating parse_constraint_table() in the lint and adding a fault-injection case to tools/tests/lint_selftest.py. -->
-| CST | Name | Triggered-by | Bounds | Frontier | Detectability |
+<!-- machine-parsed table (columns located by header name) — see the EDITING NOTE at the top of this file before changing its column headers or IDs. -->
+| Name | Triggered-by | Bounds | Frontier | Detectability | CST |
 |---|---|---|---|---|---|
-| CST-PWA-PRIVATE-SNAPSHOT | Private store read-only off FSA browsers | distribution:web-bundle, storage:opfs-sqlite-wasm | AC-1, Goal-4 | Open | feature-detect |
-| CST-PWA-SANDBOX-SEALED | OPFS store invisible + non-interoperable | storage:opfs-sqlite-wasm | AC-1, Goal-4, AC-MCP-A | Solved-on-chromium | feature-detect |
-| CST-PWA-STORAGE-EVICTABLE | Script storage is evictable | storage:opfs-sqlite-wasm | Goal-4 | Mitigated | empirical-probe |
-| CST-PWA-NO-SYNC | Origin/device-local silos; no built-in portability | distribution:web-bundle, storage:opfs-sqlite-wasm | Goal-4 | Open | feature-detect |
-| CST-PWA-SINGLE-OWNER | Multi-tab contention, no OS file lock | storage:opfs-sqlite-wasm | AC-11 | Solved-on-chromium | empirical-probe |
-| CST-PWA-NO-BACKGROUND | No reliable scheduled background execution | distribution:web-bundle | Goal-4 | Mitigated | feature-detect |
-| CST-PWA-SERVER-FLOOR | Origin + TLS + secure context required | distribution:web-bundle | PNA-DEFINITION | Inherent | feature-detect |
+| Private store read-only off FSA browsers | distribution:web-bundle, storage:opfs-sqlite-wasm | AC-1, Goal-4 | Open | feature-detect | CST-PWA-PRIVATE-SNAPSHOT |
+| OPFS store invisible + non-interoperable | storage:opfs-sqlite-wasm | AC-1, Goal-4, AC-MCP-A | Solved-on-chromium | feature-detect | CST-PWA-SANDBOX-SEALED |
+| Script storage is evictable | storage:opfs-sqlite-wasm | Goal-4 | Mitigated | empirical-probe | CST-PWA-STORAGE-EVICTABLE |
+| Origin/device-local silos; no built-in portability | distribution:web-bundle, storage:opfs-sqlite-wasm | Goal-4 | Open | feature-detect | CST-PWA-NO-SYNC |
+| Multi-tab contention, no OS file lock | storage:opfs-sqlite-wasm | AC-11 | Solved-on-chromium | empirical-probe | CST-PWA-SINGLE-OWNER |
+| No reliable scheduled background execution | distribution:web-bundle | Goal-4 | Mitigated | feature-detect | CST-PWA-NO-BACKGROUND |
+| Origin + TLS + secure context required | distribution:web-bundle | PNA-DEFINITION | Inherent | feature-detect | CST-PWA-SERVER-FLOOR |
 
 <a id="cst-pwa-private-snapshot"></a>
 ### CST-PWA-PRIVATE-SNAPSHOT — Private store is read-only off File-System-Access browsers

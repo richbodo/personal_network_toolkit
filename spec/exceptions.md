@@ -1,5 +1,7 @@
 # PNA Exceptions
 
+<!-- EDITING NOTE — machine-parsed tables: the exception registry table, the strength-profile tables, and the Reversible:/Reversal: fields are read by tools/lint-spec-ids.py AND by external report writers (reference-design conformance reports), and the `<a id>` row anchors are deep-linked from those reports. Treat the registry's columns, headers, and IDs (and the strength-class vocabulary) as an API: if you change one, update those consumers — and the lint's self-tests (tools/tests/lint_selftest.py) — in the same change. The lint finds columns by header name, so the EX ID may sit in any column; it currently lives in the last column. -->
+
 > **Toolkit-Version:** 0.1 (draft) — the toolkit (spec, contracts, skill, lint, templates) is versioned as a unit; see [VERSION](../VERSION).
 >
 > This file defines **Exceptions**: stable-ID'd conditions (`EX-*`) under which a PNA deliberately
@@ -133,9 +135,10 @@ flow judges accuracy):
 
 ## Exception registry
 
-| EX | Name | Relaxes | Stresses | Reversible | Recommended solution |
+<!-- machine-parsed table — see the EDITING NOTE at the top of this file before changing its columns, headers, or IDs. -->
+| Name | Relaxes | Stresses | Reversible | Recommended solution | EX |
 |---|---|---|---|---|---|
-| EX-CLOUD-LLM | Cloud-hosted AI over PNA data | PNA-DEFINITION, AC-MCP-A | Goal 1 | yes (mode only) | consent gate + persistent dismissable "not a PNA" signal + active-set explainer + return-to-PNA-mode — demonstrated by `fellows_local_db` |
+| Cloud-hosted AI over PNA data | PNA-DEFINITION, AC-MCP-A | Goal 1 | yes (mode only) | consent gate + persistent dismissable "not a PNA" signal + active-set explainer + return-to-PNA-mode — demonstrated by `fellows_local_db` | EX-CLOUD-LLM |
 
 <a id="ex-cloud-llm"></a>
 ### EX-CLOUD-LLM — Cloud-hosted AI over PNA data
