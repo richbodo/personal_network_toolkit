@@ -20,18 +20,7 @@ And taking control is the point, not the endpoint. Once that root is local and t
 
 Without PNAs, or something like them, we often go to a list of contacts in linkedin or facebook and are overwhelmed by the noise.  The number of non-relationships in the contact list, manipulation through feeds, and notifications keep us on those sites as long as possible, often never solving any relational need, even if it is extremely urgent and sensitive.  This makes it much harder for many to improve individual and community health.
 
----
-
-## Building a PNA
-
-When an AI is asked to build a PNA, it is required to follow the contracts of the PNA on the user's behalf, and those contracts are written so the AI can pick them up and check its own work. The user's confidence comes from the spec being clear enough that both they and the AI can read it.  As long as the contracts hold, an AI can rewrite a PNA from scratch while the user is still talking to it without changing the user's sovereignty, durability, or privacy posture. The goals below are user-facing needs; the [architectural commitments (ACs)](#vocab-universal-ac) after them are the choices that make those needs achievable.  Check out the specs of any reference design to see the output of this process.
-
-> **Validation, not certification.** PNT validates behaviors against the Goals; it does not certify. There is no pass/fail badge and no certifying body (see [`CONTRIBUTING.md`](../CONTRIBUTING.md) § "Acceptance is not certification" and the skill's § Principles, "Conformance is checked, not awarded"). Conformance is *checked* — by the user, or by an AI running the evaluate flow — against this spec. Where a PNA deliberately departs from a guarantee it raises an [Exception](exceptions.md); the evaluate flow then detects each exception and verifies how it is handled, **reporting by `AC-*`/`EX-*` ID rather than awarding a grade.** Where the *platform* imposes a ceiling the PNA cannot clear, that is a [Constraint](constraints.md); the evaluate flow detects each ceiling a design's axis picks inherit and verifies it is handled honestly — capability reduced to what the platform can keep, frontier declared truthfully — reporting by `CST-*` ID. Over-reach (promising a capability the platform cannot keep) is a silent conformance failure, the dual of an undeclared Exception.
-
-
----
-
-## Vision
+### Vision
 
 One longer-arc target is an ecosystem of cooperating PNAs on a single user's device — a [Personal Relationship Manager](#vocab-use-case) (PRM - where private relationship data lives) running alongside one or more Directory Archives, a Contact Manager, and a Calendar app, each in its own bundle and sharing data as per their contracts.
 
@@ -55,44 +44,6 @@ An AI client (Claude Desktop, Cursor, a local-Ollama-backed agent, or any MCP-ca
 
 Worked examples below cite `fellows_local_db` as the first reference design — its concrete choices live in [`fellows_local_db/docs/Architecture.md`](https://github.com/richbodo/fellows_local_db/blob/main/docs/Architecture.md).
 
-- <a id="vocab-pna"></a>**Personal network application (PNA).** A PNA is an application that helps a user view contact data and work on relationship data over it as a firewalled data layer with higher security needs than the contact data. The PNA runs local-only, never as SaaS - servers are only used for distribution and app updates, and only where appropriate. The PNA bridges SaaS data (which should never contain private relationship data) into a much more functional, customizable user-owned work environment suitable for viewing personal networks, updating private data about them, and interacting with them. A PNA MAY deliberately and temporarily depart from this definition (or from a named AC) by **raising an Exception** — see [`exceptions.md`](exceptions.md). Raising any exception exits "PNA mode"; the PNA stays conformant only while every active exception is handled to the exceptions.md handler contract.
-
-[fellows_local_db](https://github.com/richbodo/fellows_local_db/blob/main/docs/Architecture.md) is one PNA reference design — making a directory archive useful and fast - providing a credible exit from a SaaS directory system. Another PNA reference design would be a PRM - an app that aggregates personal contact data ingested from the big SaaS providers and lets the user operate privately on that data, adding privacy-sensitive notes, searching, and launching tasks from the app. PNAs bridge the old world of SaaS and offer private, custom tools to operate on contact data.
-
-- **Slot.** A slot is a part of a PNA — a code module that handles a specific job within the system. v0.1 names five slots:
-
-  - **Ingestion** — loads contact data into the Shared DB
-  - **Storage** — owns the data files and serves queries
-  - **Workspace** — runs the UI
-  - **Communications** — launches outreach
-  - **Distribution** — ships the PNA to other users
-
-  Each slot has a contract; any code that satisfies the contract can fill it — a JavaScript module, a Python package, or an OS process, depending on the target environment. The full catalog and contracts are in [§ Slot map](#slot-map).
-
-- **Interface.** A contract that spans multiple slots. Where a slot is filled by *one* code module, an interface is a shared constraint — either a data shape that multiple slots produce and consume (the Shared and Private DB schemas), or a capability requirement every slot must implement (the Debug contract). v0.1 names three interfaces: **Shared schema**, **Private schema**, **Debug contract**. Catalogued in [§ Slot map](#slot-map) alongside the slots they bind.
-
-- <a id="vocab-workspace"></a>**Workspace.** One of the slots in a PNA: the viewer + editor. The thing the user looks at and clicks. fellows_local_db's workspace is a vanilla-JS SPA (Single-Page Application) in the browser; another PNA's might be a native shell, a Tauri app, a TUI (Terminal User Interface), or a separately-distributed mini-app sharing the same data layer.
-
-- <a id="vocab-shared-data"></a>**Shared data.** In the context of a PNA, shared data is data that exists in more than one place — typically, a copy held by an external system the user uses (Google Contacts, Apple Contacts, Facebook friends, a fellowship's directory, a school's roster). The user is OK with that external system continuing to hold it, and often has no say in the matter. *Examples:* name, email, photo, organizational membership. The PNA mirrors this data locally so the user can browse and search it without depending on the external system being reachable.
-
-  > "Shared" is the key word — not "public" in the everyday sense. Shared data can be data that the user publicly shared, or shared with Apple Contacts and exported, and is typically maintained outside the user's systems. The contact data in your Google account isn't *publicly visible*; it just isn't *exclusively yours* — it is shared with Google and any controlling governments or Google partners it is sold to. In all cases, some external system has a copy, or once did.
-
-- <a id="vocab-private-data"></a>**Private data.** Data that exists only on the user's device(s). The user is *not* OK with any external system holding a copy. *Examples:* notes the user keeps about a contact, tags they apply, groups they assemble, communication history. The PNA's central architectural job is to keep this layer protected, durable, and exclusively local. This data must never be sent across insecure channels, and must only be explicitly sent by the user's command in any form.
-
-- <a id="vocab-shared-db-private-db"></a>**Shared DB / Private DB.** The two databases that a PNA stores. The Shared DB holds shared data (read-only inside the PNA — written only by the Ingestion component). The Private DB holds private data (read-write from the workspace). Further decomposition and isolation of data according to privacy constraints is reasonable but unnecessary for the first PNAs envisioned.
-
-  In fellows_local_db, the shared DB is `fellows.db` and the private DB is `relationships.db`. The spec uses the generic names; specializations may rename for ergonomics, or change database engines for practical reasons, as long as the data stays local.
-
-- **Mirroring.** The act of producing a fresh shared DB from an external source of shared data. A snapshot is created by the Ingestion component. Re-mirrors are atomic from the workspace's view (stage, validate, swap) and never silently orphan private references.
-
-- <a id="vocab-plugin"></a>**Plugin / extension.** Anything that adds a capability to a composed PNA without modifying its core. A memory-assistant view, a calendar overlay, a federated portrait pull, a community-statistics survey tool — all plugins. PNAs themselves will expose MCP server interfaces as well.
-
-- <a id="vocab-reference-design"></a>**Reference design / thematic example.** A working, deployed PNA that demonstrates one valid combination of slot-fills against the spec. fellows_local_db is the first reference design — its load-bearing adjectives are *magic-link distributed PWA (Progressive Web App)* (Distribution choice) + *static network DB archive* (Ingestion choice — the directory is mirrored once with opt-in updates, not linked to a live contact manager) + *single shared directory* (Source choice). New reference designs accumulate adjectives as their slot-fills land. AIs adapting a thematic example start from one of these and ask the user which slot-fills to keep, swap, or extend.
-
-  *Archival (v0.1).* When a reference design is accepted into PNT (Personal Network Toolkit)'s set, its source at the submitted commit MUST be archived with a Software Heritage Persistent IDentifier (SWHID — a `swh:1:dir:...` content-addressed identifier produced by Software Heritage's Save Code Now service). The SWHID is recorded in the design's PNT entry so the source survives even if the upstream repo is deleted or relocated. Future toolkit versions MAY revise the archival mechanism; v0.1 commits to SWHID.
-
-- <a id="vocab-use-case"></a>**Use case.** A user-facing class of PNA — "Directory Archive," "Personal Relationship Manager." A use case names what kind of app this is *from the user's perspective*. v0.1 attests two; future versions will add more. Use case is *not* one of the Axes (defined next); it's the parent category that a flavor instantiates. A use case typically suggests default axis picks (Directory Archives gravitate toward web-bundle distribution; PRMs toward never-distributed-single-user) but the axes remain independent — a hypothetical Directory Archive shipped as a Tauri shell + native SQLite is conceivable. Full catalog in [`use_cases.md`](use_cases.md).
-
 - **Axes.** Axes are areas of functionality that need to be defined when building a PNA. Each Axis offers a pre-defined, limited number of choices to the builder — internally we call these the builder's "Axis picks", and they are the first set of decisions that need to be made before building.
 
   An example of an Axis is the **distribution** axis, which offers the Axis picks `web-bundle-with-magic-link` (fellows_local_db's pick), `never-distributed-single-user` (PRM's likely pick), `web-bundle-open`, `app-store-native`, `sideloaded-native` — the builder picks one.
@@ -102,6 +53,8 @@ Worked examples below cite `fellows_local_db` as the first reference design — 
 - **Axis pick.** One value on one Axis. Written `axis:value` — for instance `storage:opfs-sqlite-wasm`, `distribution:web-bundle-with-magic-link`. The set of attested picks per Axis is enumerated in [`axes.md`](axes.md).
 
 - **Flavor.** The full constellation of axis picks for a specific PNA. fellows_local_db's flavor: `distribution:web-bundle-with-magic-link + storage:opfs-sqlite-wasm + ingestion:single-source-static-mirror + workspace-shell:vanilla-js-spa + comms:mailto-only + mcp-exposure:shared+private+comms`. Two PNAs of the same use case can have different flavors (a TUI PRM vs. a Tauri-wrapped GUI PRM share the use case but differ on workspace shell and storage). A flavor + a use case together fully identify a PNA's shape.
+
+- **Interface.** A contract that spans multiple slots. Where a slot is filled by *one* code module, an interface is a shared constraint — either a data shape that multiple slots produce and consume (the Shared and Private DB schemas), or a capability requirement every slot must implement (the Debug contract). v0.1 names three interfaces: **Shared schema**, **Private schema**, **Debug contract**. Catalogued in [§ Slots, Interfaces, and Sub-contracts](#slot-map) alongside the slots they bind.
 
 - <a id="vocab-mcp-server"></a>**MCP server.** A process exposing PNA capabilities as MCP tools (Anthropic's Model Context Protocol — JSON-RPC, a JSON-based Remote Procedure Call format, over stdio or socket). The spec defines five canonical MCP servers per PNA, structured around the Shared / Private privacy boundary so an AI client can be wired to one without the other:
 
@@ -113,7 +66,43 @@ Worked examples below cite `fellows_local_db` as the first reference design — 
 
   Splitting Data ops along the Shared / Private boundary mirrors the storage split (AC-1) at the MCP surface: the privacy posture of each tool call is determined by which server it lands on, not by an in-server gate. An AI client (Claude Desktop, Cursor, a local-Ollama-backed agent, etc.) consumes these servers to drive the PNA. v1 reference implementations expose read-only surfaces only; future toolkit versions may add write-side tools (Private DB CRUD, Comms message-send confirmation) as separate contracts. MCP servers are how multiple PNAs cooperate at runtime: a PNA exposing MCP becomes externally reachable so an AI client can wire multiple PNAs together on the user's device even though each is its own bundle.
 
-- <a id="vocab-universal-ac"></a>**Universal AC vs flavor-derived AC.** Universal ACs derive from goals alone and apply to every PNA. Flavor-derived ACs are triggered by specific axis picks (e.g., `[storage:opfs-sqlite-wasm]`) and apply only when the flavor matches. [§ Universal architectural commitments](#universal-architectural-commitments) lists the universal set; flavor-derived ACs live in [`axes.md`](axes.md), grouped under the axis-pick that triggers them.
+- **Mirroring.** The act of producing a fresh shared DB from an external source of shared data. A snapshot is created by the Ingestion component. Re-mirrors are atomic from the workspace's view (stage, validate, swap) and never silently orphan private references.
+
+- <a id="vocab-pna"></a>**Personal network application (PNA).** A PNA is an application that helps a user view contact data and work on relationship data over it as a firewalled data layer with higher security needs than the contact data. The PNA runs local-only, never as SaaS - servers are only used for distribution and app updates, and only where appropriate. The PNA bridges SaaS data (which should never contain private relationship data) into a much more functional, customizable user-owned work environment suitable for viewing personal networks, updating private data about them, and interacting with them. A PNA MAY deliberately and temporarily depart from this definition (or from a named AC) by **raising an Exception** — see [`exceptions.md`](exceptions.md). Raising any exception exits "PNA mode"; the PNA stays conformant only while every active exception is handled to the exceptions.md handler contract.
+
+  [fellows_local_db](https://github.com/richbodo/fellows_local_db/blob/main/docs/Architecture.md) is one PNA reference design — making a directory archive useful and fast - providing a credible exit from a SaaS directory system. Another PNA reference design would be a PRM - an app that aggregates personal contact data ingested from the big SaaS providers and lets the user operate privately on that data, adding privacy-sensitive notes, searching, and launching tasks from the app. PNAs bridge the old world of SaaS and offer private, custom tools to operate on contact data.
+
+- <a id="vocab-plugin"></a>**Plugin / extension.** Anything that adds a capability to a composed PNA without modifying its core. A memory-assistant view, a calendar overlay, a federated portrait pull, a community-statistics survey tool — all plugins. PNAs themselves will expose MCP server interfaces as well.
+
+- <a id="vocab-private-data"></a>**Private data.** Data that exists only on the user's device(s). The user is *not* OK with any external system holding a copy. *Examples:* notes the user keeps about a contact, tags they apply, groups they assemble, communication history. The PNA's central architectural job is to keep this layer protected, durable, and exclusively local. This data must never be sent across insecure channels, and must only be explicitly sent by the user's command in any form.
+
+- <a id="vocab-reference-design"></a>**Reference design / thematic example.** A working, deployed PNA that demonstrates one valid combination of slot-fills against the spec. fellows_local_db is the first reference design — its load-bearing adjectives are *magic-link distributed PWA (Progressive Web App)* (Distribution choice) + *static network DB archive* (Ingestion choice — the directory is mirrored once with opt-in updates, not linked to a live contact manager) + *single shared directory* (Source choice). New reference designs accumulate adjectives as their slot-fills land. AIs adapting a thematic example start from one of these and ask the user which slot-fills to keep, swap, or extend.
+
+  *Archival (v0.1).* When a reference design is accepted into PNT (Personal Network Toolkit)'s set, its source at the submitted commit MUST be archived with a Software Heritage Persistent IDentifier (SWHID — a `swh:1:dir:...` content-addressed identifier produced by Software Heritage's Save Code Now service). The SWHID is recorded in the design's PNT entry so the source survives even if the upstream repo is deleted or relocated. Future toolkit versions MAY revise the archival mechanism; v0.1 commits to SWHID.
+
+- <a id="vocab-shared-data"></a>**Shared data.** In the context of a PNA, shared data is data that exists in more than one place — typically, a copy held by an external system the user uses (Google Contacts, Apple Contacts, Facebook friends, a fellowship's directory, a school's roster). The user is OK with that external system continuing to hold it, and often has no say in the matter. *Examples:* name, email, photo, organizational membership. The PNA mirrors this data locally so the user can browse and search it without depending on the external system being reachable.
+
+  > "Shared" is the key word — not "public" in the everyday sense. Shared data can be data that the user publicly shared, or shared with Apple Contacts and exported, and is typically maintained outside the user's systems. The contact data in your Google account isn't *publicly visible*; it just isn't *exclusively yours* — it is shared with Google and any controlling governments or Google partners it is sold to. In all cases, some external system has a copy, or once did.
+
+- <a id="vocab-shared-db-private-db"></a>**Shared DB / Private DB.** The two databases that a PNA stores. The Shared DB holds shared data (read-only inside the PNA — written only by the Ingestion component). The Private DB holds private data (read-write from the workspace). Further decomposition and isolation of data according to privacy constraints is reasonable but unnecessary for the first PNAs envisioned.
+
+  In fellows_local_db, the shared DB is `fellows.db` and the private DB is `relationships.db`. The spec uses the generic names; specializations may rename for ergonomics, or change database engines for practical reasons, as long as the data stays local.
+
+- **Slot.** A slot is a part of a PNA — a code module that handles a specific job within the system. v0.1 names five slots:
+
+  - **Ingestion** — loads contact data into the Shared DB
+  - **Storage** — owns the data files and serves queries
+  - **Workspace** — runs the UI
+  - **Communications** — launches outreach
+  - **Distribution** — ships the PNA to other users
+
+  Each slot has a contract; any code that satisfies the contract can fill it — a JavaScript module, a Python package, or an OS process, depending on the target environment. The full catalog and contracts are in [§ Slots, Interfaces, and Sub-contracts](#slot-map).
+
+- <a id="vocab-universal-ac"></a>**Universal AC vs flavor-derived AC.** A *universal* commitment applies to every PNA — it derives from the [Goals](#goals) alone. A *flavor-derived* commitment — also called a **conditional** commitment — applies only when the flavor includes a specific pick (e.g. `storage:opfs-sqlite-wasm`). [§ Universal architectural commitments](#universal-architectural-commitments) lists the universal set; the conditional ones live in [`axes.md`](axes.md), grouped under the pick that adds them.
+
+- <a id="vocab-use-case"></a>**Use case.** A user-facing class of PNA — "Directory Archive," "Personal Relationship Manager." A use case names what kind of app this is *from the user's perspective*. v0.1 attests two; future versions will add more. Use case is *not* one of the Axes (above); it's the parent category that a flavor instantiates. A use case typically suggests default axis picks (Directory Archives gravitate toward web-bundle distribution; PRMs toward never-distributed-single-user) but the axes remain independent — a hypothetical Directory Archive shipped as a Tauri shell + native SQLite is conceivable. Full catalog in [`use_cases.md`](use_cases.md).
+
+- <a id="vocab-workspace"></a>**Workspace.** One of the slots in a PNA: the viewer + editor. The thing the user looks at and clicks. fellows_local_db's workspace is a vanilla-JS SPA (Single-Page Application) in the browser; another PNA's might be a native shell, a Tauri app, a TUI (Terminal User Interface), or a separately-distributed mini-app sharing the same data layer.
 
 ---
 
@@ -191,23 +180,29 @@ Full per-pick catalog with attestation status, AC triggers, and correlation note
 
 ## Composition
 
-In v0.1, a PNA is composed by an AI coding agent (Claude Code, Cursor, or similar) working with a user. The agent reads this spec, optionally adapts a reference design like fellows_local_db, uses canonical MCP servers to interact with existing PNA data, and writes the code with the user. **The AI agent is the composer.** v0.1 does not ship a separate build tool that assembles PNAs from stock modules — the toolkit's three deliverables (specs, reference apps, MCP servers) are the materials, and the AI agent uses them.
+A PNA is composed by an AI coding agent (Claude Code, Cursor, or similar) working with a user — **the AI agent is the composer.** The agent reads this spec, optionally adapts a reference design like fellows_local_db, uses the canonical MCP servers to interact with existing PNA data, and writes the code with the user. v0.1 does not ship a separate build tool that assembles PNAs from stock modules; the toolkit's three deliverables (specs, reference apps, MCP servers) are the materials, and the agent uses them.
 
-The agent's job, per this spec, is to:
+The contracts are written so the agent can pick them up and check its own work, and so both the user and the agent can read the spec. As long as the contracts hold, an agent can rewrite a PNA from scratch while the user is still talking to it without changing the user's sovereignty, durability, or privacy posture. The Goals are the user-facing needs; the architectural commitments (ACs) are the choices that make those needs achievable. (Read any reference design's Architecture document to see the output of this process.)
+
+> **Validation, not certification.** PNT validates behaviors against the Goals; it does not certify. There is no pass/fail badge and no certifying body (see [`CONTRIBUTING.md`](../CONTRIBUTING.md) § "Acceptance is not certification" and the skill's § Principles, "Conformance is checked, not awarded"). Conformance is *checked* — by the user, or by an AI running the evaluate flow — against this spec. Where a PNA deliberately departs from a guarantee it raises an [Exception](exceptions.md); the evaluate flow then detects each exception and verifies how it is handled, **reporting by `AC-*`/`EX-*` ID rather than awarding a grade.** Where the *platform* imposes a ceiling the PNA cannot clear, that is a [Constraint](constraints.md); the evaluate flow detects each ceiling a design's axis picks inherit and verifies it is handled honestly — capability reduced to what the platform can keep, frontier declared truthfully — reporting by `CST-*` ID. Over-reach (promising a capability the platform cannot keep) is a silent conformance failure, the dual of an undeclared Exception.
+
+The agent's job when **building**, per this spec, is to:
 
 1. Identify the **use case** with the user (see [§ Use cases](#use-cases)).
 2. Walk the user through the **Axes** (see [§ Axes](#axes)) and make picks that fit the user's goals.
-3. Generate or adapt code that fills each **slot** (see [§ Slot map](#slot-map)) according to its contract, with implementations consistent with the axis picks.
-4. Verify the result against the **universal architectural commitments** (see [§ Universal architectural commitments](#universal-architectural-commitments)) and any flavor-derived commitments triggered by the axis picks (catalogued in [`axes.md`](axes.md)).
+3. Generate or adapt code that fills each **slot** (see [§ Slots, Interfaces, and Sub-contracts](#slots-interfaces-and-sub-contracts)) according to its contract, consistent with the axis picks.
+4. Verify the result against the **universal architectural commitments** (see [§ Universal architectural commitments](#universal-architectural-commitments)) and any conditional commitments the picks add (catalogued in [`axes.md`](axes.md)).
 
-### Target environments for one PNA
+Building is one of **three flows** the skill packages — *validate* (audit a candidate against the spec), *build* (the steps above), and *contribute* (feed a finding back into the spec). See [`pna-build-eval-contrib/SKILL.md`](../pna-build-eval-contrib/SKILL.md) and [`docs/users-guide.md`](../docs/users-guide.md).
 
-Two target environments are attested in v0.1:
+### Common axis clusters
 
-- **Browser PNAs.** The PNA runs in the user's browser as a web bundle. Storage is SQLite-WASM backed by OPFS (Origin Private File System), owned by a dedicated worker. Distribution typically goes through an HTTP origin (with or without an auth gate). Multiple users can install from the same source. **fellows_local_db is a Browser PNA.**
-- **CLI / native PNAs.** The PNA runs as one or more OS processes — a TUI, a CLI subcommand set, or a native GUI (Tauri / Electron / etc.). Storage is a native SQLite file on disk (optionally SQLCipher). Distribution is typically self-install; the PNA is usually single-user. **PRT is the inspiration; a CLI / native PRM reference design is the next planned addition.**
+Axis picks tend to fall into a couple of recognizable shapes. These are **shorthand, not a formal axis** — every pick is still made independently (a given use case could in principle ship as either shape):
 
-The target environment shapes several axis picks (Distribution, Storage substrate, Workspace shell tend to cluster) but doesn't determine them — a Directory Archive could in principle be either kind. The Axes section names the specific decisions; this section names the high-level clusters.
+- **Browser PNAs** — run in the browser as a web bundle; storage is SQLite-WASM over OPFS in a dedicated worker; distribution through an HTTP origin (with or without an auth gate); multiple users install from one source. **fellows_local_db is a Browser PNA.**
+- **CLI / native PNAs** — run as one or more OS processes (a TUI, a CLI subcommand set, or a native GUI); storage is a native SQLite file (optionally SQLCipher); distribution is typically self-install and single-user. **PRT is the inspiration; a CLI / native PRM is the next planned reference design.**
+
+See [`axes.md`](axes.md) for the per-axis picks and how they correlate.
 
 ### Cooperation across multiple PNAs
 
@@ -231,6 +226,7 @@ The wording in the universal table below is substrate-neutral; specific *forms* 
 
 **Normative language.** Conformance-bearing statements in the AC table below (and in the sub-contract definitions that follow, and in the flavor-derived ACs in `axes.md`) use RFC 2119 / RFC 8174 keywords — MUST, MUST NOT, SHOULD, SHOULD NOT, MAY — when, and only when, capitalized. Surrounding prose is plain English (motivation, examples, why-it-matters notes).
 
+<!-- EDITOR NOTE — this table is machine-parsed. tools/lint-spec-ids.py reads each AC ID from the FIRST column (it tolerates a leading <a id="…"> anchor). If you reorder or reformat the columns, you MUST update the lint's regexes and add a fault-injection case to tools/tests/lint_selftest.py, or CI will silently stop seeing these ACs. The same applies to the AC tables in axes.md and the registry table in constraints.md (which is parsed by column position). -->
 | ID | Commitment | Serves |
 |---|---|---|
 | <a id="ac-1"></a>AC-1 | **Two-store ownership split.** Shared data MUST be read-only and externally managed; private data MUST be read-write and locally owned. The two stores MUST occupy separate storage namespaces with separate privacy postures. (Example realizations: two SQLite databases via OPFS in fellows_local_db; two SQLite files on the filesystem in a CLI / native PNA.) | Goal 1 |
@@ -252,13 +248,16 @@ The wording in the universal table below is substrate-neutral; specific *forms* 
 
 ---
 
-## Slot map
+## Slots, Interfaces, and Sub-contracts
+<a id="slot-map"></a>
+
+> **Reference material — skip unless you're implementing or auditing a PNA.** This section is the architectural skeleton (the five slots and three interfaces), then the detailed, ID'd **sub-contracts** that decompose each. A first read can stop after the [Slots](#slots) and [Interfaces](#interfaces) tables; the sub-contracts below them are a per-piece checklist for builders and for the evaluate flow, not narrative.
 
 The spec defines **five slots** (positions filled by code) and **three interfaces** (cross-cutting contracts spanning multiple slots). The Slot and Interface vocab terms are defined in [§ Vocabulary](#vocabulary).
 
 Each slot has a code-level contract. The typed contracts — JSON Schema for RPC + handshake, OpenAPI fragments for distribution, SQL DDL (Data Definition Language) for schemas, TypeScript declaration for the Communications transport interface, JSON Schema for each canonical MCP server's tool surface — live in [`contracts/`](../contracts/).
 
-Many Universal ACs (see [§ Universal architectural commitments](#universal-architectural-commitments)) cite specific slots in their wording. The slot map is the architectural skeleton; the ACs are the load-bearing constraints over it. Each slot decomposes further into named sub-contracts — see [§ Sub-contracts per slot](#sub-contracts-per-slot) below — so a builder can target each piece individually.
+Many Universal ACs (see [§ Universal architectural commitments](#universal-architectural-commitments)) cite specific slots in their wording. The slots and interfaces are the architectural skeleton; the ACs are the load-bearing constraints over it. Each slot decomposes further into named sub-contracts — see [§ Sub-contracts per slot](#sub-contracts-per-slot) below — so a builder can target each piece individually.
 
 ### Slots
 

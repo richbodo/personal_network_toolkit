@@ -113,6 +113,7 @@ design's constraint-attestation declaration.
 
 ## Constraint registry
 
+<!-- EDITOR NOTE — machine-parsed by COLUMN POSITION: tools/lint-spec-ids.py reads this registry table's columns in order (CST id, Name, Triggered-by, Bounds, Frontier, Detectability) and cross-checks them against the per-constraint detail blocks below. Do NOT reorder or insert columns without updating parse_constraint_table() in the lint and adding a fault-injection case to tools/tests/lint_selftest.py. -->
 | CST | Name | Triggered-by | Bounds | Frontier | Detectability |
 |---|---|---|---|---|---|
 | CST-PWA-PRIVATE-SNAPSHOT | Private store read-only off FSA browsers | distribution:web-bundle, storage:opfs-sqlite-wasm | AC-1, Goal-4 | Open | feature-detect |
