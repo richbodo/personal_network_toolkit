@@ -32,7 +32,7 @@
 - [ ] **Architecture document** present (in the design's own repo) declaring its **`Toolkit-Version`**, axis picks + versions, and an **AC attestation table** with a **Verification** entry on *every* applicable AC. *(A row missing Verification is grounds for rejection.)*
 - [ ] **Exceptions** — if the design raises any, each is declared with `Relaxes:` / `Reversible:` and a per-dimension strength profile (`spec/exceptions.md`).
 - [ ] **Evaluate flow run.** The evaluate flow (`pna-build-eval-contrib/SKILL.md`) was run against the design and the typed report is committed at `reference_designs/<name>/evaluate-report.json` (an instance of `tools/evaluate-report.schema.json`), or linked here.
-- [ ] **Lint green** — `python tools/lint-spec-ids.py` passes (CI-enforced).
+- [ ] **Lint green** — `just lint` passes (CI-enforced).
 - [ ] **License** is OSI-approved and permits Software Heritage archival.
 
 ## Maintainer acceptance

@@ -139,7 +139,7 @@ Use when the change is to the toolkit's own artifacts and imposes **no** new con
 
 1. **Read [`CONTRIBUTING.md` § Contribution types](../CONTRIBUTING.md).**
 2. **Make the change.** Keep any spec touch to a clarification or scope-decline. If you find yourself adding an obligation a design must satisfy, stop — you're back on the reference-design path.
-3. **Lint green** — run `python tools/lint-spec-ids.py` (CI-enforced), plus any fixture self-test for a tool you touched (`tools/tests/lint_selftest.py`).
+3. **Lint green** — run `just ci` (the spec/contract/manifest lint plus the fixture self-tests; CI-enforced).
 4. **Add a `CHANGELOG.md` entry.**
 5. **Record the rationale if it's a decision.** A toolkit fix that *chooses a direction* (adds or declines something, with reasoning worth preserving) appends an entry to [`docs/PriorArt.md` § Design notes](../docs/PriorArt.md) — the recurring log of toolkit-change rationale for contributions that aren't reference designs. A pure typo/mechanical fix doesn't need one.
 6. **Open the PR.** Check the **Toolkit fix / docs / tooling** box in the Type section and complete the toolkit-fix checklist; no reference-design checklist applies.
