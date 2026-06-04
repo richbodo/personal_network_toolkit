@@ -123,6 +123,7 @@ design's constraint-attestation declaration.
 | CST-PWA-NO-BACKGROUND | No reliable scheduled background execution | distribution:web-bundle | Goal-4 | Mitigated | feature-detect |
 | CST-PWA-SERVER-FLOOR | Origin + TLS + secure context required | distribution:web-bundle | PNA-DEFINITION | Inherent | feature-detect |
 
+<a id="cst-pwa-private-snapshot"></a>
 ### CST-PWA-PRIVATE-SNAPSHOT — Private store is read-only off File-System-Access browsers
 
 **Triggered-by:** distribution:web-bundle, storage:opfs-sqlite-wasm
@@ -146,6 +147,7 @@ explicit manual backup/export path and SAY SO. The reduction MUST enforce at the
 durable private writes when no verified folder backs the store), not UI-only. Demonstrated by
 `fellows_local_db` (reference_designs/fellows_local_db/).
 
+<a id="cst-pwa-sandbox-sealed"></a>
 ### CST-PWA-SANDBOX-SEALED — OPFS store is invisible to the user and to their other tools
 
 **Triggered-by:** storage:opfs-sqlite-wasm
@@ -168,6 +170,7 @@ tools see a snapshot, not the live store. A read-only Shared-DB MCP surface (whi
 mirror, not the private store) is unaffected and stays useful off-folder. Demonstrated by
 `fellows_local_db`.
 
+<a id="cst-pwa-storage-evictable"></a>
 ### CST-PWA-STORAGE-EVICTABLE — Script-managed storage is evictable
 
 **Triggered-by:** storage:opfs-sqlite-wasm
@@ -188,6 +191,7 @@ Where FSA exists, the canonical file is on disk (folder mode); off-folder, keep 
 preferences in browser storage and lean on explicit export for anything that must survive. Demonstrated
 by `fellows_local_db`.
 
+<a id="cst-pwa-no-sync"></a>
 ### CST-PWA-NO-SYNC — Origin/device-local silos, no built-in portability
 
 **Triggered-by:** distribution:web-bundle, storage:opfs-sqlite-wasm
@@ -204,6 +208,7 @@ write-generation + a human device label) so the user (and a re-pick chooser) can
 canonical?" by content; offer a manual `.db` export/import as the cross-device bridge. Declare sync
 explicitly out of scope rather than implying it. Demonstrated by `fellows_local_db`.
 
+<a id="cst-pwa-single-owner"></a>
 ### CST-PWA-SINGLE-OWNER — Multi-tab contention with no OS file lock
 
 **Triggered-by:** storage:opfs-sqlite-wasm
@@ -220,6 +225,7 @@ OS-level advisory file lock to arbitrate them — concurrent writers can corrupt
 **Recommended handling:** serialize canonical writes under a Web Lock and detect the ownership
 conflict, surfacing a specific message (not a generic "unsupported"). Demonstrated by `fellows_local_db`.
 
+<a id="cst-pwa-no-background"></a>
 ### CST-PWA-NO-BACKGROUND — No reliable scheduled background execution
 
 **Triggered-by:** distribution:web-bundle
@@ -236,6 +242,7 @@ cannot promise "your data is backed up every night."
 **Recommended handling:** opportunistic, per-boot debounced backups; frame them honestly as
 use-triggered, never scheduled. Demonstrated by `fellows_local_db`.
 
+<a id="cst-pwa-server-floor"></a>
 ### CST-PWA-SERVER-FLOOR — Origin + TLS + secure context required
 
 **Triggered-by:** distribution:web-bundle

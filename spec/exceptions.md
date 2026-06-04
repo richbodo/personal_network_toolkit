@@ -137,6 +137,7 @@ flow judges accuracy):
 |---|---|---|---|---|---|
 | EX-CLOUD-LLM | Cloud-hosted AI over PNA data | PNA-DEFINITION, AC-MCP-A | Goal 1 | yes (mode only) | consent gate + persistent dismissable "not a PNA" signal + active-set explainer + return-to-PNA-mode — demonstrated by `fellows_local_db` |
 
+<a id="ex-cloud-llm"></a>
 ### EX-CLOUD-LLM — Cloud-hosted AI over PNA data
 
 **Relaxes:** PNA-DEFINITION, AC-MCP-A

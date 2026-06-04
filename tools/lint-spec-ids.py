@@ -51,13 +51,18 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
 
-AC_RE = re.compile(r"^\| (AC-[A-Z0-9-]+?)(?=\s|\*|\|)", re.MULTILINE)
+# A table-cell ID may be preceded by a stable deep-link anchor
+# (`| <a id="ac-1"></a>AC-1 |`) so reference-design conformance reports can
+# link to a specific row. The registry regexes tolerate that optional prefix.
+_CELL_ANCHOR = r'(?:<a id="[^"]*"></a>)?'
+
+AC_RE = re.compile(r"^\| " + _CELL_ANCHOR + r"(AC-[A-Z0-9-]+?)(?=\s|\*|\|)", re.MULTILINE)
 REALIZES_RE = re.compile(r"Realizes:\s*((?:AC-[A-Z0-9-]+(?:\s*,\s*)?)+)", re.IGNORECASE)
 
 # Exception registry IDs live in `| EX-... |` table rows (mirrors AC_RE). The
 # handler-clause IDs (EX-H1..EX-H8) are list items, not table rows, so they are
 # deliberately NOT collected here as registry exceptions.
-EX_RE = re.compile(r"^\| (EX-[A-Z0-9-]+?)(?=\s|\*|\|)", re.MULTILINE)
+EX_RE = re.compile(r"^\| " + _CELL_ANCHOR + r"(EX-[A-Z0-9-]+?)(?=\s|\*|\|)", re.MULTILINE)
 # Inverse of REALIZES_RE. Tokens may be AC-*, EX-*, or the PNA-DEFINITION
 # sentinel (the PNA definition is prose in vocab-pna, not an `| AC-X |` row).
 RELAXES_RE = re.compile(
@@ -81,7 +86,7 @@ STRENGTH_CLASSES = {
 
 # --- Constraints (spec/constraints.md) ---
 # Constraint registry IDs live in `| CST-... |` table rows (mirrors AC_RE / EX_RE).
-CST_RE = re.compile(r"^\| (CST-[A-Z0-9-]+?)(?=\s|\*|\|)", re.MULTILINE)
+CST_RE = re.compile(r"^\| " + _CELL_ANCHOR + r"(CST-[A-Z0-9-]+?)(?=\s|\*|\|)", re.MULTILINE)
 # Detail blocks open with a '### CST-...' heading.
 CST_BLOCK_RE = re.compile(r"^### (CST-[A-Z0-9-]+)", re.MULTILINE)
 # Field value extractors operate on a single source string (one registry-table

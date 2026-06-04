@@ -2,6 +2,12 @@
 
 ## v0.1 draft (in progress)
 
+### Stable per-ID anchors for AC / CST / EX (additive)
+
+- **Every AC, CST, and EX now carries a stable HTML anchor** so a reference design's conformance report (and any cross-reference) can deep-link to the *specific* commitment/constraint/exception instead of dumping the reader at the top of a multi-section spec. The anchor id is the lowercased ID: `#ac-1`, `#ac-prm-a`, `#cst-pwa-sandbox-sealed`, `#ex-cloud-llm`, etc. Added as `<a id="…"></a>` inside the ID cell of each AC table row (`spec/PNA_Spec.md` ×16, `spec/axes.md` ×9) and on the line above each `### CST-…` / `### EX-…` detail heading (`spec/constraints.md` ×7, `spec/exceptions.md` ×1) — 33 anchors, no prose change.
+- **`tools/lint-spec-ids.py`** — the `AC_RE` / `EX_RE` / `CST_RE` registry-row regexes now tolerate the optional `<a id="…"></a>` cell prefix (shared `_CELL_ANCHOR`), so ID extraction is unchanged. The clean tree (which now carries the anchors) exercises this, and `tools/tests/lint_selftest.py` stays 22/22.
+- Motivated by `richbodo/fellows_local_db`'s conformance report, which links each attested row back to its PNT definition; doc-level links to a 50-section spec were too much cross-repo context to hold.
+
 ### Attestation-evidence lint + deferral discipline (additive)
 
 - **`tools/attestation-evidence-lint.py` (new).** The portable attestation checker the `ARCHITECTURE_TEMPLATE.md` § "Mechanical check" only *described* in prose is now a real stdlib lint, with `tools/attestation-evidence-lint-fixtures/{clean,dirty}` and three new `tools/tests/lint_selftest.py` cases (21/21). It parses a design's AC/CST attestation table and fails when a `conformant` row's evidence isn't real. Beyond the prose checker's existence-only rule, it adds the **marker-state** check: a `conformant` row may not cite an `xfail` or unconditional `skip` test — a declared-false/unrun invariant is not evidence (a conditional `skipif` guard is exempt). Closes the seam where a reference design cited `xfail(strict=True)` as proof and every gate stayed green. Emits `--json` evaluate-report evidence like the sibling lints.

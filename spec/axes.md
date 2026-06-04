@@ -28,10 +28,10 @@ How the PNA reaches a user's device. The distribution pick shapes whether the PN
 
 | AC | Triggered by | Commitment |
 |---|---|---|
-| AC-2 | `[dist:server-backed]` (any `web-bundle-*` pick) | **No SaaS surface.** The server, when present, MUST be a delivery channel, not a service. The server MUST NOT expose per-user RW endpoints, MUST NOT persist private data, MUST NOT host an admin console, and MUST NOT operate cross-device sync. |
-| AC-5 | `[dist:auth-gated]` (`web-bundle-with-magic-link`) | **Stale session never locks users out of cached data.** A 401/403 from any shared-side fetch MUST fall through to the local cache. Fresh data MUST require explicit user action. |
-| AC-8 | `[dist:auth-server]` + `[debug:has-error-sink]` | **Anti-enumeration on auth + abuse-bounded analytics.** Distribution-channel auth endpoints MUST always return neutral payloads. Per-IP rate limits MUST be enforced. The sanitized error sink MAY double as the analytics pipe (`kind=install`, `kind=worker`, …) but MUST NOT widen the privacy boundary. |
-| AC-14 | `[dist:pwa]` (any `web-bundle-*` PWA pick) | **Service worker never owns SQLite.** The SW MUST be app-shell + update detection only — SW lifecycle (idle eviction, multi-instance, restart on push) is hostile to data ownership. The Shared store URL MUST be bypassed in the SW fetch handler. |
+| <a id="ac-2"></a>AC-2 | `[dist:server-backed]` (any `web-bundle-*` pick) | **No SaaS surface.** The server, when present, MUST be a delivery channel, not a service. The server MUST NOT expose per-user RW endpoints, MUST NOT persist private data, MUST NOT host an admin console, and MUST NOT operate cross-device sync. |
+| <a id="ac-5"></a>AC-5 | `[dist:auth-gated]` (`web-bundle-with-magic-link`) | **Stale session never locks users out of cached data.** A 401/403 from any shared-side fetch MUST fall through to the local cache. Fresh data MUST require explicit user action. |
+| <a id="ac-8"></a>AC-8 | `[dist:auth-server]` + `[debug:has-error-sink]` | **Anti-enumeration on auth + abuse-bounded analytics.** Distribution-channel auth endpoints MUST always return neutral payloads. Per-IP rate limits MUST be enforced. The sanitized error sink MAY double as the analytics pipe (`kind=install`, `kind=worker`, …) but MUST NOT widen the privacy boundary. |
+| <a id="ac-14"></a>AC-14 | `[dist:pwa]` (any `web-bundle-*` PWA pick) | **Service worker never owns SQLite.** The SW MUST be app-shell + update detection only — SW lifecycle (idle eviction, multi-instance, restart on push) is hostile to data ownership. The Shared store URL MUST be bypassed in the SW fetch handler. |
 
 ---
 
@@ -50,10 +50,10 @@ What backs the data layer — the bytes on disk or in OPFS that hold the Shared 
 
 | AC | Triggered by | Commitment |
 |---|---|---|
-| AC-3 | `[storage:opfs-sqlite-wasm]` | **Single OPFS owner.** All OPFS handles and SQLite-WASM instances MUST live in one dedicated worker. The workspace MUST act as an RPC client. Parallel main-thread OPFS MUST NOT exist. *Realizes AC-1 + AC-11 for this substrate.* This worker-owned, single-writer architecture is **forced by the substrate**, not a stylistic choice: durable SQL in a browser (sqlite-wasm + OPFS-SAH-Pool) requires `crossOriginIsolated`, one worker owning every OPFS handle, and a single writer connection — a multi-connection or main-thread design is not available. Builders must know this up front; it is a property of the medium, not a defect to fix. |
-| AC-12 | `[storage:opfs-sqlite-wasm]` | **Capability detection inside the worker, UA-parsing for messaging only.** Browsers lie about main-thread OPFS support; the worker MUST be the only context that performs capability detection. UA strings MAY inform error messages but MUST NOT gate. |
-| AC-13 | `[storage:opfs-sqlite-wasm]` + `[dist:web-served]` | **COOP/COEP required.** OPFS-SAH-Pool needs `crossOriginIsolated`; both dev server and prod reverse proxy MUST send `Cross-Origin-Opener-Policy: same-origin` and `Cross-Origin-Embedder-Policy: require-corp`. Without this the storage substrate silently fails to install. |
-| AC-PRM-C **[draft]** | `[storage:native-sqlite-via-filesystem]` | **Single-instance file-lock.** Native SQLite demands one writer; a second process MUST refuse cleanly with a specific message naming the holding process. *Realizes AC-11 for this substrate.* **[draft — no reference design yet]** |
+| <a id="ac-3"></a>AC-3 | `[storage:opfs-sqlite-wasm]` | **Single OPFS owner.** All OPFS handles and SQLite-WASM instances MUST live in one dedicated worker. The workspace MUST act as an RPC client. Parallel main-thread OPFS MUST NOT exist. *Realizes AC-1 + AC-11 for this substrate.* This worker-owned, single-writer architecture is **forced by the substrate**, not a stylistic choice: durable SQL in a browser (sqlite-wasm + OPFS-SAH-Pool) requires `crossOriginIsolated`, one worker owning every OPFS handle, and a single writer connection — a multi-connection or main-thread design is not available. Builders must know this up front; it is a property of the medium, not a defect to fix. |
+| <a id="ac-12"></a>AC-12 | `[storage:opfs-sqlite-wasm]` | **Capability detection inside the worker, UA-parsing for messaging only.** Browsers lie about main-thread OPFS support; the worker MUST be the only context that performs capability detection. UA strings MAY inform error messages but MUST NOT gate. |
+| <a id="ac-13"></a>AC-13 | `[storage:opfs-sqlite-wasm]` + `[dist:web-served]` | **COOP/COEP required.** OPFS-SAH-Pool needs `crossOriginIsolated`; both dev server and prod reverse proxy MUST send `Cross-Origin-Opener-Policy: same-origin` and `Cross-Origin-Embedder-Policy: require-corp`. Without this the storage substrate silently fails to install. |
+| <a id="ac-prm-c"></a>AC-PRM-C **[draft]** | `[storage:native-sqlite-via-filesystem]` | **Single-instance file-lock.** Native SQLite demands one writer; a second process MUST refuse cleanly with a specific message naming the holding process. *Realizes AC-11 for this substrate.* **[draft — no reference design yet]** |
 
 ---
 
@@ -72,7 +72,7 @@ How the Shared DB is filled and refreshed — whether from a single export, a si
 
 | AC | Triggered by | Commitment |
 |---|---|---|
-| AC-PRM-B **[draft]** | `[ingestion:multi-source-merge-with-dedup]` | **Multi-source dedup contract.** A stable `record_id` MUST survive merge across sources. The dedup flow MUST surface conflicts via a wizard. Per-source provenance MUST be recorded *per field*, not just per record. Lifts the deferred "multi-source dedup contract" from § Scope into v0.1 for PRM-flavor PNAs. **[draft — no reference design yet]** |
+| <a id="ac-prm-b"></a>AC-PRM-B **[draft]** | `[ingestion:multi-source-merge-with-dedup]` | **Multi-source dedup contract.** A stable `record_id` MUST survive merge across sources. The dedup flow MUST surface conflicts via a wizard. Per-source provenance MUST be recorded *per field*, not just per record. Lifts the deferred "multi-source dedup contract" from § Scope into v0.1 for PRM-flavor PNAs. **[draft — no reference design yet]** |
 
 ---
 
