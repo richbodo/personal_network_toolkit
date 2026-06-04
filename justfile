@@ -1,23 +1,65 @@
-# PNT developer tasks. `just` (no args) runs the CI gate locally.
-# Requires only python3 (3.11+); the recipes shell out to the stdlib-only tools.
+# Personal Network Toolkit — command runner. Run `just` with no args for the menu.
+#
+# PNT is a spec/lint/docs toolkit: every recipe wraps a stdlib-only python3 tool
+# or shell script, so there is no setup/venv step — python3 (3.10+) is the only
+# requirement. Recipe names mirror the underlying tools deliberately.
+#
+# Examples:
+#   just ci                                              # the full gate before pushing
+#   just egress-lint ../candidate --json                 # AC-1 egress scan of a candidate PNA
+#   just export-lint ../candidate/export                 # PR-6 export-readability check
+#   just swh-save https://github.com/you/your-pna v1.0   # archive + print SWHID fields
 
-# Default: the same checks CI runs.
-default: test
+set shell := ["bash", "-euo", "pipefail", "-c"]
 
-# Mechanical spec / contract / version lints.
+python := "python3"
+
+# Show the recipe menu.
+default:
+    @just --list
+
+
+# ---- check ---------------------------------------------------------------
+
+# Lint + self-tests — the full CI gate (run before pushing).
+[group('check')]
+ci: lint lint-selftest
+
+# Spec / contract / version / constraint / manifest lint (tools/lint-spec-ids.py).
+[group('check')]
 lint:
-    python3 tools/lint-spec-ids.py
+    {{python}} tools/lint-spec-ids.py
 
-# Tier A — toolkit self-tests: pins the lints' own behavior so a check can't
-# silently rot (see tools/tests/lint_selftest.py and plans/conformance-suite-plan.md).
-test: lint
-    python3 tools/tests/lint_selftest.py
+# Toolkit self-tests — assert the lints fail on injected faults (tools/tests/lint_selftest.py).
+[group('check')]
+lint-selftest:
+    {{python}} tools/tests/lint_selftest.py
 
-# Tier B (scaffold, Phase 4) — pull a reference design's SWHID-pinned source,
-# verify it, build it, and run its [verify] entrypoint. Inert until a design
-# declares a real verify entrypoint + container; see the plan doc § Phase 4.
+
+# ---- evaluate ------------------------------------------------------------
+
+# Egress-scan a candidate PNA dir for off-device vectors, AC-1 (args pass through).
+[group('evaluate')]
+egress-lint target *args:
+    {{python}} tools/egress-lint.py {{target}} {{args}}
+
+# Check a Private-DB export is tool-free readable, PR-6 (args pass through).
+[group('evaluate')]
+export-lint target *args:
+    {{python}} tools/export-readable-lint.py {{target}} {{args}}
+
+
+# ---- design --------------------------------------------------------------
+
+# Software Heritage archival + print paste-ready design.toml SWHID fields. Args: <repo-url> [ref] [clone].
+[group('design')]
+swh-save url ref="HEAD" clone="":
+    tools/swh-save.sh {{url}} {{ref}} {{clone}}
+
+# (Scaffold, Phase 4) fetch -> verify SWHID -> build -> run a design's [verify] entrypoint; inert for now.
+[group('design')]
 test-design name:
     @echo "Phase 4 is not active yet: this would fetch reference design '{{name}}',"
-    @echo "verify 'git rev-parse HEAD^{{{{tree}}}} == swhid_dir', build it, and run"
-    @echo "its [verify] entrypoint. See plans/conformance-suite-plan.md § Phase 4."
+    @echo "verify 'git rev-parse HEAD^{tree} == swhid_dir', build it, and run its"
+    @echo "[verify] entrypoint. See plans/conformance-suite-plan.md § Phase 4."
     @exit 1
