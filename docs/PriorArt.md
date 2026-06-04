@@ -177,7 +177,19 @@ These references inform PNT's design without constraining it to any of their wor
 
 ## Design notes
 
-A running log of decisions where mapping PNT against the prior art above drove a concrete spec change (or a deliberate decision *not* to make one). Newest first; each entry is dated and names what it changed.
+A running log of toolkit-shaping decisions and their rationale — most often a mapping of PNT against the prior art above driving a spec change (or a deliberate decision *not* to make one), but also discipline and tooling decisions distilled from a real finding in a reference design. This is where the *why* of a toolkit fix lives when it isn't itself a reference design. Newest first; each entry is dated and names what it changed.
+
+### 2026-06 — Attestation evidence must be *live*: the xfail-as-evidence finding → marker-state lint + deferral discipline
+
+A `conformant` row in the fellows_local_db Security Target cited an `xfail(strict=True)` test as its proof, and every gate stayed green — the attestation-evidence checker only verified the cited test *resolved to a `def`*, never that it *passed* or wasn't deferred. A declared-false invariant was masquerading as evidence. Origin: the conformance-discipline work in `richbodo/fellows_local_db` (PR #249).
+
+**What it drove (a toolkit fix — no spec-AC change):**
+
+- **`tools/attestation-evidence-lint.py` (new, portable).** The reference checker the template only *described* in prose is now a real stdlib lint with clean/dirty fixtures and a self-test, mirroring `egress-lint` / `export-readable-lint`. It adds the **marker-state** rule: a `conformant` row may not cite an `xfail` or unconditional `skip` test (a conditional `skipif` environment guard is exempt). This is the *deterministic* half of "exists **and passes**" — a static lint proves a *live, non-deferred* assertion exists; *passes* is the runtime layer (run the suite).
+- **Deferral discipline (`ARCHITECTURE_TEMPLATE.md` § Deferrals).** A strict-xfail must carry a `tracking: #NNN` **issue** anchor — an issue, not a PR (issues close when the *work* is done). Names the **asymmetry**: `strict=True` trips on accidental success but never on abandoned deferral, so it needs reinforcing — an abandoned-deferral check (issue closed while the test still xfails) and a low, glanceable deferral cap.
+- **Validation timing (`ARCHITECTURE_TEMPLATE.md`).** The load-bearing principle is **non-conforming code must not reach users**: run lint + tests at the user-exposure boundary (ship / per-PR / release), with adding-or-removing-a-feature as the re-check trigger. The cap is secondary hygiene; the gate is the safety mechanism.
+
+**The reusable lesson:** a portable *existence* checker created false confidence that the *passing* check was also covered — the seam between the deterministic layer (lints) and the runtime/human layer (the suite, the maintainer) was unowned. The fix names that layering explicitly instead of pretending one lint does it all. Demonstrated end-to-end by fellows_local_db (the lint, a report/log with an issue-state probe, and `just test` / `deploy-preflight` wiring).
 
 ### 2026-06 — Ink & Switch "local-first" ideals → PR-6, and the at-rest scope decision
 

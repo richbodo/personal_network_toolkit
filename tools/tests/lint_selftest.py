@@ -178,6 +178,19 @@ def case_fixture_lint(results: list, script: str, clean: str, dirty: str) -> Non
             "" if d.returncode != 0 else "dirty fixture was not flagged")
 
 
+def case_attestation_marker_message(results: list) -> None:
+    """Pin the marker-state behavior specifically: the dirty fixture must fail
+    *because* a conformant row cites an xfail test (not just exit non-zero for
+    some other reason). This is the seam the lint exists to close, so its
+    message is asserted, not just the exit code."""
+    d = _run(REPO, "tools/attestation-evidence-lint.py",
+             "tools/attestation-evidence-lint-fixtures/dirty")
+    out = d.stdout + d.stderr
+    ok = d.returncode != 0 and "xfail" in out and "not evidence" in out
+    _record(results, "attestation-evidence-lint: flags xfail test as non-evidence",
+            ok, "" if ok else f"exit={d.returncode}, missing xfail message in:\n{out}")
+
+
 def _record(results: list, name: str, ok: bool, detail: str) -> None:
     results.append((name, ok, detail))
     print(f"  {'PASS' if ok else 'FAIL'}  {name}")
@@ -198,6 +211,10 @@ def main() -> int:
     case_fixture_lint(results, "tools/export-readable-lint.py",
                       "tools/export-readable-lint-fixtures/clean",
                       "tools/export-readable-lint-fixtures/dirty")
+    case_fixture_lint(results, "tools/attestation-evidence-lint.py",
+                      "tools/attestation-evidence-lint-fixtures/clean",
+                      "tools/attestation-evidence-lint-fixtures/dirty")
+    case_attestation_marker_message(results)
 
     passed = sum(1 for _, ok, _ in results if ok)
     total = len(results)
