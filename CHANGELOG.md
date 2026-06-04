@@ -2,6 +2,19 @@
 
 ## v0.1 draft (in progress)
 
+### Contribution types — toolkit fix vs reference design (process, additive)
+
+- **The toolkit-fix path is now first-class and discoverable.** A "Toolkit fix" PR type already existed in `.github/pull_request_template.md` and was acknowledged in passing under `CONTRIBUTING.md § Versioning`, but the **skill** (the LLM entry point) documented only the heavyweight reference-design flow, and the template shipped no toolkit-fix checklist — so an agent contributing a lint/docs/scope change had no path to follow and would wrongly force it through reference-design preflight. Since most PNT PRs are toolkit fixes, the dominant case was the undocumented one.
+- **`pna-build-eval-contrib/SKILL.md`.** The Contribute flow now opens with a **routing heuristic** — *does the change impose a new contract a conformant design must satisfy?* — splitting into *Reference-design contribution* (the existing flow) and a new *Toolkit fix* sub-flow (normal PR; `tools/lint-spec-ids.py` + fixture self-tests; CHANGELOG entry; a `docs/PriorArt.md § Design notes` entry for decisions; check the Type box). [PR #19](https://github.com/richbodo/personal_network_toolkit/pull/19) (a scope decision that declined an AC) is cited as the canonical toolkit fix.
+- **`CONTRIBUTING.md`.** New *Contribution types* section near the top with the same routing question; *What we don't accept* nuanced so a spec note that clarifies/declines a commitment is correctly a toolkit fix, not a forbidden undemonstrated spec change.
+- **`.github/pull_request_template.md`.** Adds a lightweight **Toolkit-fix checklist** (no new design obligation; CHANGELOG; Design-notes entry for decisions) alongside the reference-design one, with a routing comment in the Type section.
+
+### Documentation — `CLAUDE.md`, task-ordered users-guide, doc-currency rule (process, additive)
+
+- **New `CLAUDE.md`.** Repo conventions plus a **documentation map** — one source of truth per fact (spec = normative, `pna-build-eval-contrib/SKILL.md` = agent procedure, `docs/users-guide.md` = task-ordered how-to, `CONTRIBUTING.md` = policy; docs link rather than restate) — the stdlib-only / RFC 2119 / versioned-as-a-unit conventions, and the lint-discipline rule (every check needs a fault-injection self-test in `tools/tests/lint_selftest.py`).
+- **`docs/users-guide.md` re-architected** to be task-ordered: `Install the skill` + `Using the skill` (Build / Audit / Contribute) + `Working in this repo` (the `just` menu, one plain line per recipe) + `Contributing beyond reference designs`. The incoherent Goal 4 (archival) and Goal 5 (versioning) dissolved into the Contribute flow's tail (pointing to `CONTRIBUTING` for policy rather than restating it); the Goal 6 attestation steps folded into Build. Stale facts fixed (`swh-save` shipped; `just` commands replace bare `python3`; Constraints, Exceptions, and `design.toml` now documented).
+- **Doc-currency rule.** Any PR that changes a developer-visible behavior updates `docs/users-guide.md` in the **same PR** — stated in `CLAUDE.md` and enforced by a checkbox in the PR template's new **Every PR** section. The docs had drifted behind the code (justfile, self-tests, export lint, Constraints/Exceptions, manifests all undocumented); this stops the recurrence.
+
 ### Conformance suite — toolkit self-tests + machine-readable design records (additive)
 
 - **Tier A — toolkit self-tests.** `tools/tests/lint_selftest.py` (stdlib-only) asserts the clean tree passes the lints, then applies a catalog of named fault injections and asserts each makes the right lint fail with the expected message — pinning the lints' own behavior so a check can't silently rot (cf. the dead `Reversible:` check found in PR #18). A `justfile` (`just` shows the menu; `just ci` runs lint + self-tests; `just egress-lint`/`export-lint`/`swh-save` wrap the other tools) and a `lint-selftest` CI job run it.

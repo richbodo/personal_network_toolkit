@@ -1,6 +1,6 @@
 ---
 name: pna-build-eval-contrib
-description: 'Use when building, extending, or evaluating a Personal Network Application (PNA) — local-first, private-by-default applications that mirror SaaS contact data into a user-owned workspace and operate on relationship data with no remote authority. Triggers on requests to build a local-first contact app, relationship manager, private CRM-like tool, or any app built around personal-network data; on requests to audit an existing application for PNA-spec conformance ("is this app safe to install?", "does my app conform?"); and on requests to propose a change back to the PNT spec when a builder finds a gap. Three flows: build a conformant PNA from the spec, evaluate whether an existing application conforms, and author a contribution PR back to PNT.'
+description: 'Use when building, extending, or evaluating a Personal Network Application (PNA) — local-first, private-by-default applications that mirror SaaS contact data into a user-owned workspace and operate on relationship data with no remote authority. Triggers on requests to build a local-first contact app, relationship manager, private CRM-like tool, or any app built around personal-network data; on requests to audit an existing application for PNA-spec conformance ("is this app safe to install?", "does my app conform?"); and on requests to contribute back to PNT — either a reference design, or (the common case) a lighter toolkit fix to the spec/tooling/docs. Three flows: build a conformant PNA from the spec, evaluate whether an existing application conforms, and contribute back to PNT (reference design or toolkit fix).'
 ---
 
 # Building, Evaluating, and Contributing to PNAs
@@ -72,9 +72,19 @@ Callers may ask you to emphasize specific Goals or axes at runtime (e.g., "focus
 
 ## Contribute flow
 
+Use when the user wants to change PNT itself. **Route the contribution first** — the two shapes carry very different weight:
+
+> **Does the change impose a new contract a conformant design must satisfy** — a new or changed AC, a new sub-contract, a new axis pick?
+> - **Yes → reference-design contribution.** A spec change is accepted only with a working design that demonstrates it. Heavyweight: preflight, design record, evaluate-report, Architecture copy, archival. See *Reference-design contribution* below.
+> - **No → toolkit fix.** Tooling/lints, templates, this skill, docs, a CHANGELOG entry, or a spec note that *clarifies* or *declines* a commitment (imposes no new obligation). Lightweight — a normal PR, no reference-design attestation. **This is the common case: most PNT PRs are toolkit fixes.** See *Toolkit fix* below.
+>
+> When unsure, ask: *does a design have to do anything new to stay conformant after this change?* If nothing does, it's a toolkit fix.
+
+### Reference-design contribution
+
 Use when the user has built or operated a PNA and wants to submit it back to PNT as a reference design — whether they found a spec gap and want to propose a fix, or they have a working design that adds ecosystem value at a flavor not yet attested. The flow has two phases: **preflight validation** (is the design submission-ready?) and **PR authoring** (open the actual PR).
 
-### Preflight validation
+#### Preflight validation
 
 Before authoring the PR, validate that the design is submission-ready. This step is interactive — ask the user questions, walk them through gaps, iterate until clean.
 
@@ -107,7 +117,7 @@ Before authoring the PR, validate that the design is submission-ready. This step
 
 4. **Iterate.** When the user fixes things, re-run preflight. Keep going until the report is clean.
 
-### PR authoring
+#### PR authoring
 
 Once preflight passes:
 
@@ -121,6 +131,17 @@ Once preflight passes:
 After merge, the maintainer triggers Software Heritage archival on the design's repo at the accepted commit (planned tooling: `tools/swh-save.sh`, landing in Phase 5; until then, archival is performed manually via Software Heritage's Save Code Now), then records the returned `swh:1:dir`/`swh:1:rev` and the commit SHA **into `design.toml`** and flips `archival = "archived"` (at which point the lint requires those fields and checks `swhid_rev` against `commit`). The SWHID also goes in the prose design record. A final preflight run against the merged state should come out clean.
 
 A builder using Claude Code can drive both preflight and PR authoring end-to-end. Maintainer review at acceptance time is the human-judgment gate that's intentionally not automated.
+
+### Toolkit fix
+
+Use when the change is to the toolkit's own artifacts and imposes **no** new contract on a design — a lint or tool, a template, this skill, the docs, a CHANGELOG clarification, or a spec/scope note that *declines* or *clarifies* a commitment. No design record, no evaluate-report, no attestation. The canonical example is [PR #19](https://github.com/richbodo/personal_network_toolkit/pull/19): an at-rest-encryption *scope decision* that declined to add an AC — a spec touch that imposed no obligation, so no reference design was needed.
+
+1. **Read [`CONTRIBUTING.md` § Contribution types](../CONTRIBUTING.md).**
+2. **Make the change.** Keep any spec touch to a clarification or scope-decline. If you find yourself adding an obligation a design must satisfy, stop — you're back on the reference-design path.
+3. **Lint green** — run `python tools/lint-spec-ids.py` (CI-enforced), plus any fixture self-test for a tool you touched (`tools/tests/lint_selftest.py`).
+4. **Add a `CHANGELOG.md` entry.**
+5. **Record the rationale if it's a decision.** A toolkit fix that *chooses a direction* (adds or declines something, with reasoning worth preserving) appends an entry to [`docs/PriorArt.md` § Design notes](../docs/PriorArt.md) — the recurring log of toolkit-change rationale for contributions that aren't reference designs. A pure typo/mechanical fix doesn't need one.
+6. **Open the PR.** Check the **Toolkit fix / docs / tooling** box in the Type section and complete the toolkit-fix checklist; no reference-design checklist applies.
 
 ## Principles to honor in every flow
 

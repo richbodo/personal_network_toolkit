@@ -179,6 +179,14 @@ These references inform PNT's design without constraining it to any of their wor
 
 A running log of decisions where mapping PNT against the prior art above drove a concrete spec change (or a deliberate decision *not* to make one). Newest first; each entry is dated and names what it changed.
 
+### 2026-06 — Documentation architecture: one source of truth per fact, and a same-PR doc-currency rule
+
+The docs had drifted behind the code: the `justfile`, the lint self-tests, `export-readable-lint`, the Constraints and Exceptions concepts, and the `design.toml` manifest had all shipped while `docs/users-guide.md` still described `swh-save` as "planned." Separately, the guide's "Goal 4 / 5 / 6" sections had become an overflow bucket — archival, version-bumping, and AC-attestation facts thrown wherever there was room, restating policy that `CONTRIBUTING.md` and the spec already owned.
+
+Decided: (1) **one source of truth per fact** — the spec owns *what conformance means*, the skill owns *agent procedure*, `docs/users-guide.md` owns *the step-by-step how-to*, `CONTRIBUTING.md` owns *policy*; a doc links to the owner rather than restating it (every restatement is a drift surface). (2) The user's guide is a **task-ordered procedure layer** — numbered action sequences — which dissolved the incoherent goals (archival/versioning became the tail of the Contribute flow; the attestation steps folded into Build). (3) A **same-PR doc-currency rule**: any PR changing a developer-visible behavior updates the user's guide in the same PR, stated in `CLAUDE.md` and enforced by a PR-template checkbox. Recorded in `CLAUDE.md` (§ Documentation map, § Keep the docs current) and `.github/pull_request_template.md`.
+
+The framing that ties it together: doc drift and lint-check rot (cf. the dead `Reversible:` check, PR #18) are the same disease — a guarantee quietly becoming false — so they get the same medicine: make the absence fail loudly (the doc rule socially; the lint self-tests mechanically). This entry, and the first-classing of the toolkit-fix contribution path it ships alongside, are themselves toolkit fixes following that newly-documented path.
+
 ### 2026-06 — Ink & Switch "local-first" ideals → PR-6, and the at-rest scope decision
 
 Mapping the spec against the Ink & Switch [*local-first software*](https://www.inkandswitch.com/essay/local-first/) essay (§ 8 above) surfaced two gaps. One became a spec change; the other became an explicit decision *not* to add one. Origin: `richbodo/fellows_local_db#216`.
