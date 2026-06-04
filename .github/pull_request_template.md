@@ -9,6 +9,12 @@
 - [ ] Reference design (new or updated), or a spec/contracts change → complete the checklists below
 - [ ] Toolkit fix / docs / tooling (no reference-design attestation needed)
 
+## Every PR
+
+- [ ] **Docs current** — if this changes a developer-visible behavior (a `just` recipe, a lint check or its message, a skill flow, a contract/AC/manifest field, or a contribution step), [`docs/users-guide.md`](../docs/users-guide.md) is updated in this PR. *(See `CLAUDE.md` § Keep the docs current.)*
+- [ ] **Local gate green** — `just ci` passes (lint + self-tests); any new lint check has a fault-injection self-test.
+- [ ] **Manual test/QA steps** for the reviewer are in the PR description (when applicable).
+
 ## Reference-design / spec contribution checklist
 
 <!-- Only if this PR adds or updates a reference design, or changes spec/contracts. See CONTRIBUTING.md. -->
