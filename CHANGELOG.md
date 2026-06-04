@@ -2,6 +2,20 @@
 
 ## v0.1 draft (in progress)
 
+### Proposed (RFC, separate follow-up to #32): architectural data-floor — disclosure tiers
+
+> **Status: RFC stub, not in this repo's normative tables yet.** Lands with the PRM reference design
+> that demonstrates it (per `CONTRIBUTING.md` § Contribution types). Companion to PR #32. Full stub:
+> `docs/design-notes/2026-06-data-floor-disclosure-tiers.md`.
+
+- Proposes bounding *what* an exception can disclose (not just the act of disclosing): a per-field
+  Private-DB `disclosure_tier` (**`PR-7`**, default `private-sealed`, workspace-only mutable, enforced
+  at the query layer), a projection-bound cloud MCP surface that structurally cannot return a sealed
+  field even with consent (**`AC-MCP-C`**, the data twin of AC-MCP-B's action-floor), and a
+  blast-radius strength dimension (**`EX-H9`**) — verified by a static disclosure-tier lint + a dynamic
+  egress probe. Came out of the moderated tournament of alternate solutions recorded in the existential
+  review. Doc-only in this PR; no normative table changed (lint + self-tests green).
+
 ### Slots optionality + the Minimum Viable PNA use case (normative clarification)
 
 - **Required vs optional slots clarified.** Only **Ingestion, Storage, and Workspace** are required; **Communications and Distribution are optional** (previously only Distribution was marked optional). A PNA that never reaches out omits Communications — its comms ACs (AC-16/18/19) are then vacuous, mirroring how the MCP ACs are vacuous when no MCP server is exposed. This is a **relaxation**: every existing design (which has all slots) stays conformant; it just lets a smaller app qualify. See `spec/PNA_Spec.md` § Slots, Interfaces, and Sub-contracts.
