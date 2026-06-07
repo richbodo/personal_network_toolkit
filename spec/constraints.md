@@ -274,6 +274,17 @@ ceilings and carry no `CST-*` ID.
   verification failures; a `POST` `share_target` silently fails on some WebAPK servers; iOS hides
   install behind Share → Add to Home Screen. Keep the manifest minimal; document per-platform install
   flows.
+- **Chromium-only capability gap.** The web APIs that grant a page *user-visible, durable local
+  file/folder access* — the **File System Access API** (`showDirectoryPicker`, `showOpenFilePicker`,
+  `showSaveFilePicker`) — ship only in Chromium engines; Safari, Firefox, and all iOS browsers lack
+  them. This is the single load-bearing Chromium-only gap for a PNA, and its *consequences* are
+  already captured as ceilings above: [`CST-PWA-PRIVATE-SNAPSHOT`](#cst-pwa-private-snapshot) (no live
+  writable private store off Chromium) and [`CST-PWA-SANDBOX-SEALED`](#cst-pwa-sandbox-sealed) (the
+  store stays invisible to the user's other tools). A handful of other capabilities a builder might
+  reach for are also Chromium-only (Web Serial / Web USB / Web Bluetooth, the File Handling API) but
+  are not PNA-load-bearing. Takeaway: never put a PNA's durability or companion-tool path behind an
+  API only one engine ships — reduce per platform (M2), or choose a substrate where the capability is
+  universal.
 
 ## Origin
 
