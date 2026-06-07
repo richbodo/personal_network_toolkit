@@ -15,12 +15,52 @@
   blast-radius strength dimension (**`EX-H9`**) — verified by a static disclosure-tier lint + a dynamic
   egress probe. Came out of the moderated tournament of alternate solutions recorded in the existential
   review. Doc-only in this PR; no normative table changed (lint + self-tests green).
+### Proposed (RFC — not yet accepted): honest-exit amendments to the Exceptions mechanism
+
+> **Status: RFC, opened for maintainer consideration — not merged behavior.** Changes (2) and (3)
+> impose new obligations on designs, so per `CONTRIBUTING.md` § Contribution types they require a
+> demonstrating reference design before acceptance. Rationale:
+> `docs/design-notes/2026-06-exceptions-existential-review.md`.
+
+- **(1) Predicate split (clarification).** `spec/exceptions.md` § Concept + `spec/PNA_Spec.md`
+  (`vocab-pna`, § Vision, § Composition): the overloaded "conformant PNA in non-PNA mode" is split
+  into two reported predicates — **`pna-active`** (the mode bit; `false` while any exception is
+  active; the categorical "is it a PNA right now?" claim a relying party keys on) and
+  **`exception-handling`** reported *per handler clause* (`pass`/`partial`/`cannot-tell`, EARL-style).
+  Discipline (refined): **`pna-active` is the only conferred verdict and the only interop key**;
+  handling is never aggregated into a "conformant" badge, and `tools/evaluate-report.schema.json`'s
+  `summary.posture` is redefined to report PNA membership only (so a cleanly-handled `EX-CLOUD-LLM`
+  app can never surface `posture: conformant`). The interop future-direction gates on `pna-active`,
+  not on exception-handling conformance.
+- **(2) EX-H7 fail-closed.** `spec/exceptions.md` § Handler contract: consent for a Private-DB
+  exception MUST be obtained on a PNA-controlled surface (`enforced`), the PNA SHOULD relay a
+  best-effort "confirm in the app" notice to cooperating clients via the MCP `instructions` handshake,
+  and where it cannot confirm a human consented it MUST fail closed (AC-MCP-A's "either refuse" arm)
+  rather than raise on a proxy's say-so. Refined: the gate is **workspace-bound** (a cloud client
+  can't forge a workspace-side human action, so it is genuinely `enforced`) and is a real but
+  **secondary** control governing the *act* of disclosure — bounding *what* may be disclosed is the
+  data-floor (4).
+- **(3) Un-relaxable floor.** `spec/exceptions.md` § Scope discipline: AC-18, AC-19, and AC-MCP-B are
+  a floor no exception may relax even with consent (a user may consent to *disclose data they read*,
+  never to remove the human-in-the-loop on action taken on their behalf, which reaches third parties).
+  This is the *action*-floor; the symmetric *data*-floor is the separately-tracked correction (4).
+- **(4) Architectural data-floor (separate follow-up, demonstrated by PRM).** Out of a follow-up
+  review: bound *what* an exception can disclose, not just the act. A per-field Private-DB disclosure
+  tier (`PR-7`, default most-protective), a projection-bound cloud surface that structurally cannot
+  return a sealed field even with consent (`AC-MCP-C`), and a blast-radius strength dimension
+  (`EX-H9`). Drafted as its own proposal (`docs/design-notes/2026-06-data-floor-disclosure-tiers.md`);
+  not part of this PR's diff — it lands with the PRM reference design that demonstrates it.
+- Lint + self-tests stay green (prose-only; no machine-parsed table changed).
 
 ### Slots optionality + the Minimum Viable PNA use case (normative clarification)
 
 - **Required vs optional slots clarified.** Only **Ingestion, Storage, and Workspace** are required; **Communications and Distribution are optional** (previously only Distribution was marked optional). A PNA that never reaches out omits Communications — its comms ACs (AC-16/18/19) are then vacuous, mirroring how the MCP ACs are vacuous when no MCP server is exposed. This is a **relaxation**: every existing design (which has all slots) stays conformant; it just lets a smaller app qualify. See `spec/PNA_Spec.md` § Slots, Interfaces, and Sub-contracts.
 - **New use case — Minimum Viable PNA ("Personal Vault").** The smallest conformant shape: Ingestion + Storage + a minimal Workspace, no Communications, no Distribution — a local mirror of your contacts plus a private overlay you add via a CLI; nothing leaves the device. Added to `spec/use_cases.md` and the PNA_Spec use-cases list (README / SKILL / llms.txt summaries updated to match).
 - **Workspace stays required — MCP can't replace it (v0.1).** The Workspace bundles three roles: render, write-private-data, and the human-in-the-loop consent boundary. MCP servers can *add* an AI-driven surface but can't replace the Workspace in v0.1, because the data-ops MCP servers are read-only (no private writes via MCP) and AC-MCP-A/B make the Workspace the mandatory consent surface (the MCP server proposes; the Workspace disposes). A **headless / MCP-native PNA** is recorded as a v0.2+ direction in `use_cases.md`.
+
+### Design note — existential review of the Exceptions mechanism (toolkit fix)
+
+- Records the deliberation behind the honest-exit RFC ([PR #32](https://github.com/richbodo/personal_network_toolkit/pull/32)): *should the spec allow `EX-*` exceptions at all?* Conclusion — **keep them**; the mechanism isn't the corruption, an unverifiable purity claim would be. New full note at `docs/design-notes/2026-06-exceptions-existential-review.md`, indexed by a dated entry in `docs/PriorArt.md § Design notes`. **Establishes `docs/design-notes/` as the home for full-length notes** that the PriorArt log indexes (short entry in the log; long deliberations as their own files). Doc-only; the spec lint + self-tests are unaffected.
 
 ### ID columns moved to the right + header-aware lint + deep-link anchors (toolkit fix)
 
