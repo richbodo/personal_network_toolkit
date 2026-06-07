@@ -2,6 +2,10 @@
 
 ## v0.1 draft (in progress)
 
+### Mission-forward Preamble + new vocabulary: personal network / contact data / relationship data (toolkit fix)
+
+- **Rewrote the `spec/PNA_Spec.md` Preamble** to lead with the spec's role ("defines what an application must *prove*"), define a **personal network** as the egocentric, you-at-the-center graph, frame the highest-leverage claim explicitly as a *wager*, add the AI-OS "*where* does software act over your relationships" framing, and carry the social-network-health "why" in one sober sentence + an evidence-safe footnote (correlate, not cause; mental-health pathway). Added three first-class **Vocabulary** terms mapped onto the existing shared/private split — **contact data** (→ Shared DB), **personal network**, **relationship data** ("private relationship memory" → Private DB). Prose/definitions only — no Toolkit-Version bump, no AC/EX/CST/sub-contract ID changed.
+
 ### Project renamed to "PNA Toolkit"; "PNT" acronym retired (toolkit fix)
 
 - **Project name changed from "Personal Network Toolkit (PNT)" to "PNA Toolkit".** The "PNT" acronym is retired across the docs, spec prose, skill, templates, plans, and code comments in favor of "PNA Toolkit" (first mention / headings / titles) and "the toolkit" (subsequent in-prose mentions). Cosmetic rename only — **no Toolkit-Version bump**, no AC/EX/CST/sub-contract ID changed, no behavior changed. The **repo slug `personal_network_toolkit` and all `github.com/...` URLs are unchanged**, so existing clones, links, and cross-repo references (including `fellows_local_db`'s) still resolve. The predecessor "Personal Relationship Toolkit" (PRT) name is untouched.
