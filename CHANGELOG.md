@@ -2,6 +2,20 @@
 
 ## v0.1 draft (in progress)
 
+### Visual Validator plan + Chromium-only capability-gap note (toolkit fix)
+
+- **New plan `plans/visual-validator-plan.md`** — a phased plan for a static, zero-dependency,
+  engine-agnostic HTML/JS viewer (under `tools/report-viewer/`) that renders
+  `tools/evaluate-report.schema.json` instances in a developer **and** an end-user register —
+  shown toggled or **finding-aligned side by side** (the educational payoff) — building to a
+  directory-of-reports ←/→ flip-through (the home doubling as a cron-job reports drop on a dev
+  box). Planning artifact only — no spec/AC/contract change, no behavior change.
+- **`spec/constraints.md`** — added a non-normative *Chromium-only capability gap* implementation
+  note consolidating that user-visible durable local file/folder access (the File System Access
+  API: `showDirectoryPicker` / `showOpenFilePicker` / `showSaveFilePicker`) is Chromium-only, and
+  linking the existing `CST-PWA-PRIVATE-SNAPSHOT` / `CST-PWA-SANDBOX-SEALED` ceilings for the
+  consequences. Clarification only — no `CST-*`/AC/EX ID added or changed; lint + self-tests green.
+
 ### Mission-forward Preamble + new vocabulary: personal network / contact data / relationship data (toolkit fix)
 
 - **Rewrote the `spec/PNA_Spec.md` Preamble** to lead with the spec's role ("defines what an application must *prove*"), define a **personal network** as the egocentric, you-at-the-center graph, frame the highest-leverage claim explicitly as a *wager*, add the AI-OS "*where* does software act over your relationships" framing, and carry the social-network-health "why" in one sober sentence + an evidence-safe footnote (correlate, not cause; mental-health pathway). Added three first-class **Vocabulary** terms mapped onto the existing shared/private split — **contact data** (→ Shared DB), **personal network**, **relationship data** ("private relationship memory" → Private DB). Prose/definitions only — no Toolkit-Version bump, no AC/EX/CST/sub-contract ID changed.
