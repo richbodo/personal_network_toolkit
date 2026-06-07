@@ -6,7 +6,7 @@ and a `conformant` claim with no executable evidence is a finding.
 This is the portable reference implementation the
 `reference_designs/templates/ARCHITECTURE_TEMPLATE.md` "Mechanical check" note
 points at. A design copies it into its own repo and runs it against its own
-Architecture document + test tree (PNT runs it here only against fixtures —
+Architecture document + test tree (the toolkit runs it here only against fixtures —
 it hosts no application code). It is the deterministic half of the evaluate
 flow's "confirm the named test exists **and passes**" step: a static lint can
 prove the cited test *exists and is a live, non-deferred assertion*; whether it

@@ -28,7 +28,7 @@ One paragraph describing what this design is and what it demonstrates.
 
 - Reference design version: commit `<sha>`
 - Software Heritage: `swh:1:dir:<id>`
-- Optional archive: `archive/<design-name>` at commit `<sha>` (if PNT forked for high-signal archival)
+- Optional archive: `archive/<design-name>` at commit `<sha>` (if the toolkit forked for high-signal archival)
 - Summary: <2–4 sentences>
 
 ### Toolkit-Version <X.Y+n> — <short title> (PR #<m>)

@@ -1,12 +1,12 @@
-# PNT User's Guide
+# PNA Toolkit User's Guide
 
 The PNA (Personal Network Application) Spec is the canonical specification; this guide is the canonical **how-to**. It is task-ordered: each section is a numbered sequence of actions to accomplish one thing. Where a step needs a rule or definition, it links to the authoritative document rather than restating it.
 
-PNT (Personal Network Toolkit) is built to be consumed by AI coding agents, and its users are developers. Most of this guide assumes you have an agent (Claude Code, Cursor, an equivalent) you can ask things like *"use the PNT skill to validate my design."* The skill at [`pna-build-eval-contrib/SKILL.md`](../pna-build-eval-contrib/SKILL.md) is the agent-consumption view of the build / audit / contribute flows below.
+The PNA Toolkit is built to be consumed by AI coding agents, and its users are developers. Most of this guide assumes you have an agent (Claude Code, Cursor, an equivalent) you can ask things like *"use the toolkit skill to validate my design."* The skill at [`pna-build-eval-contrib/SKILL.md`](../pna-build-eval-contrib/SKILL.md) is the agent-consumption view of the build / audit / contribute flows below.
 
 **The fastest way in is auditing.** If you just want to know whether a contact app is safe before you install it — without building or contributing anything — go straight to [Audit a candidate PNA](#audit-a-candidate-pna-before-installing-it). Point an agent at the app's source and get back an AC-keyed safety report.
 
-> **Status (June 2026).** PNT's deterministic tooling is tested and CI-enforced; the agent-driven flows are being exercised for real.
+> **Status (June 2026).** The toolkit's deterministic tooling is tested and CI-enforced; the agent-driven flows are being exercised for real.
 >
 > **Tested / CI-enforced** (run on every PR, reproducible locally with `just ci`):
 > - [`tools/lint-spec-ids.py`](../tools/lint-spec-ids.py) — AC ↔ contract / exception / constraint / manifest / toolkit-version traceability lint.
@@ -22,29 +22,29 @@ PNT (Personal Network Toolkit) is built to be consumed by AI coding agents, and 
 
 ## Install the skill
 
-The flows below are driven by the PNT skill at [`pna-build-eval-contrib/SKILL.md`](../pna-build-eval-contrib/SKILL.md). If you haven't used Claude Code skills before: they're modular agent capabilities that live in a `.claude/skills/<skill-name>/SKILL.md` layout. You install one once, then use it through natural language in any chat.
+The flows below are driven by the toolkit skill at [`pna-build-eval-contrib/SKILL.md`](../pna-build-eval-contrib/SKILL.md). If you haven't used Claude Code skills before: they're modular agent capabilities that live in a `.claude/skills/<skill-name>/SKILL.md` layout. You install one once, then use it through natural language in any chat.
 
 ### How Claude decides to use the skill
 
-At session start Claude Code loads every installed skill's **name and `description`** into context — not the full body, which loads only when the skill actually runs. Claude then **auto-discovers** the skill: when your prompt matches the triggers in its `description`, it invokes the skill on its own, without you naming it. The PNT skill's description is written to fire on phrases like *"is this app safe to install?"*, *"does my app conform?"*, or "build a local-first contact app", so a request like *"audit this contact app before I install it"* trips it automatically.
+At session start Claude Code loads every installed skill's **name and `description`** into context — not the full body, which loads only when the skill actually runs. Claude then **auto-discovers** the skill: when your prompt matches the triggers in its `description`, it invokes the skill on its own, without you naming it. The toolkit skill's description is written to fire on phrases like *"is this app safe to install?"*, *"does my app conform?"*, or "build a local-first contact app", so a request like *"audit this contact app before I install it"* trips it automatically.
 
-You don't have to rely on that, though. You can always invoke it explicitly — `/pna-build-eval-contrib`, or just *"Use the PNT skill to…"*. Auto-discovery is a match against prose, so it's a strong default but not a guarantee; for a deliberate task like validating that a repo conforms, naming the skill (or the flow) is the most reliable path — and that's how the prompts in this guide are phrased.
+You don't have to rely on that, though. You can always invoke it explicitly — `/pna-build-eval-contrib`, or just *"Use the toolkit skill to…"*. Auto-discovery is a match against prose, so it's a strong default but not a guarantee; for a deliberate task like validating that a repo conforms, naming the skill (or the flow) is the most reliable path — and that's how the prompts in this guide are phrased.
 
-**Recommended — symlink globally** (run from your PNT working directory):
+**Recommended — symlink globally** (run from your toolkit working directory):
 
 ```bash
 mkdir -p ~/.claude/skills
 ln -s "$(pwd)/pna-build-eval-contrib" ~/.claude/skills/pna-build-eval-contrib
 ```
 
-Symlinking keeps the skill in sync with your PNT clone — a `git pull` here updates the skill everywhere it's used.
+Symlinking keeps the skill in sync with your toolkit clone — a `git pull` here updates the skill everywhere it's used.
 
 **Alternatives:**
 
 - **Copy instead of symlink** — replace `ln -s` with `cp -r` to pin the skill to a specific version. You'll re-copy when you want updates.
-- **Run Claude Code from PNT itself** — no install required; the skill is discoverable from this directory. Adequate for one-off auditing.
+- **Run Claude Code from the toolkit itself** — no install required; the skill is discoverable from this directory. Adequate for one-off auditing.
 
-### Per-repo install (for a design that contributes to PNT)
+### Per-repo install (for a design that contributes to the PNA Toolkit)
 
 When a PNA repo actively contributes back (it's a reference design, or you drive the contribute flow from it), scope the skill to that repo at `<your-project>/.claude/skills/pna-build-eval-contrib` so collaborators on it pick the skill up. Two forms:
 
@@ -52,18 +52,18 @@ When a PNA repo actively contributes back (it's a reference design, or you drive
   ```bash
   ln -s <path-to-pnt>/pna-build-eval-contrib <your-project>/.claude/skills/pna-build-eval-contrib
   ```
-  Stays in sync with your PNT clone, but the absolute path is machine-specific — **don't commit a machine-specific symlink.**
+  Stays in sync with your toolkit clone, but the absolute path is machine-specific — **don't commit a machine-specific symlink.**
 - **Vendored copy** (portable, committable):
   ```bash
   cp -r <path-to-pnt>/pna-build-eval-contrib <your-project>/.claude/skills/pna-build-eval-contrib
   ```
-  Commit it **with a provenance note pinning the PNT commit** it was copied from (e.g. an `INSTALLED_FROM.md` beside `SKILL.md`). Collaborator-friendly and reproducible, but it **drifts** from upstream — re-sync before relying on it for a contribution.
+  Commit it **with a provenance note pinning the toolkit commit** it was copied from (e.g. an `INSTALLED_FROM.md` beside `SKILL.md`). Collaborator-friendly and reproducible, but it **drifts** from upstream — re-sync before relying on it for a contribution.
 
 Pick the symlink for local iteration; pick the vendored copy when the design repo should carry the skill for everyone working on it.
 
 > **Precedence gotcha — a global install shadows the repo copy.** When the same skill name exists at more than one scope, Claude Code resolves in the order **enterprise → personal (`~/.claude/skills`) → project (`<repo>/.claude/skills`)**, and the higher scope wins *silently* — no collision warning. So if you've done the recommended global install **and** vendored a pinned copy into a design repo, the global copy wins, and your pinned, reproducible copy is never used. When a contribution depends on validating against a specific pinned Toolkit-Version, remove or rename the global install for that work.
 
-**Verify.** Start Claude Code and try one of the prompts below; if the skill triggers, you're set. You can also ask *"what PNT skills do you have available?"*. **Note:** a restart is only needed the **first** time you create a top-level skills directory that didn't exist when the session started (e.g. the `mkdir -p ~/.claude/skills` above). Once the directory exists, later edits are picked up live.
+**Verify.** Start Claude Code and try one of the prompts below; if the skill triggers, you're set. You can also ask *"what PNA Toolkit skills do you have available?"*. **Note:** a restart is only needed the **first** time you create a top-level skills directory that didn't exist when the session started (e.g. the `mkdir -p ~/.claude/skills` above). Once the directory exists, later edits are picked up live.
 
 ---
 
@@ -79,7 +79,7 @@ You're starting (or extending) a personal network application.
 
 2. **Walk through axis picks with the agent.** Open Claude Code in your new project's directory and ask:
 
-   > "Use the PNT skill to walk me through axis picks for a [Directory Archive | Personal Relationship Manager | …] PNA."
+   > "Use the toolkit skill to walk me through axis picks for a [Directory Archive | Personal Relationship Manager | …] PNA."
 
    The agent walks each Axis (distribution, storage substrate, ingestion shape, workspace shell, comms transport set, MCP-exposure) and the attested picks per Axis. Your full set of picks is your *flavor*. Some picks trigger flavor-derived ACs — see [`spec/axes.md`](../spec/axes.md).
 
@@ -104,11 +104,11 @@ You have a PNA in front of you (someone else's, or your own in-progress one) and
 
 1. **Get the candidate's source.** Clone the repo. If you only have a bundle, ask for the source — you can't audit a black box.
 
-2. **Open Claude Code with PNT and the candidate both reachable.** The skill lives at [`pna-build-eval-contrib/SKILL.md`](../pna-build-eval-contrib/SKILL.md); the agent reads it when the prompt matches.
+2. **Open Claude Code with the toolkit and the candidate both reachable.** The skill lives at [`pna-build-eval-contrib/SKILL.md`](../pna-build-eval-contrib/SKILL.md); the agent reads it when the prompt matches.
 
 3. **Ask the agent to run the audit:**
 
-   > "Use the PNT skill to audit `<path-to-candidate>` for PNA-spec conformance. Is this app safe for me to install?"
+   > "Use the toolkit skill to audit `<path-to-candidate>` for PNA-spec conformance. Is this app safe for me to install?"
 
    If the candidate ships its own Architecture document, the agent validates it against the code (do cited locations match? do declared verifications pass?). Otherwise it infers axis picks from the source and walks every applicable AC from scratch. It also **detects and verifies Exceptions** (`EX-*`) and **Constraints** (`CST-*`) — confirming each declared deviation is handled honestly and flagging any *undeclared* one. As part of the audit it runs the deterministic checks in `tools/` (`just egress-lint <path>` for AC-1 off-device leaks; `just export-lint <path>` for PR-6 export readability; `just attestation-lint <path>` to confirm the candidate's own `conformant` attestation rows cite live, non-deferred evidence) and folds their results into the matching AC findings as `source: deterministic` evidence.
 
@@ -118,19 +118,19 @@ You have a PNA in front of you (someone else's, or your own in-progress one) and
 
 ### Contribute your design back as a reference design
 
-You've built or are operating a PNA against the spec and want to contribute it back to PNT. This is the most-used flow.
+You've built or are operating a PNA against the spec and want to contribute it back to the toolkit. This is the most-used flow.
 
 **Should I submit?** Three patterns justify a submission: a **new architectural commitment** (your design surfaced a constraint the spec doesn't capture — your PR includes a spec diff); **existing patterns on a new platform** (you exercise existing ACs on a substrate/use-case not yet attested — no spec change needed); or an **ecosystem value-add** (you fill a use-case gap or bring something no existing design demonstrates). If your design is *identical* to an existing reference with no novelty, reach out before authoring.
 
 1. **Preflight via the skill — iterate until clean.** Open Claude Code in your design's repo and ask:
 
-   > "Use the PNT skill to validate this design for submission to PNT."
+   > "Use the toolkit skill to validate this design for submission to the toolkit."
 
    The agent locates (or interactively creates) your Architecture document, asks what's architecturally interesting, and reports what's broken or missing as a structured list — missing files/sections, attestation rows without Verification, cited-but-absent code, a missing/malformed `design.toml`, failing tests, license problems. Fix things, re-run preflight, repeat until the report is clean.
 
 2. **Ask the agent to open the PR.** Once preflight is clean:
 
-   > "Use the PNT skill's contribute flow to open a PR adding this design at `<path>` (commit `<sha>`)."
+   > "Use the toolkit skill's contribute flow to open a PR adding this design at `<path>` (commit `<sha>`)."
 
    The agent reads [`CONTRIBUTING.md`](../CONTRIBUTING.md), authors the design record at `reference_designs/<name>/README.md`, copies your Architecture document to `reference_designs/<name>/Architecture.md`, writes the machine-readable manifest `reference_designs/<name>/design.toml` (per [`reference_designs/templates/design.toml`](../reference_designs/templates/design.toml) — repo, `[flavor]` picks, the `[verify]` entrypoint, and the SWHID pin once archived), commits the evaluate-report, adds a spec diff if you're proposing one, and opens the PR. The PR template's [reference-design checklist](../.github/pull_request_template.md) lists every required artifact.
 
@@ -184,10 +184,10 @@ If you find a spec gap, ambiguity, or contradiction, your PR includes a spec dif
 
 | You want to … | Open Claude Code in … | Ask the agent … |
 |---|---|---|
-| Build a new PNA | your new project's dir | "Use the PNT skill to walk me through axis picks for a [use case] PNA." |
-| Audit someone's PNA before installing | PNT (with candidate at known path) | "Use the PNT skill to audit `<path>` for PNA-spec conformance." |
-| Preflight your design for submission | your design's repo | "Use the PNT skill to validate this design for submission to PNT." |
-| Open the contribution PR | PNT | "Use the PNT skill's contribute flow to open a PR adding this design." |
+| Build a new PNA | your new project's dir | "Use the toolkit skill to walk me through axis picks for a [use case] PNA." |
+| Audit someone's PNA before installing | PNA Toolkit (with candidate at known path) | "Use the toolkit skill to audit `<path>` for PNA-spec conformance." |
+| Preflight your design for submission | your design's repo | "Use the toolkit skill to validate this design for submission to the toolkit." |
+| Open the contribution PR | PNA Toolkit | "Use the toolkit skill's contribute flow to open a PR adding this design." |
 
 Working on the toolkit itself: `just` for the command menu, `just ci` before pushing.
 
@@ -215,4 +215,4 @@ Working on the toolkit itself: `just` for the command menu, `just ci` before pus
   - [`tools/evaluate-report.schema.json`](../tools/evaluate-report.schema.json) — typed schema for the audit report
   - [`tools/swh-save.sh`](../tools/swh-save.sh) — Software Heritage archival + SWHID computation
 - [`docs/conformance-scope-and-lifecycle.md`](conformance-scope-and-lifecycle.md) — what the conformance suite covers, the active/archival lifecycle, and the roadmap
-- [`plans/`](../plans/) — live plans tracking PNT's own evolution
+- [`plans/`](../plans/) — live plans tracking the toolkit's own evolution
