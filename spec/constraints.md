@@ -49,7 +49,7 @@ acknowledging the ceiling.
 
 ### Validation, not certification
 
-PNT **validates behaviors against the Goals; it does not certify** (see `CONTRIBUTING.md` and the
+The PNA Toolkit **validates behaviors against the Goals; it does not certify** (see `CONTRIBUTING.md` and the
 skill's § Principles, "Conformance is checked, not awarded"). For Constraints, the
 [evaluate flow](../pna-build-eval-contrib/SKILL.md) detects each inherited ceiling and verifies that
 the candidate *handles it honestly* — capability reduced to match the platform, frontier declared
@@ -282,6 +282,6 @@ fellow's Private Data Ops MCP server stopped connecting to a cloud client, and c
 was that fragile in the first place* surfaced a class-level ceiling the app had been routing around
 without naming (the FSA-only durable private store; the sealed OPFS sandbox). Constraints are the dual
 of [Exceptions](exceptions.md): where an Exception is a deviation the user raises, a Constraint is a
-ceiling the platform imposes. Per PNT's reference-driven model, this concept ships alongside the working
+ceiling the platform imposes. Per the toolkit's reference-driven model, this concept ships alongside the working
 design that demonstrates the handling (folder mode + per-platform capability reduction). See that
 design's `docs/architectural_findings.md` (upstream) and `reference_designs/fellows_local_db/`.

@@ -1,8 +1,8 @@
 # Reference designs
 
-A reference design is a working, deployed PNA that demonstrates one valid combination of axis picks against the PNA Spec. Each lives in its author's own repository, under its own release cadence; PNT references each design by Software Heritage SWHID (the v0.1 permanent identifier — see `spec/PNA_Spec.md § Vocabulary`).
+A reference design is a working, deployed PNA that demonstrates one valid combination of axis picks against the PNA Spec. Each lives in its author's own repository, under its own release cadence; the PNA Toolkit references each design by Software Heritage SWHID (the v0.1 permanent identifier — see `spec/PNA_Spec.md § Vocabulary`).
 
-PNT's contribution model is reference-driven: spec changes are accompanied by a reference design that demonstrates the change in working code. The reference designs collected here are therefore not just illustrations — each one contributed something to the spec.
+The toolkit's contribution model is reference-driven: spec changes are accompanied by a reference design that demonstrates the change in working code. The reference designs collected here are therefore not just illustrations — each one contributed something to the spec.
 
 ## How to contribute a design
 

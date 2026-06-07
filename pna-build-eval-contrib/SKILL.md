@@ -1,15 +1,15 @@
 ---
 name: pna-build-eval-contrib
-description: 'Use when building, extending, or evaluating a Personal Network Application (PNA) — local-first, private-by-default applications that mirror SaaS contact data into a user-owned workspace and operate on relationship data with no remote authority. Triggers on requests to build a local-first contact app, relationship manager, private CRM-like tool, or any app built around personal-network data; on requests to audit an existing application for PNA-spec conformance ("is this app safe to install?", "does my app conform?"); and on requests to contribute back to PNT — either a reference design, or (the common case) a lighter toolkit fix to the spec/tooling/docs. Three flows: build a conformant PNA from the spec, evaluate whether an existing application conforms, and contribute back to PNT (reference design or toolkit fix).'
+description: 'Use when building, extending, or evaluating a Personal Network Application (PNA) — local-first, private-by-default applications that mirror SaaS contact data into a user-owned workspace and operate on relationship data with no remote authority. Triggers on requests to build a local-first contact app, relationship manager, private CRM-like tool, or any app built around personal-network data; on requests to audit an existing application for PNA-spec conformance ("is this app safe to install?", "does my app conform?"); and on requests to contribute back to the PNA Toolkit — either a reference design, or (the common case) a lighter toolkit fix to the spec/tooling/docs. Three flows: build a conformant PNA from the spec, evaluate whether an existing application conforms, and contribute back to the toolkit (reference design or toolkit fix).'
 ---
 
 # Building, Evaluating, and Contributing to PNAs
 
 > **Toolkit-Version:** 0.1 (draft) — the toolkit (spec, contracts, skill, lint, templates) is versioned as a unit; see [VERSION](../VERSION).
 
-A PNA is a local-first application built to the PNT spec. The spec defines the architectural commitments (ACs) all PNAs share and the axes along which they legitimately differ. Conformance is satisfied by implementing the typed contracts in `contracts/` for each declared axis pick and honoring every applicable AC.
+A PNA is a local-first application built to the PNA Toolkit spec. The spec defines the architectural commitments (ACs) all PNAs share and the axes along which they legitimately differ. Conformance is satisfied by implementing the typed contracts in `contracts/` for each declared axis pick and honoring every applicable AC.
 
-PNT itself is a *generative + evaluative* application-class blueprint:
+The PNA Toolkit itself is a *generative + evaluative* application-class blueprint:
 
 - **Generative.** AI agents read it to build conformant PNAs. The spec + contracts + reference designs are the materials.
 - **Evaluative.** AI agents read it to evaluate whether an existing application conforms. The user trusts the spec; they want to know whether a specific candidate honors it.
@@ -72,17 +72,17 @@ Callers may ask you to emphasize specific Goals or axes at runtime (e.g., "focus
 
 ## Contribute flow
 
-Use when the user wants to change PNT itself. **Route the contribution first** — the two shapes carry very different weight:
+Use when the user wants to change the toolkit itself. **Route the contribution first** — the two shapes carry very different weight:
 
 > **Does the change impose a new contract a conformant design must satisfy** — a new or changed AC, a new sub-contract, a new axis pick?
 > - **Yes → reference-design contribution.** A spec change is accepted only with a working design that demonstrates it. Heavyweight: preflight, design record, evaluate-report, Architecture copy, archival. See *Reference-design contribution* below.
-> - **No → toolkit fix.** Tooling/lints, templates, this skill, docs, a CHANGELOG entry, or a spec note that *clarifies* or *declines* a commitment (imposes no new obligation). Lightweight — a normal PR, no reference-design attestation. **This is the common case: most PNT PRs are toolkit fixes.** See *Toolkit fix* below.
+> - **No → toolkit fix.** Tooling/lints, templates, this skill, docs, a CHANGELOG entry, or a spec note that *clarifies* or *declines* a commitment (imposes no new obligation). Lightweight — a normal PR, no reference-design attestation. **This is the common case: most PRs to the toolkit are toolkit fixes.** See *Toolkit fix* below.
 >
 > When unsure, ask: *does a design have to do anything new to stay conformant after this change?* If nothing does, it's a toolkit fix.
 
 ### Reference-design contribution
 
-Use when the user has built or operated a PNA and wants to submit it back to PNT as a reference design — whether they found a spec gap and want to propose a fix, or they have a working design that adds ecosystem value at a flavor not yet attested. The flow has two phases: **preflight validation** (is the design submission-ready?) and **PR authoring** (open the actual PR).
+Use when the user has built or operated a PNA and wants to submit it back to the toolkit as a reference design — whether they found a spec gap and want to propose a fix, or they have a working design that adds ecosystem value at a flavor not yet attested. The flow has two phases: **preflight validation** (is the design submission-ready?) and **PR authoring** (open the actual PR).
 
 #### Preflight validation
 
@@ -126,7 +126,7 @@ Once preflight passes:
 2. **Frame the contribution.** If proposing a spec change, write the spec diff and explain what working code in the design demonstrates each change. If purely additive (no spec change), say so in the design record's contributions section.
 3. **Author the design record** at `reference_designs/<design-name>/README.md` per `reference_designs/templates/TEMPLATE.md`.
 4. **Author the machine-readable manifest** at `reference_designs/<design-name>/design.toml` per `reference_designs/templates/design.toml`. This is the source of truth the conformance suite reads: `name`, `repo`, `toolkit_version`, `status`, `archival`, the `[flavor]` axis picks (each must resolve in `spec/axes.md`), and the `[verify]` block declaring the one command that builds and runs the design's attested tests (`tools/lint-spec-ids.py` validates the shape). While archival is still pending, leave `commit`/`swhid_rev`/`swhid_dir` empty (`archival = "pending"`); the lint permits that for an in-flight design.
-5. **Copy the Architecture document** to `reference_designs/<design-name>/Architecture.md`. (PNT keeps its own copy at acceptance time; the design's own repo may evolve after.)
+5. **Copy the Architecture document** to `reference_designs/<design-name>/Architecture.md`. (The toolkit keeps its own copy at acceptance time; the design's own repo may evolve after.)
 6. **Open the PR** with: spec diff (if any), design record, `design.toml`, Architecture document, canonical repo URL, and the commit SHA being submitted.
 
 After merge, the maintainer triggers Software Heritage archival on the design's repo at the accepted commit (planned tooling: `tools/swh-save.sh`, landing in Phase 5; until then, archival is performed manually via Software Heritage's Save Code Now), then records the returned `swh:1:dir`/`swh:1:rev` and the commit SHA **into `design.toml`** and flips `archival = "archived"` (at which point the lint requires those fields and checks `swhid_rev` against `commit`). The SWHID also goes in the prose design record. A final preflight run against the merged state should come out clean.
@@ -146,7 +146,7 @@ Use when the change is to the toolkit's own artifacts and imposes **no** new con
 
 ## Principles to honor in every flow
 
-- **Layering of verification.** Deterministic tools (lints in `tools/`) for the mechanical layer; LLMs (you) for the architectural-conformance layer; humans for judgment-and-review at PR time. Investment is ~80/20 toward description-and-process; PNT does not ship a Python conformance test runner beyond trivial lints.
+- **Layering of verification.** Deterministic tools (lints in `tools/`) for the mechanical layer; LLMs (you) for the architectural-conformance layer; humans for judgment-and-review at PR time. Investment is ~80/20 toward description-and-process; the toolkit does not ship a Python conformance test runner beyond trivial lints.
 - **The AC is the unit of identity.** Every AC has a stable ID. Every contract names the AC(s) it realizes. Every Architecture document attests AC-by-AC. When citing non-conformance, cite by AC ID.
 - **Conformance is checked, not awarded.** There is no certifying body. A user trusts an app because they (or an LLM running this skill) checked it against the spec, not because the app carries a badge.
 - **Variable language about axis counts.** The spec says "the axes," not "the six axes." The set may evolve; don't hardcode numbers.

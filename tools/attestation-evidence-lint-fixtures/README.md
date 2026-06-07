@@ -1,7 +1,7 @@
 # attestation-evidence-lint fixtures
 
 Self-test inputs for `tools/attestation-evidence-lint.py` (wired into
-`tools/tests/lint_selftest.py`). PNT hosts no application code, so the lint is
+`tools/tests/lint_selftest.py`). The PNA Toolkit hosts no application code, so the lint is
 exercised here against two tiny fake design roots instead of a real repo.
 
 - **`clean/`** — every `conformant` row cites a live, non-deferred test or a

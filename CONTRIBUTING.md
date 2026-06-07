@@ -1,12 +1,12 @@
-# Contributing to PNT
+# Contributing to the PNA Toolkit
 
 > **Toolkit-Version:** 0.1 (draft) — the toolkit (spec, contracts, skill, lint, templates) is versioned as a unit; see [VERSION](VERSION).
 
-PNT (the Personal Network Toolkit) evolves through reference-driven specification: a spec change that imposes a new obligation on designs is accepted only with a working reference design that demonstrates it in code. But most contributions are lighter — **toolkit fixes** (tooling, docs, the skill, a scope or clarification spec note) that impose no such obligation. This document covers both; see *Contribution types* below for which path yours takes.
+The PNA Toolkit evolves through reference-driven specification: a spec change that imposes a new obligation on designs is accepted only with a working reference design that demonstrates it in code. But most contributions are lighter — **toolkit fixes** (tooling, docs, the skill, a scope or clarification spec note) that impose no such obligation. This document covers both; see *Contribution types* below for which path yours takes.
 
 ## Philosophy
 
-The spec is generative + evaluative. AI agents read it to build conformant PNAs (Personal Network Applications), and to evaluate whether a candidate application is safe to use as one. Both modes are first-class. PNT is a thin canonical repo: spec, typed contracts, reference design records, skill, tooling. It does not host runnable application code.
+The spec is generative + evaluative. AI agents read it to build conformant PNAs (Personal Network Applications), and to evaluate whether a candidate application is safe to use as one. Both modes are first-class. The toolkit is a thin canonical repo: spec, typed contracts, reference design records, skill, tooling. It does not host runnable application code.
 
 A reference design is the bridge between abstract spec and working software. Spec changes that impose a new obligation on designs without a demonstrating design are not accepted; designs without a discussion of what they contribute to the spec are not accepted either. The two co-evolve.
 
@@ -15,7 +15,7 @@ A reference design is the bridge between abstract spec and working software. Spe
 A contribution is a PR against the versioned toolkit, in one of two shapes. **Route yours first** — they carry very different weight:
 
 - **Reference design** — a new or updated reference design, or a spec/contracts change that imposes a new obligation on designs (a new or changed AC, a new sub-contract, a new axis pick). Accepted only with a working design that demonstrates it. This is the heavyweight path the rest of this document specifies: an Architecture document with an AC attestation table, an evaluate-flow report, archival. The skill's *Reference-design contribution* flow drives it.
-- **Toolkit fix** — a change to the toolkit's own artifacts that imposes **no** new contract a design must satisfy: tooling/lints, templates, the skill, docs, a CHANGELOG entry, or a spec note that *clarifies* or *declines* a commitment. No reference-design attestation. **Most PNT PRs are toolkit fixes.** Open a normal PR, run `just ci` (lint + self-tests), add a CHANGELOG entry, record rationale in [`docs/PriorArt.md` § Design notes](docs/PriorArt.md) if it's a decision, and check the *Toolkit fix* box in the PR template. The skill's *Toolkit fix* flow drives it. [PR #19](https://github.com/richbodo/personal_network_toolkit/pull/19) is the canonical example: an at-rest-encryption scope decision that *declined* to add an AC.
+- **Toolkit fix** — a change to the toolkit's own artifacts that imposes **no** new contract a design must satisfy: tooling/lints, templates, the skill, docs, a CHANGELOG entry, or a spec note that *clarifies* or *declines* a commitment. No reference-design attestation. **Most PRs to the toolkit are toolkit fixes.** Open a normal PR, run `just ci` (lint + self-tests), add a CHANGELOG entry, record rationale in [`docs/PriorArt.md` § Design notes](docs/PriorArt.md) if it's a decision, and check the *Toolkit fix* box in the PR template. The skill's *Toolkit fix* flow drives it. [PR #19](https://github.com/richbodo/personal_network_toolkit/pull/19) is the canonical example: an at-rest-encryption scope decision that *declined* to add an AC.
 
 **The deciding question:** *does a design have to do anything new to stay conformant after this change?* If yes → reference design. If nothing does → toolkit fix. Everything below (*What we accept* / *don't accept* / *PR contents* / *acceptance* / *archival*) is the **reference-design** policy; a toolkit fix only needs the lint, a CHANGELOG entry, and — for a decision — a Design-notes entry.
 
@@ -87,9 +87,9 @@ Individual axes carry their own version (declared per-axis in each design's Arch
 
 ## Archival
 
-Software Heritage SWHIDs are the canonical permanent identifier for accepted reference designs (v0.1 — see `spec/PNA_Spec.md § Vocabulary` under "reference design"). PNT may additionally fork high-signal designs to a `pnt-archive` GitHub organization at maintainer discretion; these forks are frozen at the accepted commit and not maintained.
+Software Heritage SWHIDs are the canonical permanent identifier for accepted reference designs (v0.1 — see `spec/PNA_Spec.md § Vocabulary` under "reference design"). The toolkit may additionally fork high-signal designs to a `pnt-archive` GitHub organization at maintainer discretion; these forks are frozen at the accepted commit and not maintained.
 
-PNT does not host runnable application code or maintain forks.
+The toolkit does not host runnable application code or maintain forks.
 
 ## Acceptance is not certification
 

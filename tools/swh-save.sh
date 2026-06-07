@@ -4,7 +4,7 @@
 # swh-save.sh — request Software Heritage archival of a reference design's
 # source and print the git-compatible SWHIDs to record in its design entry.
 #
-# Why: PNT records a Software Heritage Persistent IDentifier (SWHID) for each
+# Why: the toolkit records a Software Heritage Persistent IDentifier (SWHID) for each
 # accepted reference design so the source survives even if the upstream repo
 # is deleted (spec/PNA_Spec.md § Vocabulary "reference design"; CONTRIBUTING
 # § Archival). SH's content/dir/rev identifiers are git-compatible, so

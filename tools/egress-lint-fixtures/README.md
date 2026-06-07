@@ -1,7 +1,7 @@
 # egress-lint fixtures
 
-Self-test inputs for [`../egress-lint.py`](../egress-lint.py). PNT bundles no
-application code, so these fixtures are how PNT's own CI exercises the lint (the
+Self-test inputs for [`../egress-lint.py`](../egress-lint.py). The PNA Toolkit bundles no
+application code, so these fixtures are how the toolkit's own CI exercises the lint (the
 real target of the lint is a reference design's source tree, in that design's
 repo).
 

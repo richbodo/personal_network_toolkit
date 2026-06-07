@@ -2,13 +2,13 @@
 
 > **Toolkit-Version:** 0.1 (draft) — the toolkit (spec, contracts, skill, lint, templates) is versioned as a unit; see [VERSION](../VERSION).
 >
-> The *how/when* of building PNT's test machinery. The *why/where's the line*
+> The *how/when* of building the PNA Toolkit's test machinery. The *why/where's the line*
 > reasoning lives in
 > [`docs/conformance-scope-and-lifecycle.md`](../docs/conformance-scope-and-lifecycle.md).
 
 ## Two lanes, never conflated
 
-- **Tier A — toolkit self-tests.** Tests of PNT's *own* checkers (the lints).
+- **Tier A — toolkit self-tests.** Tests of the toolkit's *own* checkers (the lints).
   Fast, hermetic, deterministic, run on every PR. No external repos. Pins the
   toolkit's honesty so a check can't silently rot (cf. the dead
   `Reversible:`/`Reversal:` check found in PR #18 review).

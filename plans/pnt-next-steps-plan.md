@@ -1,4 +1,4 @@
-# PNT Next Steps — High-Level Plan
+# PNA Toolkit Next Steps — High-Level Plan
 
 Ordered as requested: **1 → 4 → 5 → 3 → 6 → 2**. High-level only; work the details with Claude Code. Each item notes how it rides the existing reorg phases and `tools/` conventions rather than starting a parallel track.
 
@@ -75,7 +75,7 @@ Sequencing logic: a cheap README win first; then formalize the evaluate *output*
 **Goal.** Once Evaluate has proven itself as the front door (items 1, 4), give it its own skill for sharper auto-activation and standalone discoverability ("is this app safe to install?").
 
 - Separate entry point + tight, trigger-phrase-rich description; **share a reference file** with the build/contribute skill so the "Principles to honor" and "Key resources" sections aren't duplicated.
-- Keep Build (+ Contribute) together. Optionally publish Evaluate as a standalone surface (e.g. a Claude Project) so non-builders can use it without the rest of PNT.
+- Keep Build (+ Contribute) together. Optionally publish Evaluate as a standalone surface (e.g. a Claude Project) so non-builders can use it without the rest of the toolkit.
 
 **Done when.** Evaluate triggers reliably on audit-intent requests on its own, with no duplicated spec body across skills.
 
