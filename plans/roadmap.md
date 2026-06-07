@@ -80,8 +80,8 @@ low-cost, high-reversibility moves.
 ### Tier 3 — Inbound findings maturing in their demonstrators *(tracked, not scheduled)*
 See the registry below. fellows writes the demonstrating work **test-first**; each finding rides up
 to the toolkit at the next fellows re-sync, per the `CONTRIBUTING.md` reference-driven rule.
-- **#40** (fellows#252) — workspace user-mediation invariant → candidate **3rd general mechanism**.
-- **#41** (fellows#256) — EAR rejected for the live store; light CST frontier note (encrypt-in-transit).
+- **#40** (fellows#252) — workspace user-mediation invariant → candidate **3rd general mechanism**. *Demonstrator in progress: fellows PR #261.*
+- **#41** (fellows#256) — EAR rejected for the live store; light CST frontier note (encrypt-in-transit). *Decision recorded: fellows PR #258.*
 - **#42** (fellows#257) — cross-device over commodity channels; exploratory; 4 candidates.
 
 ### Tier 4 — Parked / later
@@ -99,15 +99,27 @@ is accepted only with a demonstrating design — so each row names its demonstra
 
 | Finding | Source | Toolkit track | Demonstrator | Gate | Target artifact | Status |
 |---|---|---|---|---|---|---|
-| Distribution = verifiability spectrum (not binary); + code-only vs. code+data | prm#8 | **#39** | PRM | PRM contribution (days) | `spec/axes.md` Distribution split + new dimension | **Ready → Tier 1** |
-| Workspace user-mediation invariant ("human is the actuator; workspace is ground truth") | fellows#252 | **#40** | fellows_local_db | fellows test-first (3 property tests) | new mechanism doc, sibling to `exceptions.md`/`constraints.md` | Tracked |
-| EAR rejected for live store; encrypt the portable export instead | fellows#256 | **#41** | fellows_local_db | decision recorded | non-normative frontier note on `CST-PWA-NO-SYNC` / `-PRIVATE-SNAPSHOT` | Tracked (light) |
+| Distribution = verifiability spectrum (not binary); + code-only vs. code+data | prm#8 | **#39** | PRM | PRM contribution (days); finding needs a fuller write-up | `spec/axes.md` Distribution split + new dimension | Demonstrator near-ready → Tier 1; write-up pending |
+| Workspace user-mediation invariant ("human is the actuator; workspace is ground truth") | fellows#252 | **#40** | fellows_local_db | fellows test-first (3 property tests) | new mechanism doc, sibling to `exceptions.md`/`constraints.md` | **Demonstrator in progress** — fellows PR #261 lands property 1 (no-bypass) |
+| EAR rejected for live store; encrypt the portable export instead | fellows#256 | **#41** | fellows_local_db | decision recorded | non-normative frontier note on `CST-PWA-NO-SYNC` / `-PRIVATE-SNAPSHOT` | **Decision locked** — fellows PR #258; toolkit note folds in at next re-sync |
 | Cross-device private data over commodity channels (4 candidates) | fellows#257 | **#42** | fellows_local_db | fellows prototype + local-AI | axis picks / CST frontier resolution / a skill | Exploratory |
+
+**In-flight in the demonstrators (2026-06-07).** fellows **PR #261** fixes a real private-store
+leak in the file-import path (`importRelationshipsBytes` durably wrote to evictable OPFS in
+browse-only mode — even from the DevTools console), found **test-first** while building #252 and
+fixed at the **worker/data layer**. It lands the first #252 no-bypass property test and doubles as a
+real-world validation of the toolkit's own CST-handling rule — *"a capability reduction MUST enforce
+at the data layer, not UI-only."* fellows **PR #258** records the #256 EAR decision (reject for the
+live store; encrypt in-transit). fellows defers #259 (off-folder UX) / #260 (attestation citations)
+to follow-ups. Net: #40's demonstrator is in progress and #41's decision is locked — both fold into
+the toolkit at the next fellows re-sync (Tier 0/1), where the fellows attestation will also gain the
+new data-layer-guard citations.
 
 ## Cross-repo sync state
 
 - **Mirrored:** the three fellows findings now have toolkit tracking issues (#40/#41/#42, label
   `inbound-finding`); the distribution finding is cross-filed (#39 ⇄ prm#8, bidirectionally linked).
+  In-flight demonstrator work is linked from each: fellows PR #261 → #40, fellows PR #258 → #41.
 - **Drift to fix in Tier 0:** `reference_designs/fellows_local_db/` README claims a computed SWHID
   while its `design.toml` says `archival = "pending"` with empty SWHID/commit/verify fields.
 - **Snapshot lag:** the toolkit's `reference_designs/fellows_local_db/` attestation predates fellows's
