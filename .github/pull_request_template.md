@@ -1,4 +1,4 @@
-<!-- PNT pull-request template. Delete the sections that don't apply. -->
+<!-- PNA Toolkit pull-request template. Delete the sections that don't apply. -->
 
 ## What this PR does
 

@@ -1,6 +1,10 @@
-# PNT Changelog
+# PNA Toolkit Changelog
 
 ## v0.1 draft (in progress)
+
+### Project renamed to "PNA Toolkit"; "PNT" acronym retired (toolkit fix)
+
+- **Project name changed from "Personal Network Toolkit (PNT)" to "PNA Toolkit".** The "PNT" acronym is retired across the docs, spec prose, skill, templates, plans, and code comments in favor of "PNA Toolkit" (first mention / headings / titles) and "the toolkit" (subsequent in-prose mentions). Cosmetic rename only — **no Toolkit-Version bump**, no AC/EX/CST/sub-contract ID changed, no behavior changed. The **repo slug `personal_network_toolkit` and all `github.com/...` URLs are unchanged**, so existing clones, links, and cross-repo references (including `fellows_local_db`'s) still resolve. The predecessor "Personal Relationship Toolkit" (PRT) name is untouched.
 
 ### Proposed (RFC, separate follow-up to #32): architectural data-floor — disclosure tiers
 
@@ -80,7 +84,7 @@
 
 - **Every AC, CST, and EX now carries a stable HTML anchor** so a reference design's conformance report (and any cross-reference) can deep-link to the *specific* commitment/constraint/exception instead of dumping the reader at the top of a multi-section spec. The anchor id is the lowercased ID: `#ac-1`, `#ac-prm-a`, `#cst-pwa-sandbox-sealed`, `#ex-cloud-llm`, etc. Added as `<a id="…"></a>` inside the ID cell of each AC table row (`spec/PNA_Spec.md` ×16, `spec/axes.md` ×9) and on the line above each `### CST-…` / `### EX-…` detail heading (`spec/constraints.md` ×7, `spec/exceptions.md` ×1) — 33 anchors, no prose change.
 - **`tools/lint-spec-ids.py`** — the `AC_RE` / `EX_RE` / `CST_RE` registry-row regexes now tolerate the optional `<a id="…"></a>` cell prefix (shared `_CELL_ANCHOR`), so ID extraction is unchanged. The clean tree (which now carries the anchors) exercises this, and `tools/tests/lint_selftest.py` stays 22/22.
-- Motivated by `richbodo/fellows_local_db`'s conformance report, which links each attested row back to its PNT definition; doc-level links to a 50-section spec were too much cross-repo context to hold.
+- Motivated by `richbodo/fellows_local_db`'s conformance report, which links each attested row back to its toolkit definition; doc-level links to a 50-section spec were too much cross-repo context to hold.
 
 ### Attestation-evidence lint + deferral discipline (additive)
 
@@ -94,7 +98,7 @@
 
 ### Contribution types — toolkit fix vs reference design (process, additive)
 
-- **The toolkit-fix path is now first-class and discoverable.** A "Toolkit fix" PR type already existed in `.github/pull_request_template.md` and was acknowledged in passing under `CONTRIBUTING.md § Versioning`, but the **skill** (the LLM entry point) documented only the heavyweight reference-design flow, and the template shipped no toolkit-fix checklist — so an agent contributing a lint/docs/scope change had no path to follow and would wrongly force it through reference-design preflight. Since most PNT PRs are toolkit fixes, the dominant case was the undocumented one.
+- **The toolkit-fix path is now first-class and discoverable.** A "Toolkit fix" PR type already existed in `.github/pull_request_template.md` and was acknowledged in passing under `CONTRIBUTING.md § Versioning`, but the **skill** (the LLM entry point) documented only the heavyweight reference-design flow, and the template shipped no toolkit-fix checklist — so an agent contributing a lint/docs/scope change had no path to follow and would wrongly force it through reference-design preflight. Since most PRs to the toolkit are toolkit fixes, the dominant case was the undocumented one.
 - **`pna-build-eval-contrib/SKILL.md`.** The Contribute flow now opens with a **routing heuristic** — *does the change impose a new contract a conformant design must satisfy?* — splitting into *Reference-design contribution* (the existing flow) and a new *Toolkit fix* sub-flow (normal PR; `tools/lint-spec-ids.py` + fixture self-tests; CHANGELOG entry; a `docs/PriorArt.md § Design notes` entry for decisions; check the Type box). [PR #19](https://github.com/richbodo/personal_network_toolkit/pull/19) (a scope decision that declined an AC) is cited as the canonical toolkit fix.
 - **`CONTRIBUTING.md`.** New *Contribution types* section near the top with the same routing question; *What we don't accept* nuanced so a spec note that clarifies/declines a commitment is correctly a toolkit fix, not a forbidden undemonstrated spec change.
 - **`.github/pull_request_template.md`.** Adds a lightweight **Toolkit-fix checklist** (no new design obligation; CHANGELOG; Design-notes entry for decisions) alongside the reference-design one, with a routing comment in the Type section.

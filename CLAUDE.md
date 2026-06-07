@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Personal Network Toolkit (PNT) — a machine-readable, goal-anchored spec (plus typed
+PNA Toolkit — a machine-readable, goal-anchored spec (plus typed
 contracts, lints, an agent skill, and reference designs) that an AI agent uses to
 **build** conformant Personal Network Applications (PNAs) and **evaluate** candidate
 apps against the PNA Goals. This is a spec/lint/docs repo, **not** an application.
@@ -13,7 +13,7 @@ command menu and `just ci` before pushing.
 
 ## Keep the docs current
 
-PNT's users are developers, and [`docs/users-guide.md`](docs/users-guide.md) is the
+The toolkit's users are developers, and [`docs/users-guide.md`](docs/users-guide.md) is the
 developer-facing source of truth. **Any PR that changes a behavior a developer would
 notice — a `just` recipe, a lint check or its message, a skill flow, a contract / AC /
 manifest field, or a contribution step — MUST update `docs/users-guide.md` in the same

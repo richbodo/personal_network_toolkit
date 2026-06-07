@@ -25,11 +25,11 @@ dead environments. This note draws both lines.
 
 ## The utility line: the Goals are the measuring stick, and the only one
 
-PNT **validates behaviors against the Goals; it does not certify** (see
+The PNA Toolkit **validates behaviors against the Goals; it does not certify** (see
 [`CONTRIBUTING.md`](../CONTRIBUTING.md) § "Acceptance is not certification"). The
 key realization for scope is that **the line is not between "PNA" and "not a
-PNA." It is between "evaluated against PNT's Goals" and "evaluated against goals
-PNT does not define."** The Goals (Goal 1–5 in
+PNA." It is between "evaluated against the toolkit's Goals" and "evaluated against goals
+the toolkit does not define."** The Goals (Goal 1–5 in
 [`PNA_Spec.md`](../spec/PNA_Spec.md)) are a fixed measuring stick. Pointing that
 stick at a non-PNA is legitimate and useful; *inventing new marks on the stick*
 to opine on general "privacy" or "software quality" is the creep that destroys
@@ -60,7 +60,7 @@ fixed scale:
 The high-value signal is *diminishes*: an app that erodes the user's control of
 their personal-network root (harvests the contact graph to a server, makes
 private notes un-exportable, forces an insecure transport). A user genuinely
-wants this, and PNT is uniquely positioned to say it precisely, because PNT has
+wants this, and the toolkit is uniquely positioned to say it precisely, because the toolkit has
 crisply *defined* what "control of the personal-network root" means.
 
 Worked example — Signal: Goal 3 (user-controlled, content-blind transport) is
@@ -71,7 +71,7 @@ PNA-membership verdict on Signal would be noise — it never claimed membership.
 
 ### Mode 3 — Out-of-scope (no nexus)
 For an app with no personal-network root to protect or diminish (a photo editor,
-a game). The honest output is **"out of scope — PNT has nothing useful to say
+a game). The honest output is **"out of scope — the toolkit has nothing useful to say
 here,"** not a contrived number. **The willingness to say this is what keeps the
 suite credible.** The temptation to expand is, precisely, the temptation never to
 say "out of scope." We say it.
@@ -118,7 +118,7 @@ flavor, or (c) its maintainer stops supporting it. Being choosy about what stays
 active is what keeps the suite tractable.
 
 **Archival is not worthless.** This is the honest answer to "how do you retest to
-the beginning of time?" — *you don't.* PNT does **not** promise eternal
+the beginning of time?" — *you don't.* The toolkit does **not** promise eternal
 re-testability. It promises:
 
 - eternal **retrievability** (the SWHID-pinned source survives upstream
@@ -164,7 +164,7 @@ submission). The *living, continuously-tested* suite is deliberately roadmap:
 
 ## General field: application-class blueprints for agents
 
-PNT is one instance of a broader pattern worth naming: **a machine-readable,
+The PNA Toolkit is one instance of a broader pattern worth naming: **a machine-readable,
 goal-anchored spec that an AI agent uses to (a) build conformant instances of an
 application class and (b) evaluate arbitrary candidates against the class's
 goals.** Two pieces of what we are building here generalize beyond PNAs:

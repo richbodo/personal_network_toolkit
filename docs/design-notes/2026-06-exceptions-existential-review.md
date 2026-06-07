@@ -4,7 +4,7 @@
 [`../PriorArt.md` § Design notes](../PriorArt.md). Drove the honest-exit RFC
 ([PR #32](https://github.com/richbodo/personal_network_toolkit/pull/32)).*
 
-> **Home of this note.** PNT's design-note *log* lives in [`docs/PriorArt.md` § Design notes](../PriorArt.md)
+> **Home of this note.** The toolkit's design-note *log* lives in [`docs/PriorArt.md` § Design notes](../PriorArt.md)
 > — dated, newest-first, one entry per decision. That log is the index; full-length deliberations
 > (like this one) live as their own files under `docs/design-notes/` and are linked from a log entry.
 
@@ -200,7 +200,7 @@ single gate. Three directions worth a future write-up:
   `instructions` handshake (and tool-result messages), a PNA tells a cooperating client *"have the user
   open the app and press confirm before I return private data — then come back."* Best-effort up, while
   the PNA fails closed down. This is the constructive half of EX-H7's hardening (PR #32).
-- **Runtime egress detection as a toolkit metric.** PNT already ships a *static* egress scanner
+- **Runtime egress detection as a toolkit metric.** The toolkit already ships a *static* egress scanner
   ([`tools/egress-lint.py`](../../tools/egress-lint.py), AC-1). A *dynamic* complement — observe a
   candidate PNA's actual network traffic during an evaluate run and flag off-device vectors — is how
   egress is detected in practice, and would feed the evaluate flow as runtime evidence alongside the

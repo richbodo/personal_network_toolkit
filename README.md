@@ -1,8 +1,8 @@
-# Personal Network Toolkit
+# PNA Toolkit
 
 > **Toolkit-Version:** 0.1 (draft) — the toolkit (spec, contracts, skill, lint, templates) is versioned as a unit; see [VERSION](VERSION).
 
-The Personal Network Toolkit (PNT) is a [generative application-class blueprint](docs/PriorArt.md) for building and validating **[personal network applications (PNAs)](spec/PNA_Spec.md#goals)** — local-only apps for viewing contact data and working on relationship data over a firewalled private data layer. PNAs run on the user's device, never as SaaS, and bridge SaaS-held contact data into a private workspace. **[Why do this?](spec/PNA_Spec.md#preamble)**
+The PNA Toolkit is a [generative application-class blueprint](docs/PriorArt.md) for building and validating **[personal network applications (PNAs)](spec/PNA_Spec.md#goals)** — local-only apps for viewing contact data and working on relationship data over a firewalled private data layer. PNAs run on the user's device, never as SaaS, and bridge SaaS-held contact data into a private workspace. **[Why do this?](spec/PNA_Spec.md#preamble)**
 
 When building a PNA, specs are foundational because users will increasingly compose software by prompting AI agents, and success is measured by adherence to them.
 
@@ -10,9 +10,9 @@ Three deliverables, in dependency order:
 
 1. **Foundational specs.** Universal vocabulary, goals, axes, architectural commitments, and typed contracts for a PNA. — **shipping in v0.1 (draft)**.
 2. **Production-ready reference applications.** Working PNAs you can install, study, and adapt. — first reference design is a distributed directory archive (lives at [richbodo/fellows_local_db](https://github.com/richbodo/fellows_local_db)).
-3. **AI tooling — skill + MCP (Model Context Protocol) servers.** How AI agents work with PNT. The skill at [`pna-build-eval-contrib/SKILL.md`](pna-build-eval-contrib/SKILL.md) is what an agent reads to consume the spec at design time. The MCP servers (typed contracts in [`contracts/`](contracts/); three v1 stdio implementations in `fellows_local_db/mcp_servers/`) expose an already-built PNA's capabilities at runtime so AI clients (Claude Desktop, Cursor, local Ollama agents) can drive a PNA on the user's behalf.
+3. **AI tooling — skill + MCP (Model Context Protocol) servers.** How AI agents work with the toolkit. The skill at [`pna-build-eval-contrib/SKILL.md`](pna-build-eval-contrib/SKILL.md) is what an agent reads to consume the spec at design time. The MCP servers (typed contracts in [`contracts/`](contracts/); three v1 stdio implementations in `fellows_local_db/mcp_servers/`) expose an already-built PNA's capabilities at runtime so AI clients (Claude Desktop, Cursor, local Ollama agents) can drive a PNA on the user's behalf.
 
-PNT supports three modes of use, all packaged in the [skill](pna-build-eval-contrib/SKILL.md). **Install it once** so your agent auto-discovers it — symlink the skill into your skills directory (run from your PNT working directory):
+The PNA Toolkit supports three modes of use, all packaged in the [skill](pna-build-eval-contrib/SKILL.md). **Install it once** so your agent auto-discovers it — symlink the skill into your skills directory (run from your toolkit working directory):
 
 ```bash
 mkdir -p ~/.claude/skills
@@ -23,11 +23,11 @@ A `git pull` here then updates the skill everywhere it's used. See [`docs/users-
 
 - **Evaluate.** *Audit any contact app for safety before you install it.* An AI agent reads the candidate's source, checks it against every applicable AC (Architectural Commitment), and returns a structured report flagging anything that would put your data at risk. The lowest-friction way in — and it doubles as a self-check on your own in-progress design.
 - **Build.** An AI agent reads the spec and helps you compose a conformant PNA against the typed contracts, adapting from a reference design that shares your axis picks.
-- **Contribute.** When you find a spec gap or have a design that adds ecosystem value, the skill walks you through preflight validation (Architecture document + AC attestation table) and then opens the PR back to PNT.
+- **Contribute.** When you find a spec gap or have a design that adds ecosystem value, the skill walks you through preflight validation (Architecture document + AC attestation table) and then opens the PR back to the toolkit.
 
 See [`docs/users-guide.md`](docs/users-guide.md) for step-by-step instructions for each.
 
-PNT augments human-AI builder teams; it doesn't auto-build applications itself. It's a blueprint for AI agents to implement and humans to customize and verify. Conformance verification works at three layers: mechanical lints in `tools/` (CI-enforced), LLM (Large Language Model) architectural review via the skill above, and human PR review.
+The toolkit augments human-AI builder teams; it doesn't auto-build applications itself. It's a blueprint for AI agents to implement and humans to customize and verify. Conformance verification works at three layers: mechanical lints in `tools/` (CI-enforced), LLM (Large Language Model) architectural review via the skill above, and human PR review.
 
 ## Status
 
@@ -57,7 +57,7 @@ Read in this first if you are new:
 
 To contribute to the spec with a new reference design or architectural finding:
 
-- [`CONTRIBUTING.md`](CONTRIBUTING.md) — how reference designs (and any spec changes they motivate) get accepted into PNT.
+- [`CONTRIBUTING.md`](CONTRIBUTING.md) — how reference designs (and any spec changes they motivate) get accepted into the toolkit.
 
 To dig into the spec more deeply:
 
@@ -88,7 +88,7 @@ When a second reference design (e.g. a Personal Relationship Manager) lands, it'
 
 ## Prior Art
 
-PNT is a *generative application-class blueprint*: a machine-readable spec, written for AI agents, that defines what makes an instance of a whole *class* of apps correct and lets many implementations attest conformance. [`docs/PriorArt.md`](docs/PriorArt.md) surveys the landscape — spec-driven-development tooling, agent-interface standards, conformance test suites, Common Criteria Protection Profiles, and local-first infrastructure — and finds no published artifact occupies the same quadrant: *generative + class-scoped + multi-flavor + machine-checkable*. The full annotated source list is in [`docs/PriorArtReferences.md`](docs/PriorArtReferences.md).
+The PNA Toolkit is a *generative application-class blueprint*: a machine-readable spec, written for AI agents, that defines what makes an instance of a whole *class* of apps correct and lets many implementations attest conformance. [`docs/PriorArt.md`](docs/PriorArt.md) surveys the landscape — spec-driven-development tooling, agent-interface standards, conformance test suites, Common Criteria Protection Profiles, and local-first infrastructure — and finds no published artifact occupies the same quadrant: *generative + class-scoped + multi-flavor + machine-checkable*. The full annotated source list is in [`docs/PriorArtReferences.md`](docs/PriorArtReferences.md).
 
 ## License
 

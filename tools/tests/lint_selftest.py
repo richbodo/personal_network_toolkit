@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # Toolkit-Version: 0.1
-"""Self-tests for PNT's deterministic lints (Tier A of the conformance suite).
+"""Self-tests for the PNA Toolkit's deterministic lints (Tier A of the conformance suite).
 
 Why this exists: a lint with no test silently rots. PR #18 review found the
 exceptions.md `Reversible:`/`Reversal:` check had been *fully dead* (it matched

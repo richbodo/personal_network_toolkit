@@ -116,7 +116,7 @@ the honesty about what crosses above it is unchanged.
   user the exception path is for. The worst case ("user marks everything shareable") is merely PR #32's
   *every* case; this is never worse and usually much better.
 - **Mis-tiering creates bounded false comfort.** `EX-H9`'s honest split ("sealed → `enforced`; what
-  *you* shared → `provider-asserted`") is the mitigation; PNT already forbids a single collapsed "safe"
+  *you* shared → `provider-asserted`") is the mitigation; the toolkit already forbids a single collapsed "safe"
   claim (EX-H8). The false comfort is bounded to the chosen projection; PR #32's, with no floor, is
   unbounded.
 - **It's a real build, not prose.** That is exactly why it is a follow-up gated on a demonstrating

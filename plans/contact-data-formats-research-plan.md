@@ -1,12 +1,12 @@
 # Research Plan: Contact Data Format Atlas
 
-**A PNT documentation contribution tracking vendor contact data formats, quirks, community knowledge, and interop initiatives.**
+**A PNA Toolkit documentation contribution tracking vendor contact data formats, quirks, community knowledge, and interop initiatives.**
 
 - **Status:** Draft
-- **Parent project:** Personal Network Toolkit (PNT)
+- **Parent project:** PNA Toolkit
 - **Consumer:** PRM reference implementation (AC-PRM-B use case) and the PRT conformance suite
 - **Author:** Rich Bodo
-- **License:** Same as PNT repo
+- **License:** Same as the toolkit repo
 
 ---
 
@@ -14,7 +14,7 @@
 
 Every Personal Network Application must ingest contact data from SaaS silos, yet no canonical, maintained reference exists that documents what those silos actually emit. The vCard RFCs describe an ideal; vendors ship deviations. Knowledge of those deviations is scattered across parser test suites, blog posts, converter-tool changelogs, and GitHub issues — and it rots quickly as vendors change export behavior without notice.
 
-PNT's ingestion architecture (multi-source-merge-with-dedup, file import baseline, vdirsyncer for CardDAV, py-vobject parsing) depends on accurate knowledge of these formats. This project creates a living document — the **Contact Data Format Atlas** — that consolidates that knowledge as a citable, versioned doc in the PNT repo, backed by a synthetic test corpus.
+The toolkit's ingestion architecture (multi-source-merge-with-dedup, file import baseline, vdirsyncer for CardDAV, py-vobject parsing) depends on accurate knowledge of these formats. This project creates a living document — the **Contact Data Format Atlas** — that consolidates that knowledge as a citable, versioned doc in the toolkit repo, backed by a synthetic test corpus.
 
 ## 2. Goals
 
@@ -27,7 +27,7 @@ PNT's ingestion architecture (multi-source-merge-with-dedup, file import baselin
 ### Non-Goals
 
 - Documenting CRM/B2B SaaS exports (Salesforce, HubSpot) in v1 — out of scope until a PNA use case demands it.
-- Writing converters. The Atlas informs PNT ingestion code; it is not itself code.
+- Writing converters. The Atlas informs the toolkit's ingestion code; it is not itself code.
 - Tracking social-graph data beyond contact-equivalent records (e.g., full Facebook activity exports).
 
 ## 3. Scope: Vendors and Formats (v1)
@@ -52,7 +52,7 @@ Per vendor/format:
 - **RQ2 — Encoding:** Character encoding, line endings, folding, quoted-printable usage, escaping behavior.
 - **RQ3 — Extensions:** Which X-properties and grouped-property conventions does the vendor emit, and what do they mean?
 - **RQ4 — Round-trip behavior:** What happens on re-import to the same vendor? To each other vendor?
-- **RQ5 — Identity:** What stable identifiers (UID, etag, resourceName) exist, and do they survive export? (Directly feeds PNT dedup design.)
+- **RQ5 — Identity:** What stable identifiers (UID, etag, resourceName) exist, and do they survive export? (Directly feeds the toolkit's dedup design.)
 - **RQ6 — Limits:** File size caps, batching behavior, contact-count limits.
 - **RQ7 — Drift:** When did the export behavior last observably change, and how would we detect future change?
 
@@ -64,7 +64,7 @@ Per vendor/format:
 2. Enter the maximal contact into each vendor's system; export through every export surface; capture the raw files **byte-exact** (no editor round-trip).
 3. Round-trip: import each vendor's export into every other vendor; re-export; diff against original.
 4. Supplement with anonymized structural observations from real SaaS data already feeding the test suite (structure only — no real PII enters the repo; corpus files are 100% synthetic).
-5. Vendor the corpus into the PNT repo under `tests/corpus/<vendor>/<surface>/`, each file with a metadata sidecar: capture date, account region, client version, capture procedure.
+5. Vendor the corpus into the toolkit repo under `tests/corpus/<vendor>/<surface>/`, each file with a metadata sidecar: capture date, account region, client version, capture procedure.
 
 ### 5.2 Secondary evidence: literature and code survey
 
@@ -75,11 +75,11 @@ Per vendor/format:
 
 ### 5.3 Initiatives survey
 
-- **IETF**: vCard 4.0 (RFC 6350), jCard (RFC 7095), JSContact (RFC 9553) and the calext WG — assess JSContact as a possible PNT-internal interchange representation.
+- **IETF**: vCard 4.0 (RFC 6350), jCard (RFC 7095), JSContact (RFC 9553) and the calext WG — assess JSContact as a possible toolkit-internal interchange representation.
 - **Data Transfer Initiative / Data Transfer Project** (Google/Meta/Apple/Microsoft): per-vendor adapter code is effectively executable schema documentation; assess reusability.
 - **CardDAV ecosystem**: vdirsyncer, Radicale, DAVx5 as RFC-baseline implementations.
 - DMA/portability regulatory developments insofar as they change export surfaces.
-- For each: relevance to PNAs, maturity, and whether PNT should reference, adopt, or merely watch.
+- For each: relevance to PNAs, maturity, and whether the toolkit should reference, adopt, or merely watch.
 
 ## 6. Deliverables
 
@@ -96,17 +96,17 @@ D2's machine-readable form is the bridge to PRM: ingestion code can reference qu
 
 ## 7. Phases and Sequencing
 
-**Phase 0 — Scaffold (small):** Repo structure, doc templates, quirk-entry schema, maximal-contact field list. Open a tracking issue in PNT.
+**Phase 0 — Scaffold (small):** Repo structure, doc templates, quirk-entry schema, maximal-contact field list. Open a tracking issue in the toolkit.
 
 **Phase 1 — Big Two (Google + Apple):** Highest-value, most-divergent pair; exercises Takeout, iCloud export, and CardDAV via vdirsyncer. Produces first corpus entries and validates the method. PRM ingestion work can consume results immediately.
 
 **Phase 2 — Microsoft + Android:** Adds the vCard 2.1 / quoted-printable / CSV-column world. Likely the richest quirk harvest.
 
-**Phase 3 — Graph silos (Meta, LinkedIn):** JSON/CSV exports without vCard semantics; documents the mapping decisions PNT must make to normalize them.
+**Phase 3 — Graph silos (Meta, LinkedIn):** JSON/CSV exports without vCard semantics; documents the mapping decisions the toolkit must make to normalize them.
 
-**Phase 4 — Synthesis:** Cross-vendor round-trip matrix, initiatives brief, "maximally compatible export profile" recommendation for PNT's own export path (connects to PR-6 human-readable export work), maintenance protocol.
+**Phase 4 — Synthesis:** Cross-vendor round-trip matrix, initiatives brief, "maximally compatible export profile" recommendation for the toolkit's own export path (connects to PR-6 human-readable export work), maintenance protocol.
 
-Each phase ends with a PR to PNT; the doc is useful after Phase 1, not only at the end. Phases are sized for daily-ship: a single vendor surface capture is a shippable unit.
+Each phase ends with a PR to the toolkit; the doc is useful after Phase 1, not only at the end. Phases are sized for daily-ship: a single vendor surface capture is a shippable unit.
 
 ## 8. Maintenance Model
 

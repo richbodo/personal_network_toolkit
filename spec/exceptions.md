@@ -52,7 +52,7 @@ exists to prevent: *(Proposed, RFC — predicate split; a reporting clarificatio
   about *process*, not about the guarantee: the app is deviating *honestly*. It is deliberately
   **never aggregated into a single conferred "conformant" status, and is never an interop
   credential** — only `pna-active` is conferred and gated on (see *Discipline* below). This is the
-  same refusal-to-collapse PNT already applies in the strength profile (EX-H8) and that EARL applies
+  same refusal-to-collapse the toolkit already applies in the strength profile (EX-H8) and that EARL applies
   per-assertion: a rolled-up "handled conformantly" bit would hide exactly the `partial` /
   `cannot-tell` the per-clause report exists to surface.
 
@@ -84,7 +84,7 @@ it.)
 
 ### Validation, not certification
 
-PNT **validates behaviors against the Goals; it does not certify.** There is no pass/fail badge and
+The PNA Toolkit **validates behaviors against the Goals; it does not certify.** There is no pass/fail badge and
 no certifying body (see `CONTRIBUTING.md` and the skill's § Principles, "Conformance is checked, not
 awarded"). The evaluate flow *detects* exceptions and *verifies how each is handled*, reporting by
 `EX-*` ID. "This app raises `EX-CLOUD-LLM` and handles it to contract" is a finding, not a grade.
@@ -94,12 +94,12 @@ awarded"). The evaluate flow *detects* exceptions and *verifies how each is hand
 Exceptions are bounded so they stay a PNA-class mechanism rather than a general deviation framework:
 
 - **Goal-anchored.** Every exception MUST name, via `Relaxes:`, the specific `AC-*` (or
-  `PNA-DEFINITION`) it departs from. PNT defines exceptions ONLY for deviations from its own
+  `PNA-DEFINITION`) it departs from. The toolkit defines exceptions ONLY for deviations from its own
   Goals/ACs — not for other application classes. A proposed "exception" that relaxes no named PNA
   guarantee is not a PNA exception.
 - **Composition, not enumeration.** Non-PNA mode is binary (in / out). The active-set explainer
   (EX-H4) renders the *currently-active* exceptions at runtime, each with its own entry and strength
-  profile. PNT never pre-enumerates combinations; cost scales linearly in the number of defined
+  profile. The toolkit never pre-enumerates combinations; cost scales linearly in the number of defined
   exceptions, not combinatorially.
 - **Un-relaxable floor.** *(Proposed, RFC — generalizes a per-exception fact into a standing rule; a
   new obligation on future exceptions.)* Some guarantees are a floor that **no exception may relax,
@@ -170,7 +170,7 @@ each exception it can raise, a conforming PNA:
   from the active-set explainer (EX-H4). A single collapsed "assurance level" MUST NOT be used in
   place of the per-dimension profile.
 
-> **Sub-contract IDs.** `EX-H1..EX-H8` follow PNT's existing sub-contract convention
+> **Sub-contract IDs.** `EX-H1..EX-H8` follow the toolkit's existing sub-contract convention
 > (`<prefix>-<integer>`). They are deliberately prose/list items, not `| EX-… |` registry rows, so
 > the lint collects them as handler clauses, not as registry exceptions. The evaluate flow cites
 > them ("fails EX-H3 — no persistent signal").
@@ -264,5 +264,5 @@ handling — an exception names the *minimum* set of guarantees it actually depa
 The Exceptions concept was distilled from operating the `fellows_local_db` reference design with a
 ~500-user base: users wanted cloud-LLM integration, local models were impractical for them, and the
 spec had no first-class way to deviate *honestly*. See that design's `docs/architectural_findings.md`
-(upstream) and `reference_designs/fellows_local_db/`. Per PNT's reference-driven model, this concept
+(upstream) and `reference_designs/fellows_local_db/`. Per the toolkit's reference-driven model, this concept
 ships alongside the working design that demonstrates it.

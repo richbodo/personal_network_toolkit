@@ -1,4 +1,4 @@
-# Plan: PNT Reorganization
+# Plan: PNA Toolkit Reorganization
 
 ## Status (2026-05-25)
 
@@ -14,25 +14,25 @@ This plan is the unified successor to:
 - `plans/pna-rfc-conversion-plan.md` (spec-formalization ideas folded in; the hello-world and Tolaria-composition phases dropped as superseded by the contribution-driven model below)
 - Issue #4 "Pass for conventional terminology and form" (folded in; closed when this plan landed)
 
-The memorize-plugin plan was removed separately; it belongs in a downstream reference design's repository, not in PNT.
+The memorize-plugin plan was removed separately; it belongs in a downstream reference design's repository, not in the toolkit.
 
 ## Background
 
-The Personal Network Toolkit currently bundles spec documents and refers to one reference design (`fellows_local_db`) in a single project. Two parallel pressures motivate reorganization:
+The PNA Toolkit currently bundles spec documents and refers to one reference design (`fellows_local_db`) in a single project. Two parallel pressures motivate reorganization:
 
-1. **Contribution model.** As PNT matures, external contributors should be able to submit reference designs derived from their own production applications, with spec changes evolving in response to what production reality reveals.
+1. **Contribution model.** As the toolkit matures, external contributors should be able to submit reference designs derived from their own production applications, with spec changes evolving in response to what production reality reveals.
 
-2. **Spec formalization.** PNT is a *generative + evaluative* application-class blueprint: AI agents read it to build conformant PNAs, and (increasingly) AI agents read it to evaluate whether a candidate application is safe to use as a PNA. Both modes benefit from sharper formalization than plain markdown prose — RFC-style normative language and stable IDs across spec, contracts, and reference-design attestations.
+2. **Spec formalization.** The toolkit is a *generative + evaluative* application-class blueprint: AI agents read it to build conformant PNAs, and (increasingly) AI agents read it to evaluate whether a candidate application is safe to use as a PNA. Both modes benefit from sharper formalization than plain markdown prose — RFC-style normative language and stable IDs across spec, contracts, and reference-design attestations.
 
 This plan combines both threads. The contribution-model substance survives largely intact; the spec-formalization layer is added on top.
 
 ## Working hypotheses
 
-**Hypothesis 1 — Reference designs derived from production applications are more valuable than purpose-built lab designs.** Reality surfaces architectural constraints that first-principles reasoning cannot. The PWA-doesn't-work-for-most-PNAs insight that came from `fellows_local_db`'s real user feedback is the canonical example: that constraint would not have been discovered by writing a lab demo. PNT's contribution model privileges snapshots of running production apps.
+**Hypothesis 1 — Reference designs derived from production applications are more valuable than purpose-built lab designs.** Reality surfaces architectural constraints that first-principles reasoning cannot. The PWA-doesn't-work-for-most-PNAs insight that came from `fellows_local_db`'s real user feedback is the canonical example: that constraint would not have been discovered by writing a lab demo. The toolkit's contribution model privileges snapshots of running production apps.
 
-**Hypothesis 2 — Conformance evaluation is a first-class deliverable.** The most likely retail use of PNT's evaluative side is a user pointing an LLM at someone else's PNA source and asking: *"before I use this application, make sure it conforms to PNA specs and is safe for me to use."* The user trusts the spec; they want to know whether a specific candidate app honors it. Builders use the same evaluator on their own in-progress code to find gaps. PNT needs to support evaluation explicitly, not just generation.
+**Hypothesis 2 — Conformance evaluation is a first-class deliverable.** The most likely retail use of the toolkit's evaluative side is a user pointing an LLM at someone else's PNA source and asking: *"before I use this application, make sure it conforms to PNA specs and is safe for me to use."* The user trusts the spec; they want to know whether a specific candidate app honors it. Builders use the same evaluator on their own in-progress code to find gaps. The toolkit needs to support evaluation explicitly, not just generation.
 
-**Hypothesis 3 — Evaluation is described in PNT, not implemented by PNT.** PNT ships descriptions of what conformance checking looks like; an LLM consuming those descriptions performs the actual evaluation. Deterministic tooling stays small (file presence, license check, schema validity); LLMs handle the architectural-conformance layer; humans review contributed designs. This is the layering principle below.
+**Hypothesis 3 — Evaluation is described in the toolkit, not implemented by the toolkit.** The toolkit ships descriptions of what conformance checking looks like; an LLM consuming those descriptions performs the actual evaluation. Deterministic tooling stays small (file presence, license check, schema validity); LLMs handle the architectural-conformance layer; humans review contributed designs. This is the layering principle below.
 
 ## Principle: layering of verification
 
@@ -42,63 +42,63 @@ Verification of PNA conformance happens at three layers, each owned by a differe
 - **Architectural-conformance layer** — does the application's behavior and structure honor the spec? "Does this app send Private DB rows to a cloud service?" "Does the auth gate let stale sessions fall through to cached data?" Prose questions about behavior, well within reach for an LLM reading source.
 - **Judgment-and-review layer** — does the design's Architecture document accurately describe the design? Does the design genuinely contribute what it claims? Owned by humans reviewing contribution PRs.
 
-PNT writes deterministic tooling for the first layer (bounded), describes evaluator behavior for the second (no Python eval harness; the description is the deliverable), and writes contribution-review guidance for the third. Investment ratio is roughly 80/20 toward description-and-process.
+The toolkit writes deterministic tooling for the first layer (bounded), describes evaluator behavior for the second (no Python eval harness; the description is the deliverable), and writes contribution-review guidance for the third. Investment ratio is roughly 80/20 toward description-and-process.
 
 The *specifics* of which test verifies which AC live per-design, in each Architecture document. The spec declares ACs and their normative content; each Architecture document declares how its design verifies each AC. This keeps the spec light (no brittle per-AC tags that go stale as LLM capabilities evolve) and pushes per-implementation flexibility to where it belongs.
 
 ## Goals
 
-1. PNT becomes a thin canonical repository: spec, typed contracts, reference-design records, skill packaging, tooling. No bundled application code.
+1. The toolkit becomes a thin canonical repository: spec, typed contracts, reference-design records, skill packaging, tooling. No bundled application code.
 
-2. Reference designs live in their authors' own repos, under their own release cadence. PNT references them by permanent identifier (v0.1: Software Heritage SWHIDs; the spec itself declares this commitment).
+2. Reference designs live in their authors' own repos, under their own release cadence. The toolkit references them by permanent identifier (v0.1: Software Heritage SWHIDs; the spec itself declares this commitment).
 
 3. Spec changes must be accompanied by a reference design that demonstrates the change in working code.
 
 4. Each accepted design ships an Architecture document declaring conformance to a specific Toolkit-Version, declaring per-axis picks and their versions, attesting per-AC conformance, and **mapping each applicable AC to the specific test(s) or review mechanism(s) that verify it in the design**. Test coverage of the AC list is an acceptance criterion.
 
-5. Archival is robust to upstream repo deletion. PNT does not undertake routine maintenance of contributed code.
+5. Archival is robust to upstream repo deletion. The toolkit does not undertake routine maintenance of contributed code.
 
-6. The PNT skill is the canonical way for AI agents to consume PNT — when building a new PNA, when evaluating whether an existing application conforms, and when authoring a contribution PR back to PNT. The skill points into `spec/`, `contracts/`, and `reference_designs/`; it is not a separate copy that drifts.
+6. The toolkit skill is the canonical way for AI agents to consume the toolkit — when building a new PNA, when evaluating whether an existing application conforms, and when authoring a contribution PR back to the toolkit. The skill points into `spec/`, `contracts/`, and `reference_designs/`; it is not a separate copy that drifts.
 
 7. The spec keeps its readable prose. Conformance-bearing statements use unambiguous language (MUST / MUST NOT / SHOULD / SHOULD NOT / MAY); informative prose stays as it is. Every conformance-bearing requirement is testable in principle, by an LLM if not by a script.
 
 8. Every architectural commitment carries a stable ID, used as the join key between spec prose, typed contracts, and per-design Architecture documents. Bidirectional traceability holds at the AC level.
 
-9. Conformance evaluation is a first-class deliverable. The spec and the skill together describe how an LLM evaluates a candidate PNA; PNT does not implement the evaluator as code.
+9. Conformance evaluation is a first-class deliverable. The spec and the skill together describe how an LLM evaluates a candidate PNA; the toolkit does not implement the evaluator as code.
 
-10. Claude Code (or any equivalent LLM agent) can use the skill to author a contribution PR back to PNT end-to-end. When a builder finds a spec ambiguity or gap, the skill walks the agent through producing a well-formed PR — spec diff, design record, Architecture document, SWHID-archival request — without maintainer hand-holding.
+10. Claude Code (or any equivalent LLM agent) can use the skill to author a contribution PR back to the toolkit end-to-end. When a builder finds a spec ambiguity or gap, the skill walks the agent through producing a well-formed PR — spec diff, design record, Architecture document, SWHID-archival request — without maintainer hand-holding.
 
 ## Non-goals
 
-1. PNT does not host runnable application code. Designs run from their own repos.
+1. The toolkit does not host runnable application code. Designs run from their own repos.
 
-2. PNT does not certify implementations against marketing claims. Acceptance signals "this design contributed something to the spec," not "this is a recommended production app." There is no certifying body. *Conformance is something you check, not something you are awarded.*
+2. The toolkit does not certify implementations against marketing claims. Acceptance signals "this design contributed something to the spec," not "this is a recommended production app." There is no certifying body. *Conformance is something you check, not something you are awarded.*
 
-3. PNT does not run a registry service or website beyond the GitHub repo itself.
+3. The toolkit does not run a registry service or website beyond the GitHub repo itself.
 
-4. PNT does not ship a Python conformance test runner beyond the trivially mechanical lints. The architectural-conformance layer is described, not implemented.
+4. The toolkit does not ship a Python conformance test runner beyond the trivially mechanical lints. The architectural-conformance layer is described, not implemented.
 
-5. PNT does not hand-maintain a parallel YAML/JSON spec. Prose remains canonical. Lightweight derived indexes may be generated on demand if needed.
+5. The toolkit does not hand-maintain a parallel YAML/JSON spec. Prose remains canonical. Lightweight derived indexes may be generated on demand if needed.
 
-6. PNT does not adopt Common Criteria terminology wholesale. The Protection Profile / Security Target *model* is the conceptual ancestor; PNT keeps its own vocabulary ("PNA Spec," "Architecture document").
+6. The toolkit does not adopt Common Criteria terminology wholesale. The Protection Profile / Security Target *model* is the conceptual ancestor; the toolkit keeps its own vocabulary ("PNA Spec," "Architecture document").
 
 ## Key design decisions (resolved)
 
 These are settled here so subsequent work doesn't relitigate.
 
-**No first-party in-repo designs.** All reference designs — including those Rich maintains personally, such as `fellows_local_db` — are external. PNT references snapshots, never bundles code.
+**No first-party in-repo designs.** All reference designs — including those Rich maintains personally, such as `fellows_local_db` — are external. The toolkit references snapshots, never bundles code.
 
 **Software Heritage SWHID is the canonical permanent identifier (v0.1).** When a design is accepted, Save Code Now is triggered on the contributor's repo at the submitted commit; the resulting SWHID is recorded in the design entry. Software Heritage archives source permanently with content-addressed identifiers. The PNA Spec itself states this v0.1 commitment; future toolkit versions may revise.
 
-**Optional secondary fork for high-signal designs.** A `pnt-archive` GitHub-organization fork is at maintainer discretion for designs PNT wants belt-and-braces archival on. SWHID alone is sufficient for the archival promise.
+**Optional secondary fork for high-signal designs.** A `pnt-archive` GitHub-organization fork is at maintainer discretion for designs the toolkit wants belt-and-braces archival on. SWHID alone is sufficient for the archival promise.
 
 **Linear SemVer for the PNA Spec; per-axis versioning declared in each design's Architecture document.** Patch for clarifications, minor for additive, major for breaking. Individual axes can evolve at different rates; a design declares which axis version it implements for each axis it picks.
 
 **Every accepted contribution ships an Architecture document with a complete AC attestation table.** It declares conformance to a specific Toolkit-Version, declares per-axis picks and versions, documents implementation choices per axis, and includes an AC attestation table that maps every applicable AC to (a) how the design realizes it and (b) the specific test(s) or review mechanism(s) that verify it. A row missing the verification field is a rejected PR. This is the load-bearing acceptance check.
 
-**Architecture document = Security Target in role.** The Common Criteria Protection Profile / Security Target model maps cleanly: the PNA Spec acts as the Protection Profile (class-level requirements); each design's Architecture document acts as the Security Target (this design's declared conformance, with implementation details and test pointers). PNT keeps its own terminology — no rename — but the model is what we're building.
+**Architecture document = Security Target in role.** The Common Criteria Protection Profile / Security Target model maps cleanly: the PNA Spec acts as the Protection Profile (class-level requirements); each design's Architecture document acts as the Security Target (this design's declared conformance, with implementation details and test pointers). The toolkit keeps its own terminology — no rename — but the model is what we're building.
 
-**Skill packages the spec for AI agents — three flows in one skill.** The skill (`pna-build-eval-contrib/SKILL.md`) is one consumption view — it points into `spec/`, `contracts/`, and `reference_designs/`. It covers three flows: building a new PNA, evaluating an existing PNA, and authoring a contribution PR back to PNT. If any flow grows large enough to need its own SKILL.md, split later.
+**Skill packages the spec for AI agents — three flows in one skill.** The skill (`pna-build-eval-contrib/SKILL.md`) is one consumption view — it points into `spec/`, `contracts/`, and `reference_designs/`. It covers three flows: building a new PNA, evaluating an existing PNA, and authoring a contribution PR back to the toolkit. If any flow grows large enough to need its own SKILL.md, split later.
 
 **Single evaluation flow, not two named modes.** Mechanics, inputs, and output shape of an LLM evaluating a PNA are the same whether the consumer is a user auditing someone else's app or a builder checking their own in-progress code. The flow takes a source tree (or description), walks the AC list, and produces an AC-ID-keyed report (conformant / non-conformant / not-applicable / unable-to-determine, with citations). Callers can ask the evaluator to emphasize specific Goals at runtime (e.g., "focus on Goal 1 — private data sovereignty") if they have a particular concern; that's a runtime variation, not a structural split.
 
@@ -241,7 +241,7 @@ A row missing the verification field is a rejected PR. This is the mechanical ch
 1. Contributor builds (or already has) a PNA in their own repo, under an OSI-approved license.
 2. While building or operating it, contributor identifies a spec ambiguity, gap, or constraint not yet captured.
 3. Contributor authors an Architecture document describing the design and the proposed contribution, including the AC attestation table with verification references.
-4. Contributor opens a PR against PNT containing:
+4. Contributor opens a PR against the toolkit containing:
    - Spec diff (if any)
    - New or updated record at `reference_designs/<design-name>/README.md`
    - Copy of the Architecture document at `reference_designs/<design-name>/Architecture.md`
@@ -257,19 +257,19 @@ A row missing the verification field is a rejected PR. This is the mechanical ch
    - Maintainer decides whether the design warrants an `archive/` fork
    - Toolkit version bumped per SemVer rules
 
-**Automated contribution path.** The skill (see below) walks an LLM through steps 3–4 end-to-end. A builder using Claude Code can ask the agent to "open a PR adding this design to PNT" and the skill guides the agent through authoring the Architecture document, generating the AC attestation table from the design's source, and producing the PR. Maintainer review at step 5 is the human-judgment gate that's intentionally not automated.
+**Automated contribution path.** The skill (see below) walks an LLM through steps 3–4 end-to-end. A builder using Claude Code can ask the agent to "open a PR adding this design to the toolkit" and the skill guides the agent through authoring the Architecture document, generating the AC attestation table from the design's source, and producing the PR. Maintainer review at step 5 is the human-judgment gate that's intentionally not automated.
 
 ## SKILL.md content (sketch)
 
 ```markdown
 ---
 name: pna-build-eval-contrib
-description: Use when building, extending, or evaluating a Personal Network Application (PNA) — local-first, private-by-default applications operating on personal contact and relationship data with no remote authority. Also triggers when proposing changes to the PNT spec back to its canonical repo. Three flows: build a conformant PNA from the spec, evaluate whether an existing application conforms (e.g. "is this app safe to install?"), and author a contribution PR back to PNT when a spec gap is found.
+description: Use when building, extending, or evaluating a Personal Network Application (PNA) — local-first, private-by-default applications operating on personal contact and relationship data with no remote authority. Also triggers when proposing changes to the PNA Toolkit spec back to its canonical repo. Three flows: build a conformant PNA from the spec, evaluate whether an existing application conforms (e.g. "is this app safe to install?"), and author a contribution PR back to the toolkit when a spec gap is found.
 ---
 
 # Building, Evaluating, and Contributing to PNAs
 
-A PNA is a local-first application built to the PNT spec. The spec defines the architectural commitments (ACs) all PNAs share and the axes along which they legitimately differ. Conformance is satisfied by implementing the typed contracts in `contracts/` for each declared axis pick and honoring every applicable AC.
+A PNA is a local-first application built to the PNA Toolkit spec. The spec defines the architectural commitments (ACs) all PNAs share and the axes along which they legitimately differ. Conformance is satisfied by implementing the typed contracts in `contracts/` for each declared axis pick and honoring every applicable AC.
 
 ## Build flow
 
@@ -325,7 +325,7 @@ When a builder discovers a spec ambiguity, gap, or constraint not yet captured:
 
 Sections to write:
 
-1. **Philosophy.** PNT evolves through reference-driven specification. Spec changes must be accompanied by a working reference design. The spec is generative + evaluative: AI agents read it to build conformant PNAs and to evaluate whether a candidate application is safe to use as one.
+1. **Philosophy.** The toolkit evolves through reference-driven specification. Spec changes must be accompanied by a working reference design. The spec is generative + evaluative: AI agents read it to build conformant PNAs and to evaluate whether a candidate application is safe to use as one.
 
 2. **What we accept.** Reference designs derived from working applications, under any OSI-approved license, with an Architecture document conforming to the requirements above — including a complete AC attestation table with verification references for every applicable AC.
 
@@ -337,7 +337,7 @@ Sections to write:
 
 6. **Versioning.** Linear SemVer for the PNA Spec. Per-axis versioning declared in each design.
 
-7. **Archival.** Software Heritage SWHID is the canonical archive. PNT may additionally fork high-signal designs to a `pnt-archive` org at maintainer discretion. PNT does not maintain forks; they are frozen at the accepted commit.
+7. **Archival.** Software Heritage SWHID is the canonical archive. The toolkit may additionally fork high-signal designs to a `pnt-archive` org at maintainer discretion. The toolkit does not maintain forks; they are frozen at the accepted commit.
 
 ## Phased implementation
 
@@ -408,7 +408,7 @@ Phase 4.5 lands in the same PR as Phases 1–4 so the User's Guide is exercisabl
 
 3. **Skill format stability.** SKILL.md format is still young. If it evolves significantly, the skill packaging may change. Mitigation: the skill is one view of the canonical artifact, not the artifact itself.
 
-4. **Discovery.** New builders won't find PNT without external discovery (blog posts, awesome-lists, integration with SDD tools). Out of scope for this plan but flagged.
+4. **Discovery.** New builders won't find the toolkit without external discovery (blog posts, awesome-lists, integration with SDD tools). Out of scope for this plan but flagged.
 
 5. **Sub-contract-level traceability.** Bidirectional links at the AC level are committed; the 57 sub-contracts stay as they are. Deepen if contribution review surfaces it as friction.
 

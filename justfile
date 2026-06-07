@@ -1,6 +1,6 @@
-# Personal Network Toolkit — command runner. Run `just` with no args for the menu.
+# PNA Toolkit — command runner. Run `just` with no args for the menu.
 #
-# PNT is a spec/lint/docs toolkit: every recipe wraps a stdlib-only python3 tool
+# This is a spec/lint/docs toolkit: every recipe wraps a stdlib-only python3 tool
 # or shell script, so there is no setup/venv step — python3 (3.10+) is the only
 # requirement. Recipe names mirror the underlying tools deliberately.
 #
