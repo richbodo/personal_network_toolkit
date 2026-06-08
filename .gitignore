@@ -17,3 +17,6 @@ __pycache__/
 
 # Opt-in browser-test venv (just setup-test / just test-viewer) — never used by `just ci`
 .venv/
+
+# Transient symlink created by `just view-reports <dir>` (cleaned up on exit)
+tools/report-viewer/_reports

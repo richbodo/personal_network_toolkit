@@ -5,19 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>PNA evaluate-report viewer</title>
 <!--
-  Visual Validator — Phases 2-3 (plans/visual-validator-plan.md). Static, zero-dependency,
+  Visual Validator — Phases 2-5 (plans/visual-validator-plan.md). Static, zero-dependency,
   engine-agnostic vanilla JS. No build, no framework, no network, no Chromium-only APIs.
   DOM is built with textContent so report strings cannot inject HTML.
 
-  Renders one instance of tools/evaluate-report.schema.json in two registers:
-    - developer (A0): per-AC table with code citations + raw evidence;
-    - end-user (A1): plain-language good / at-risk / how-to-be-safer, by Goal.
-  View modes: end-user | side-by-side (finding-aligned) | developer. The mode persists in
-  localStorage and is deep-linkable via ?mode=. Both registers derive from the SAME JSON.
+  Renders evaluate-report.schema.json instances in two registers (developer A0 / end-user A1),
+  with view modes end-user | side-by-side (finding-aligned) | developer (mode persists in
+  localStorage; ?mode=). Loads ONE report or a SET you flip through with ‹ Prev / Next › / ← → /
+  a jump dropdown.
 
-  Open it: drag a report onto the page, or use the file picker — both work over file://.
-  ?report=<path> / ?mode=<mode> / the sample buttons use fetch(), which needs serving:
-      python3 -m http.server   (then open http://localhost:8000/index.html)
+  Load a set:
+    - drag several report files onto the page, or pick several in the file dialog;
+    - ?reports=a.json,b.json,c.json     (explicit list)
+    - ?dir=<path>                       (fetches <path>/index.json — an array of filenames)
+  ?report= / ?reports= / ?dir= and the sample buttons use fetch(), which needs serving:
+      just view-reports [dir]     # or:  python3 -m http.server --directory tools/report-viewer
 -->
 <style>
   :root {
@@ -40,6 +42,7 @@
   .btn { font:inherit; font-size:13px; padding:5px 10px; border:1px solid var(--line); border-radius:7px;
     background:#fff; color:var(--ink); cursor:pointer; }
   .btn:hover { border-color:var(--accent); color:var(--accent); }
+  .btn[disabled] { opacity:.4; cursor:default; border-color:var(--line); color:var(--muted); }
   .hint { color:var(--muted); font-size:13px; }
 
   /* view-mode segmented control */
@@ -51,6 +54,13 @@
   .modebtn.active { background:var(--accent); color:#fff; }
 
   main { max-width:1060px; margin:0 auto; padding:22px 18px 80px; }
+
+  /* report set navigation (←/→) */
+  .navbar { display:flex; gap:10px; align-items:center; flex-wrap:wrap; background:var(--panel);
+    border:1px solid var(--line); border-radius:10px; padding:8px 12px; margin:0 0 14px;
+    position:sticky; top:54px; z-index:4; }
+  .navselect { font:inherit; font-size:13px; padding:4px 8px; border:1px solid var(--line); border-radius:7px; max-width:46ch; }
+  .navpos { color:var(--muted); font-size:13px; margin-left:auto; font-variant-numeric:tabular-nums; }
 
   .empty { text-align:center; color:var(--muted); padding:64px 16px; border:2px dashed var(--line);
     border-radius:14px; background:var(--panel); }
@@ -132,8 +142,8 @@
 <body>
 <header>
   <h1>PNA evaluate-report viewer</h1>
-  <span class="hint">drag a report on, or</span>
-  <label class="btn">open file…<input id="file" type="file" accept=".json,application/json" hidden></label>
+  <span class="hint">drag report(s) on, or</span>
+  <label class="btn">open file…<input id="file" type="file" accept=".json,application/json" multiple hidden></label>
   <div class="modebar" role="group" aria-label="view mode">
     <button class="modebtn" data-mode="end-user">End-user</button>
     <button class="modebtn" data-mode="side-by-side">Side by side</button>
@@ -144,10 +154,11 @@
     <button class="btn" data-sample="01-conformant-minimal-pna.json">conformant</button>
     <button class="btn" data-sample="02-non-conformant-leaky-app.json">non-conformant</button>
     <button class="btn" data-sample="03-mixed-exceptions-and-constraints.json">mixed</button>
+    <button class="btn" data-sample-set="01-conformant-minimal-pna.json,02-non-conformant-leaky-app.json,03-mixed-exceptions-and-constraints.json">▸ flip all 3</button>
   </div>
 </header>
 <main id="content"></main>
-<footer>Renders <code>tools/evaluate-report.schema.json</code> instances in two registers from one JSON. Both views derive from the same data — the end-user view invents nothing the report doesn't assert.</footer>
+<footer>Renders <code>tools/evaluate-report.schema.json</code> instances in two registers from one JSON; load a set and flip with ← / →. Both views derive from the same data — the end-user view invents nothing the report doesn't assert.</footer>
 
 <script>
 "use strict";
@@ -179,7 +190,8 @@ const CAVEAT = "This measures the app against the PNA spec's specific promises. 
 const STATUS_RANK = {"non-conformant":0, "unable-to-determine":1, "conformant":2, "not-applicable":3};
 
 const params = new URLSearchParams(location.search);
-let currentReport = null;  // { obj, label }
+let reportSet = [];   // [{ obj, label }]
+let reportIndex = 0;
 let viewMode = params.get("mode") || localStorage.getItem("vv-mode") || "side-by-side";
 if (!MODES.includes(viewMode)) viewMode = "side-by-side";
 
@@ -213,6 +225,9 @@ function firstDetail(f) {
   if (Array.isArray(f.evidence)) for (const e of f.evidence) if (e && e.detail) return e.detail;
   if (Array.isArray(f.citations) && f.citations[0] && f.citations[0].note) return f.citations[0].note;
   return null;
+}
+function labelOf(obj, src) {
+  return (obj && obj.candidate && obj.candidate.name) || (src ? String(src).split("/").pop() : "report");
 }
 function concernSort(findings) {
   return findings.map((f, i) => [f, i]).sort((a, b) => {
@@ -310,34 +325,6 @@ function renderSummaryA1(summ, findings) {
   box.append(el("div", {class:"caveat", text:CAVEAT}));
   return box;
 }
-
-// ---- render dispatch ----
-function renderReport(obj, sourceLabel) {
-  if (!obj || typeof obj !== "object") throw new Error("top level is not an object");
-  currentReport = {obj, label:sourceLabel};
-  render();
-}
-function render() {
-  if (!currentReport) { showEmpty(); return; }
-  const {obj, label} = currentReport;
-  const findings = concernSort(Array.isArray(obj.findings) ? obj.findings : []);
-  const cand = obj.candidate || {}, summ = obj.summary || {};
-  const nodes = [renderCandidateCard(obj, cand, label)];
-
-  if (viewMode === "developer") {
-    nodes.push(renderSummaryA0(summ, findings), el("div", null, ...findings.map(renderFindingA0)));
-  } else if (viewMode === "end-user") {
-    nodes.push(renderSummaryA1(summ, findings), el("div", null, ...findings.map(renderFindingA1)));
-  } else { // side-by-side — finding-aligned (A1 | A0 per grid row)
-    const grid = el("div", {class:"sxs"});
-    grid.append(el("div", {class:"sxs-label", text:"In plain language"}), el("div", {class:"sxs-label", text:"Technical detail"}));
-    grid.append(renderSummaryA1(summ, findings), renderSummaryA0(summ, findings));
-    for (const f of findings) grid.append(renderFindingA1(f), renderFindingA0(f));
-    nodes.push(grid);
-  }
-  content.replaceChildren(...nodes);
-  document.title = (cand.name ? cand.name + " — " : "") + "PNA evaluate-report";
-}
 function renderCandidateCard(obj, cand, label) {
   const head = el("div", {class:"card"});
   head.append(el("p", {class:"cand-name", text:cand.name || "(unnamed candidate)"}));
@@ -357,22 +344,104 @@ function renderCandidateCard(obj, cand, label) {
   return head;
 }
 
+// ---- report-set navigation ----
+function renderNav() {
+  const bar = el("div", {class:"navbar"});
+  const prev = el("button", {class:"btn", text:"‹ Prev", onclick:() => go(-1)});
+  const next = el("button", {class:"btn", text:"Next ›", onclick:() => go(1)});
+  if (reportIndex === 0) prev.setAttribute("disabled", "");
+  if (reportIndex === reportSet.length - 1) next.setAttribute("disabled", "");
+  const sel = el("select", {class:"navselect", onchange:e => jumpTo(parseInt(e.target.value, 10))});
+  reportSet.forEach((r, i) => {
+    const o = el("option", {value:String(i), text:r.label || ("report " + (i + 1))});
+    if (i === reportIndex) o.setAttribute("selected", "");
+    sel.append(o);
+  });
+  bar.append(prev, sel, next, el("span", {class:"navpos", text:(reportIndex + 1) + " / " + reportSet.length}));
+  return bar;
+}
+function go(d) {
+  if (reportSet.length < 2) return;
+  reportIndex = Math.max(0, Math.min(reportSet.length - 1, reportIndex + d));
+  render();
+}
+function jumpTo(i) { if (i >= 0 && i < reportSet.length) { reportIndex = i; render(); } }
+
+// ---- render dispatch ----
+function render() {
+  if (!reportSet.length) { showEmpty(); return; }
+  const {obj, label} = reportSet[reportIndex];
+  const findings = concernSort(Array.isArray(obj.findings) ? obj.findings : []);
+  const cand = obj.candidate || {}, summ = obj.summary || {};
+  const nodes = [];
+  if (reportSet.length > 1) nodes.push(renderNav());
+  nodes.push(renderCandidateCard(obj, cand, label));
+
+  if (viewMode === "developer") {
+    nodes.push(renderSummaryA0(summ, findings), el("div", null, ...findings.map(renderFindingA0)));
+  } else if (viewMode === "end-user") {
+    nodes.push(renderSummaryA1(summ, findings), el("div", null, ...findings.map(renderFindingA1)));
+  } else { // side-by-side — finding-aligned (A1 | A0 per grid row)
+    const grid = el("div", {class:"sxs"});
+    grid.append(el("div", {class:"sxs-label", text:"In plain language"}), el("div", {class:"sxs-label", text:"Technical detail"}));
+    grid.append(renderSummaryA1(summ, findings), renderSummaryA0(summ, findings));
+    for (const f of findings) grid.append(renderFindingA1(f), renderFindingA0(f));
+    nodes.push(grid);
+  }
+  content.replaceChildren(...nodes);
+  document.title = (cand.name ? cand.name + " — " : "") + "PNA evaluate-report" +
+    (reportSet.length > 1 ? " (" + (reportIndex + 1) + "/" + reportSet.length + ")" : "");
+}
+
 function showEmpty() {
   content.replaceChildren(el("div", {class:"empty"},
-    el("p", null, el("strong", {text:"Drop an evaluate-report.json here"}), " — or use ", el("strong", {text:"open file…"}), " above, or a sample."),
-    el("p", {class:"hint", text:"A valid instance of tools/evaluate-report.schema.json. Toggle End-user / Side by side / Developer once loaded."})));
+    el("p", null, el("strong", {text:"Drop evaluate-report.json file(s) here"}), " — or use ", el("strong", {text:"open file…"}), ", or a sample."),
+    el("p", {class:"hint", text:"Drop several to flip through them with ← / →. Toggle End-user / Side by side / Developer once loaded."})));
 }
 function showError(msg) { content.replaceChildren(el("div", {class:"error", text:msg})); }
+
+// ---- loading ----
+function loadSet(items) {
+  items = (items || []).filter(x => x && x.obj && typeof x.obj === "object");
+  if (!items.length) { showError("No valid reports loaded."); return; }
+  reportSet = items;
+  reportIndex = 0;
+  render();
+}
 function loadText(text, label) {
   let obj;
   try { obj = JSON.parse(text); } catch (e) { showError("Not valid JSON: " + e.message); return; }
-  try { renderReport(obj, label); } catch (e) { showError("Could not render report: " + e.message); }
+  loadSet([{obj, label:labelOf(obj, label)}]);
 }
-function loadUrl(url) {
-  fetch(url).then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.text(); })
-    .then(t => loadText(t, url))
-    .catch(e => showError("Could not fetch " + url + " (" + e.message + ").\n\n" +
-      "fetch is blocked on file:// — drag a report onto the page, use “open file…”, or serve this folder:  python3 -m http.server"));
+function fetchItem(url) {
+  return fetch(url).then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.text(); })
+    .then(t => { const obj = JSON.parse(t); return {obj, label:labelOf(obj, url)}; });
+}
+function loadUrls(urls) {
+  Promise.all(urls.map(u => fetchItem(u).catch(() => null))).then(items => {
+    const good = items.filter(Boolean);
+    if (good.length) loadSet(good);
+    else showError("Could not load: " + urls.join(", ") + "\n\nfetch is blocked on file:// — drag the report(s) onto the page, " +
+      "use “open file…”, or serve the folder:  just view-reports   (or  python3 -m http.server)");
+  });
+}
+function loadDir(dir) {
+  const base = dir.replace(/\/+$/, "");
+  fetch(base + "/index.json").then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(m => {
+      const files = Array.isArray(m) ? m : (m && Array.isArray(m.reports) ? m.reports : []);
+      if (!files.length) throw new Error("manifest lists no reports");
+      loadUrls(files.map(f => base + "/" + f));
+    })
+    .catch(e => showError("Could not load directory manifest " + base + "/index.json (" + e.message + ")."));
+}
+function readFiles(fileList) {
+  Promise.all([...fileList].map(f => f.text().then(t => {
+    try { return {obj:JSON.parse(t), label:labelOf(JSON.parse(t), f.name)}; } catch (e) { return null; }
+  }))).then(items => {
+    const good = items.filter(Boolean);
+    if (good.length) loadSet(good); else showError("No valid evaluate-report.json in the selection.");
+  });
 }
 
 // ---- view-mode control ----
@@ -384,7 +453,7 @@ function setMode(m) {
   viewMode = m;
   try { localStorage.setItem("vv-mode", m); } catch (e) { /* private mode */ }
   updateModebar();
-  if (currentReport) render();
+  if (reportSet.length) render();
 }
 for (const b of document.querySelectorAll("[data-mode]")) b.addEventListener("click", () => setMode(b.getAttribute("data-mode")));
 if (params.get("mode")) { try { localStorage.setItem("vv-mode", viewMode); } catch (e) {} }
@@ -392,21 +461,32 @@ updateModebar();
 
 // ---- input wiring ----
 document.getElementById("file").addEventListener("change", e => {
-  const f = e.target.files && e.target.files[0];
-  if (f) f.text().then(t => loadText(t, f.name));
+  if (e.target.files && e.target.files.length) readFiles(e.target.files);
 });
 for (const b of document.querySelectorAll("[data-sample]"))
-  b.addEventListener("click", () => loadUrl("sample-reports/" + b.getAttribute("data-sample")));
+  b.addEventListener("click", () => loadUrls(["sample-reports/" + b.getAttribute("data-sample")]));
+for (const b of document.querySelectorAll("[data-sample-set]"))
+  b.addEventListener("click", () => loadUrls(b.getAttribute("data-sample-set").split(",").map(s => "sample-reports/" + s.trim())));
+
 ["dragenter","dragover"].forEach(ev => document.addEventListener(ev, e => { e.preventDefault(); document.body.classList.add("dragging"); }));
 ["dragleave","drop"].forEach(ev => document.addEventListener(ev, e => { e.preventDefault(); document.body.classList.remove("dragging"); }));
 document.addEventListener("drop", e => {
-  const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
-  if (f) f.text().then(t => loadText(t, f.name));
+  if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) readFiles(e.dataTransfer.files);
+});
+document.addEventListener("keydown", e => {
+  if (reportSet.length < 2) return;
+  const t = e.target;
+  if (t && /^(INPUT|SELECT|TEXTAREA)$/.test(t.tagName)) return;
+  if (e.key === "ArrowLeft") { go(-1); e.preventDefault(); }
+  else if (e.key === "ArrowRight") { go(1); e.preventDefault(); }
 });
 
 // ---- initial ----
-const want = params.get("report");
-if (want) loadUrl(want); else showEmpty();
+const dirParam = params.get("dir"), reportsParam = params.get("reports"), reportParam = params.get("report");
+if (dirParam) loadDir(dirParam);
+else if (reportsParam) loadUrls(reportsParam.split(",").map(s => s.trim()).filter(Boolean));
+else if (reportParam) loadUrls([reportParam]);
+else showEmpty();
 </script>
 </body>
 </html>

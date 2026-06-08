@@ -14,6 +14,8 @@ set shell := ["bash", "-euo", "pipefail", "-c"]
 
 python := "python3"
 venv := ".venv"
+viewer_port := "8009"
+opener := if os() == "macos" { "open" } else { "xdg-open" }
 
 # Show the recipe menu.
 default:
@@ -90,3 +92,24 @@ setup-test:
 [group('browser-test')]
 test-viewer *args:
     {{venv}}/bin/pytest tools/report-viewer/tests/ {{args}}
+
+# Serve the Visual Validator and flip through a directory of reports (← / →). No arg = the bundled samples.
+[group('browser-test')]
+view-reports dir="":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    viewer="tools/report-viewer"
+    if [ -z "{{dir}}" ]; then
+      q="reports=$(cd "$viewer" && ls sample-reports/*.json | paste -sd, -)"
+    else
+      abs="$(cd "{{dir}}" && pwd)"
+      ln -sfn "$abs" "$viewer/_reports"
+      trap 'rm -f "$viewer/_reports"' EXIT
+      files="$(cd "$abs" && ls *.json 2>/dev/null | sed 's#^#_reports/#' | paste -sd, -)"
+      [ -n "$files" ] || { echo "no *.json reports in {{dir}}"; exit 1; }
+      q="reports=$files"
+    fi
+    url="http://127.0.0.1:{{viewer_port}}/index.html?$q&mode=side-by-side"
+    echo "Visual Validator → $url   (Ctrl-C to stop)"
+    ( sleep 1; {{opener}} "$url" >/dev/null 2>&1 || true ) &
+    {{python}} -m http.server {{viewer_port}} -d "$viewer"

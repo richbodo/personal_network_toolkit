@@ -1,0 +1,8 @@
+{
+  "report_schema_version": "0.1",
+  "candidate": { "name": "App A (dirset fixture)", "pna_spec_version": "0.1", "picks_source": "inferred" },
+  "summary": { "posture": "conformant", "headline": "First report in a two-report directory fixture." },
+  "findings": [
+    { "ac_id": "AC-1", "status": "conformant", "goals": [1], "citations": [{ "path": "a/store.py", "note": "two-store split" }] }
+  ]
+}

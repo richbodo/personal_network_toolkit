@@ -165,6 +165,7 @@ For developers working **on the toolkit itself** (the spec, lints, contracts, sk
 | `just test-design <name>` | *(Scaffold, inert)* the planned per-design conformance harness — see [`plans/conformance-suite-plan.md`](../plans/conformance-suite-plan.md) § Phase 4. |
 | `just setup-test` | **(Opt-in, one-time)** Create `.venv` and install the browser-test deps (`pytest` + Playwright + Chromium) from `requirements-dev.txt`. Needed only for `just test-viewer`. |
 | `just test-viewer` | **(Opt-in; NOT in `just ci`)** Render-test the Visual Validator viewer in a real browser (Playwright). See [`plans/viewer-e2e-testing-plan.md`](../plans/viewer-e2e-testing-plan.md). |
+| `just view-reports [dir]` | **(Opt-in)** Serve the Visual Validator and flip through a directory of `evaluate-report.json` files (← / →). No arg flips through the bundled samples. |
 
 **Conventions** (full list in [`CLAUDE.md`](../CLAUDE.md)):
 

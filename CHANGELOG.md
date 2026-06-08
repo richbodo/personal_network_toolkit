@@ -2,6 +2,21 @@
 
 ## v0.1 draft (in progress)
 
+### Visual Validator Phase 5: report-set flip-through + `just view-reports` (toolkit fix)
+
+- **`tools/report-viewer/index.html`** now loads a **set** of reports and flips through them with
+  **‹ Prev / Next ›**, **← / →**, or a jump dropdown (with a position indicator) — the view mode
+  (developer / end-user / side-by-side) is preserved across flips. Load a set via multi-file
+  drag-drop / file-picker, `?reports=a,b,c`, or `?dir=<path>` (fetches `<path>/index.json`, an array
+  of filenames). A single report renders with no nav, as before.
+- **`just view-reports [dir]`** — serves the viewer (stdlib `http.server`, port 8009) and opens it
+  pointed at a directory of reports; no arg flips through the three bundled samples. (`tools/report-viewer/_reports`
+  is a transient symlink it creates for a custom dir, gitignored + cleaned up on exit.)
+- **e2e:** the Playwright suite grows to **13 tests** — adds flip-through via `?reports=` and a
+  `?dir=` manifest, mode-preserved-across-flip, and single-report-has-no-nav. Verified: 13 passed in
+  headless Chromium; screenshot confirmed the nav + side-by-side. Implements
+  [`plans/visual-validator-plan.md`](plans/visual-validator-plan.md) Phase 5. `just ci` unchanged (24/24).
+
 ### Visual Validator e2e CI job — `viewer-e2e` (e2e plan Phase 3) (toolkit fix)
 
 - **`.github/workflows/viewer-e2e.yml`** — a dedicated GitHub Actions job that installs Playwright +

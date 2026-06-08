@@ -60,8 +60,8 @@ When you add a fact, put it in the doc that owns its category and link from the 
 
 Worktrees are **cheap and nearly isolated** here — this is a stdlib-only `python3` spec/lint/docs
 repo where `just ci` runs against a tempdir copy, so concurrent `just ci` across worktrees can't
-collide. The **one** shared host resource is the opt-in browser test's server on **port 8791**
-(`just test-viewer`, and the Phase-5 `just view-reports`) — serialize those across worktrees;
+collide. The shared host resources are the opt-in viewer servers — **port 8791** (`just test-viewer`)
+and **port 8009** (`just view-reports`) — serialize those across worktrees;
 everything else (edits, `just ci`, the lints) stays parallel-safe. When more than one Claude
 Code / agent works on this host's checkout at once, give each its own worktree so a `git checkout`
 in one can't pull the branch (or uncommitted work) out from under another:

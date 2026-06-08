@@ -132,3 +132,65 @@ def test_empty_state(page: Page, viewer_url):
 def test_malformed_report_shows_error(page: Page, viewer_url):
     page.goto(f"{viewer_url}/index.html?report=tests/fixtures/broken.json", wait_until="networkidle")
     expect(page.locator(".error")).to_be_visible()
+
+
+# ---- report-set flip-through (Phase 5) ----
+
+def test_flip_through_a_set_via_reports_param(page: Page, viewer_url):
+    files = [
+        "01-conformant-minimal-pna.json",
+        "02-non-conformant-leaky-app.json",
+        "03-mixed-exceptions-and-constraints.json",
+    ]
+    reports = ",".join("sample-reports/" + f for f in files)
+    page.goto(f"{viewer_url}/index.html?reports={reports}&mode=developer", wait_until="networkidle")
+    page.locator(".navbar").wait_for(state="visible", timeout=5000)
+
+    expect(page.locator(".navpos")).to_have_text("1 / 3")
+    expect(page.locator(".cand-name")).to_contain_text("vault-cli")
+    # the jump dropdown lists all three
+    assert page.locator(".navselect option").count() == 3
+
+    page.locator("button", has_text="Next").click()
+    expect(page.locator(".navpos")).to_have_text("2 / 3")
+    expect(page.locator(".cand-name")).to_contain_text("contacts-sync-pro")
+
+    page.keyboard.press("ArrowRight")
+    expect(page.locator(".navpos")).to_have_text("3 / 3")
+    expect(page.locator(".cand-name")).to_contain_text("fellows_local_db")
+
+    page.keyboard.press("ArrowLeft")
+    expect(page.locator(".navpos")).to_have_text("2 / 3")
+
+    # jump straight to the first via the dropdown
+    page.locator(".navselect").select_option("0")
+    expect(page.locator(".navpos")).to_have_text("1 / 3")
+
+
+def test_flip_through_a_directory_manifest(page: Page, viewer_url):
+    page.goto(f"{viewer_url}/index.html?dir=tests/fixtures/dirset&mode=developer", wait_until="networkidle")
+    page.locator(".navbar").wait_for(state="visible", timeout=5000)
+    expect(page.locator(".navpos")).to_have_text("1 / 2")
+    expect(page.locator(".cand-name")).to_contain_text("App A")
+    page.keyboard.press("ArrowRight")
+    expect(page.locator(".navpos")).to_have_text("2 / 2")
+    expect(page.locator(".cand-name")).to_contain_text("App B")
+
+
+def test_mode_is_preserved_across_a_flip(page: Page, viewer_url):
+    reports = ",".join("sample-reports/" + f for f in
+                       ["02-non-conformant-leaky-app.json", "03-mixed-exceptions-and-constraints.json"])
+    page.goto(f"{viewer_url}/index.html?reports={reports}&mode=side-by-side", wait_until="networkidle")
+    page.locator(".sxs").wait_for(state="visible", timeout=5000)
+    page.keyboard.press("ArrowRight")
+    expect(page.locator(".navpos")).to_have_text("2 / 2")
+    # still side-by-side after flipping
+    expect(page.locator(".sxs")).to_be_visible()
+    assert page.locator(".a1-finding").count() == page.locator(".finding").count()
+
+
+def test_single_report_has_no_nav(page: Page, viewer_url):
+    page.goto(f"{viewer_url}/index.html?report=sample-reports/01-conformant-minimal-pna.json&mode=developer",
+              wait_until="networkidle")
+    page.locator(".finding").first.wait_for(state="visible", timeout=5000)
+    assert page.locator(".navbar").count() == 0
