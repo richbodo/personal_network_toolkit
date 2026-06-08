@@ -53,6 +53,11 @@ export-lint target *args:
 attestation-lint target *args:
     {{python}} tools/attestation-evidence-lint.py {{target}} {{args}}
 
+# Validate evaluate-report.json instance(s) against the render contract (Visual Validator input).
+[group('evaluate')]
+report-lint target:
+    {{python}} tools/report-fixtures-lint.py {{target}}
+
 
 # ---- design --------------------------------------------------------------
 

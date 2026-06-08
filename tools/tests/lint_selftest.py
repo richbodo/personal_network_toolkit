@@ -226,6 +226,9 @@ def main() -> int:
     case_fixture_lint(results, "tools/attestation-evidence-lint.py",
                       "tools/attestation-evidence-lint-fixtures/clean",
                       "tools/attestation-evidence-lint-fixtures/dirty")
+    case_fixture_lint(results, "tools/report-fixtures-lint.py",
+                      "tools/report-viewer/sample-reports",
+                      "tools/report-fixtures-lint-fixtures/dirty")
     case_attestation_marker_message(results)
     case_attestation_pytestmark(results)
 

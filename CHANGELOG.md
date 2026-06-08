@@ -2,6 +2,22 @@
 
 ## v0.1 draft (in progress)
 
+### Visual Validator Phase 1: sample reports + render-contract lint (toolkit fix)
+
+- **`tools/report-viewer/sample-reports/`** — three valid `evaluate-report.schema.json` instances
+  (a `conformant` Minimum-Viable-PNA; a `non-conformant` leaky app with an undeclared `EX-CLOUD-LLM`
+  deviation; a `mixed` report modeled on fellows with EX-/CST-handling referenced *inside* the AC
+  findings, and evidence from all three sources). The Visual Validator's render fixtures + render
+  contract. **EX-*/CST- note:** the v0.1 report schema is AC-keyed (`ac_id` matches `^AC-…$`), so
+  exceptions and constraints are referenced within the AC findings they bear on, not as top-level
+  keys (a SKILL ↔ schema reconciliation tracked separately).
+- **`tools/report-fixtures-lint.py`** — stdlib render-contract lint (required keys, summary posture,
+  and the per-finding `ac_id`/`status` + status-conditional rules the viewer relies on). `just
+  report-lint <path>` runs it against the samples or any report directory. Fault-injection self-test
+  wired into `tools/tests/lint_selftest.py` (clean samples pass; a `conformant`-without-`citations`
+  dirty fixture fails) per the lint-discipline rule. `docs/users-guide.md` command table + tools list
+  updated. Implements [`plans/visual-validator-plan.md`](plans/visual-validator-plan.md) Phase 1.
+
 ### Worktree note + per-wave instance ownership (toolkit fix)
 
 - **`CLAUDE.md`** gains a **Worktrees** section: worktrees are cheap and fully isolated here (no

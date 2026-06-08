@@ -158,6 +158,7 @@ For developers working **on the toolkit itself** (the spec, lints, contracts, sk
 | `just egress-lint <dir> [args]` | Scan a candidate PNA's source for off-device egress vectors — the deterministic AC-1 check (args like `--json`, `--allow <origin>` pass through). |
 | `just export-lint <path> [args]` | Check a Private-DB human-readable export is readable with no PNA tooling — the deterministic PR-6 check. |
 | `just attestation-lint <dir> [args]` | Check a design's Architecture document — every `conformant` attestation row cites a live, non-deferred (`xfail`/`skip`-free) test or a declared review kind. The deterministic half of "exists **and** passes." |
+| `just report-lint <path>` | Validate `evaluate-report.json` instance(s) against the render contract the Visual Validator reads — a single file or a reports directory (e.g. a cron drop). |
 | `just swh-save <repo-url> [ref] [clone]` | Request Software Heritage archival of a design's repo and print the SWHID fields to paste into its `design.toml`. |
 | `just test-design <name>` | *(Scaffold, inert)* the planned per-design conformance harness — see [`plans/conformance-suite-plan.md`](../plans/conformance-suite-plan.md) § Phase 4. |
 
@@ -213,6 +214,7 @@ Working on the toolkit itself: `just` for the command menu, `just ci` before pus
   - [`tools/export-readable-lint.py`](../tools/export-readable-lint.py) — deterministic PR-6 export-readability check
   - [`tools/attestation-evidence-lint.py`](../tools/attestation-evidence-lint.py) — deterministic attestation-evidence check (every `conformant` row cites a live, non-deferred test or a declared review kind)
   - [`tools/evaluate-report.schema.json`](../tools/evaluate-report.schema.json) — typed schema for the audit report
+  - [`tools/report-fixtures-lint.py`](../tools/report-fixtures-lint.py) — deterministic render-contract check for `evaluate-report.json` instances (the Visual Validator's input); samples at [`tools/report-viewer/sample-reports/`](../tools/report-viewer/sample-reports/)
   - [`tools/swh-save.sh`](../tools/swh-save.sh) — Software Heritage archival + SWHID computation
 - [`docs/conformance-scope-and-lifecycle.md`](conformance-scope-and-lifecycle.md) — what the conformance suite covers, the active/archival lifecycle, and the roadmap
 - [`plans/`](../plans/) — live plans tracking the toolkit's own evolution

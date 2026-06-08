@@ -1,0 +1,68 @@
+{
+  "report_schema_version": "0.1",
+  "generated_by": "pna-build-eval-contrib skill (illustrative sample — fictional candidate, not a real app)",
+  "candidate": {
+    "name": "contacts-sync-pro (illustrative candidate)",
+    "pna_spec_version": "0.1",
+    "picks_source": "inferred",
+    "axis_picks": {
+      "storage": "idb-only-browser",
+      "workspace-shell": "framework-spa",
+      "comms": "mailto-only"
+    }
+  },
+  "summary": {
+    "posture": "non-conformant",
+    "headline": "Private data leaves the device: notes are POSTed to a vendor analytics endpoint (AC-1), and an LLM 'smart compose' calls a cloud model over private fields with no consent gate and no declared exception (AC-PRM-A). Not safe to trust with relationship data.",
+    "leading_concerns": ["AC-1", "AC-PRM-A"]
+  },
+  "findings": [
+    {
+      "ac_id": "AC-1",
+      "ac_source": "universal",
+      "status": "non-conformant",
+      "goals": [1],
+      "requirement": "Shared data MUST be read-only and externally managed; private data MUST be read-write and locally owned. The two stores MUST occupy separate namespaces and private data MUST NOT leave the device on its own.",
+      "citations": [
+        { "path": "src/sync.js", "lines": "88-104", "note": "POSTs note bodies to https://telemetry.vendor.example/v1/events on every edit" }
+      ],
+      "evidence": [
+        {
+          "source": "deterministic",
+          "tool": "egress-lint",
+          "detail": "Off-device egress to telemetry.vendor.example is not on any allow-list (AC-1 violation).",
+          "citations": [ { "path": "src/sync.js", "lines": "91" } ]
+        },
+        {
+          "source": "llm",
+          "detail": "The payload includes record_notes rows — private data by definition — so this is a Goal-1 sovereignty violation, not anonymous-counter telemetry."
+        }
+      ],
+      "needs_human_review": false
+    },
+    {
+      "ac_id": "AC-PRM-A",
+      "ac_source": "universal",
+      "status": "non-conformant",
+      "goals": [1, 3],
+      "requirement": "Any LLM invocation over Private or Shared data MUST be treated as a transport: a local model is the default; a cloud model MUST be opt-in per call; the user MUST see the prompt and any merged data before send.",
+      "citations": [
+        { "path": "src/compose.js", "lines": "33-59", "note": "sends private fields to a cloud completion API on keystroke — no consent, no preview" }
+      ],
+      "rationale": "Undeclared deviation: the app departs from the local-only guarantee without raising EX-CLOUD-LLM (no consent gate, no persistent non-PNA-mode signal). It should have declared and handled that exception; absent that, this is a silent (uncaught) conformance failure — the backstop in SKILL.md § Evaluate flow.",
+      "evidence": [
+        { "source": "llm", "detail": "No EX-* attestation in the source and no runtime consent surface; names the EX-CLOUD-LLM exception it should have raised." }
+      ],
+      "needs_human_review": true
+    },
+    {
+      "ac_id": "AC-9",
+      "ac_source": "universal",
+      "status": "conformant",
+      "goals": [4],
+      "citations": [
+        { "path": "src/backup.js", "lines": "10-30", "note": "an IndexedDB snapshot ring exists (durability is bounded by the evictable substrate, but the backup path is present)" }
+      ]
+    }
+  ]
+}

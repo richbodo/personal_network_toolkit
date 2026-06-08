@@ -1,0 +1,16 @@
+{
+  "report_schema_version": "0.1",
+  "candidate": { "pna_spec_version": "0.1", "picks_source": "inferred" },
+  "summary": {
+    "posture": "conformant",
+    "headline": "Deliberately broken fixture: a conformant finding with no citations. The viewer would render a verdict with no supporting evidence, and it violates the schema's conformant -> citations rule. report-fixtures-lint MUST flag this (exit 1)."
+  },
+  "findings": [
+    {
+      "ac_id": "AC-1",
+      "ac_source": "universal",
+      "status": "conformant",
+      "goals": [1]
+    }
+  ]
+}

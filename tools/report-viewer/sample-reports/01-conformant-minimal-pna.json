@@ -1,0 +1,79 @@
+{
+  "report_schema_version": "0.1",
+  "generated_by": "pna-build-eval-contrib skill (illustrative sample — not a real evaluation)",
+  "candidate": {
+    "name": "vault-cli (illustrative Minimum-Viable-PNA)",
+    "pna_spec_version": "0.1",
+    "picks_source": "inferred",
+    "axis_picks": {
+      "storage": "native-sqlite-via-filesystem",
+      "ingestion": "single-source-static-mirror",
+      "workspace-shell": "cli-subcommands"
+    }
+  },
+  "summary": {
+    "posture": "conformant",
+    "headline": "A Minimum-Viable-PNA (CLI vault): the two-store split holds and private data stays on disk. The communication, distribution, and MCP ACs are not-applicable because the design exposes no such surfaces.",
+    "leading_concerns": []
+  },
+  "findings": [
+    {
+      "ac_id": "AC-1",
+      "ac_source": "universal",
+      "status": "conformant",
+      "goals": [1],
+      "citations": [
+        { "path": "vault/store.py", "lines": "40-72", "note": "two separate SQLite files; the shared DB is opened read-only via ATTACH ?mode=ro" }
+      ],
+      "evidence": [
+        { "source": "llm", "detail": "Traced every write path; only the private DB is opened read-write, and the shared DB attaches read-only." }
+      ]
+    },
+    {
+      "ac_id": "AC-9",
+      "ac_source": "universal",
+      "status": "conformant",
+      "goals": [4],
+      "citations": [
+        { "path": "vault/backup.py", "lines": "12-48", "note": "per-invocation debounced snapshot with a 5-slot rotation ring" }
+      ]
+    },
+    {
+      "ac_id": "AC-17",
+      "ac_source": "universal",
+      "status": "conformant",
+      "goals": [2],
+      "citations": [
+        { "path": "vault/ingest.py", "lines": "22", "note": "every record traces to the single configured vCard source; nothing introduced beyond it" }
+      ]
+    },
+    {
+      "ac_id": "AC-16",
+      "ac_source": "universal",
+      "status": "not-applicable",
+      "goals": [3],
+      "rationale": "No Communications slot: the vault never reaches out, so the transport-selection AC is vacuous (the same way the MCP ACs are vacuous when no MCP server is exposed)."
+    },
+    {
+      "ac_id": "AC-18",
+      "ac_source": "universal",
+      "status": "not-applicable",
+      "goals": [3],
+      "rationale": "No Communications slot present."
+    },
+    {
+      "ac_id": "AC-19",
+      "ac_source": "universal",
+      "status": "not-applicable",
+      "goals": [3],
+      "rationale": "No Communications slot present."
+    },
+    {
+      "ac_id": "AC-MCP-A",
+      "ac_source": "universal",
+      "status": "not-applicable",
+      "goals": [1, 3],
+      "rationale": "mcp-exposure pick is none; there is no MCP surface to gate cloud clients against."
+    }
+  ]
+}
