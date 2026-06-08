@@ -139,7 +139,7 @@ You've built or are operating a PNA against the spec and want to contribute it b
 3. **Address maintainer feedback.** A maintainer reviews at the judgment layer: does the spec change make sense? Does the Architecture document accurately describe the design? Is the attestation table complete with real Verification evidence? License must be OSI-approved and permit Software Heritage archival. Fix, push, repeat.
 
 4. **After your PR is accepted.** Acceptance is the merge. Then:
-   - **The maintainer archives your source to Software Heritage** at the accepted commit — a post-merge maintainer step (you MAY pre-compute the SWHIDs and include them in the PR). The exact command and its one gotcha live in [Working in this repo → Archive a design](#archive-a-design-to-software-heritage-compute-its-swhid); the maintainer records the printed `commit` / `swhid_rev` / `swhid_dir` into your `design.toml` (flipping `archival = "archived"`) and design record, so your source survives even if your upstream repo is deleted. For high-signal designs they may also mirror to a `pnt-archive` fork; the SWHID alone is sufficient for the archival promise.
+   - **The maintainer archives your source to Software Heritage** at the accepted commit — a post-merge maintainer step (you MAY pre-compute the SWHIDs and include them in the PR). The exact command and its one gotcha live in [Working in this repo → Archive a reference design](#archive-a-reference-design-to-the-software-heritage-archive); the maintainer records the printed `commit` / `swhid_rev` / `swhid_dir` into your `design.toml` (flipping `archival = "archived"`) and design record, so your source survives even if your upstream repo is deleted. For high-signal designs they may also mirror to a `pnt-archive` fork; the SWHID alone is sufficient for the archival promise.
    - The Toolkit-Version is bumped per [`CONTRIBUTING.md` § Versioning](../CONTRIBUTING.md#versioning) (Patch for clarifications, Minor for additive changes, Major for breaking ones; an axis carries its own version too).
    - Run preflight once more against the merged state — it should come out clean.
 
@@ -161,22 +161,26 @@ For developers working **on the toolkit itself** (the spec, lints, contracts, sk
 | `just export-lint <path> [args]` | Check a Private-DB human-readable export is readable with no PNA tooling — the deterministic PR-6 check. |
 | `just attestation-lint <dir> [args]` | Check a design's Architecture document — every `conformant` attestation row cites a live, non-deferred (`xfail`/`skip`-free) test or a declared review kind. The deterministic half of "exists **and** passes." |
 | `just report-lint <path>` | Validate `evaluate-report.json` instance(s) against the render contract the Visual Validator reads — a single file or a reports directory (e.g. a cron drop). |
-| `just swh-save <repo-url> [ref] [clone]` | Request Software Heritage archival of a design's repo and print the SWHID fields to paste into its `design.toml`. **Pass the `clone` path (3rd arg) when running from the toolkit** — otherwise it computes the toolkit's own SWHIDs from the cwd. See [Archive a design](#archive-a-design-to-software-heritage-compute-its-swhid). |
+| `just swh-save <repo-url> [ref] [clone]` | Request Software Heritage archival of a design's repo and print the SWHID fields to paste into its `design.toml`. **Pass the `clone` path (3rd arg) when running from the toolkit** — otherwise it computes the toolkit's own SWHIDs from the cwd. See [Archive a reference design](#archive-a-reference-design-to-the-software-heritage-archive). |
 | `just test-design <name>` | *(Scaffold, inert)* the planned per-design conformance harness — see [`plans/conformance-suite-plan.md`](../plans/conformance-suite-plan.md) § Phase 4. |
 | `just setup-test` | **(Opt-in, one-time)** Create `.venv` and install the browser-test deps (`pytest` + Playwright + Chromium) from `requirements-dev.txt`. Needed only for `just test-viewer`. |
 | `just test-viewer` | **(Opt-in; NOT in `just ci`)** Render-test the Visual Validator viewer in a real browser (Playwright). See [`plans/viewer-e2e-testing-plan.md`](../plans/viewer-e2e-testing-plan.md). |
 | `just view-reports [dir]` | **(Opt-in)** Serve the Visual Validator and flip through a directory of `evaluate-report.json` files (← / →). No arg flips through the bundled samples. |
 
-### Archive a design to Software Heritage (compute its SWHID)
+### Archive a reference design to the Software Heritage archive
 
-A reference design's source is pinned with a Software Heritage ID (SWHID) so it survives even if the upstream repo disappears. Run this when you **accept** a design, or **re-archive an existing one** at a newer commit (e.g. after its attestation changes). It's a maintainer step — `swh-save` needs no PR.
+A reference design's source is pinned with a Software Heritage ID (SWHID) — the content-addressed identifier from the [Software Heritage](https://www.softwareheritage.org/) archive's *Save Code Now* service — so it survives even if the upstream repo disappears. Run this when you **accept** a design, or **re-archive an existing one** at a newer commit (e.g. after its attestation changes). It's a maintainer step — `swh-save` needs no PR.
+
+**Run these from the toolkit repo.** `swh-save` is a `just` recipe, so your shell must be in `~/src/personal_network_toolkit` (the `cd` is the first line below). This is a *cross-repo* operation: the 3rd argument points at a **separate** local clone of the design, which is exactly why the working directory matters — `just` resolves from the toolkit, and the SWHIDs are computed from that other clone.
 
 ```bash
-# Run from the TOOLKIT repo, with a local clone of the design checked out at the ref to archive.
+cd ~/src/personal_network_toolkit                                        # ← run swh-save from HERE (the toolkit)
+
+# Generic form: <design-repo-url> <git-ref> <path-to-a-local-clone-of-the-design>
 just swh-save <design-repo-url> <git-ref> <path-to-local-clone>
 
 # Example — re-archive fellows_local_db at its current HEAD:
-git -C ~/src/fellows_local_db pull                                       # be on the latest pushed commit
+git -C ~/src/fellows_local_db pull                                       # make the design's local clone current first
 just swh-save https://github.com/richbodo/fellows_local_db HEAD ~/src/fellows_local_db
 ```
 
