@@ -43,9 +43,10 @@ The toolkit is now the **orchestrator** for its reference designs, so the work t
 milestones lives across three repos (fellows_local_db, prm, the toolkit). This is the suggested
 order to clear the open issues/PRs that matter — **dependency-first**. Items not listed here are
 low-utility (ideas / stale bugs / app-UX) and are classified in the snapshot below; prune them,
-don't schedule them. Each step notes the Tier it serves.
+don't schedule them. Each wave names its **owning Claude Code instance** (one per repo — so you can
+dispatch "do Wave N" to the right one); each step notes the Tier it serves.
 
-### Wave 1 — Land the ready fellows work; prune the deprecated lineage *(unblocks an honest keystone)*
+### Wave 1 — Land the ready fellows work; prune the deprecated lineage · **owner: fellows instance** *(unblocks an honest keystone)*
 The fellows attestation is about to change (an EAR non-goal note + new data-layer guards). Land
 those **before** archiving the keystone (Wave 2), or you archive a commit that is immediately stale.
 1. Merge **fellows PR #258** (record the EAR decision) → the deprecation is official **[T3/EAR]**.
@@ -54,16 +55,16 @@ those **before** archiving the keystone (Wave 2), or you archive a commit that i
 4. **fellows #260** (fix the off-folder red tests + cite the new guards in `docs/Architecture.md`) → makes the fellows attestation honest & current.
 5. Close **fellows #156** as done (the AC-MCP-A consent gate shipped in fellows PR #226; only "file upstream" remains — a toolkit action, not dev work).
 
-### Wave 2 — Finalize the keystone *(T0 — proves the toolkit end-to-end)*
+### Wave 2 — Finalize the keystone · **owner: toolkit instance** *(T0 — proves the toolkit end-to-end)*
 Now that fellows's attestation reflects Wave 1:
 6. Re-sync `reference_designs/fellows_local_db/Architecture.md` to the post-Wave-1 state (guard citations + EAR non-goal note); run the evaluate flow → a **real `evaluate-report.json`**.
-7. Finalize `design.toml`: archival via `just swh-save`, fill `commit`/`swhid_*`/`[verify].entrypoint`, flip `archival = "archived"`; reconcile the README↔manifest SWHID drift.
+7. Finalize `design.toml`: archival via `just swh-save`, fill `commit`/`swhid_*`/`[verify].entrypoint`, flip `archival = "archived"`; reconcile the README↔manifest SWHID drift. *(Second gate: the `[verify].entrypoint` must emit a schema-shaped `evaluate-report.json`, which fellows does not yet — that's fellows's own `conformance_report_and_gate.md`. Until it ships, either keep `archival = "pending"` or point the entrypoint at `just conformance` as an interim and flip to archived later.)*
 8. Fold the **toolkit #41** encrypt-in-transit CST frontier note into the same re-sync (a non-normative line on `CST-PWA-NO-SYNC` / `-PRIVATE-SNAPSHOT`; confirms the PR-#19 scope decline — *no new AC*). → Conformance-suite Phase 4 is now activatable; README criteria 1/3/4/6 met.
 
-### Wave 3 — Value surface fed by the keystone *(T2 — parallelizable)*
+### Wave 3 — Value surface fed by the keystone · **owner: toolkit instance** *(T2 — parallelizable)*
 9. **✓ toolkit PR #38 (Visual Validator plan) merged (2026-06-07);** build its Phases 1–3 — fed by the **real** fellows report from Wave 2 (samples stop being synthetic). Targeted for the week of Jun 15–19, alongside testing non-reference (third-party) apps through the evaluate flow.
 
-### Wave 4 — PRM toward the 2nd reference design *(T1 — the long pole; runs parallel to Waves 2–3)*
+### Wave 4 — PRM toward the 2nd reference design · **owner: prm instance** *(T1 — the long pole; runs parallel to Waves 2–3)*
 10. **✓ Done (2026-06-07):** **prm #16** (M2 read-only workspace + justfile) merged — basic functionality verified under manual test (not yet user-test-ready).
 11. **Break the distribution circular dep:** write up the **verifiability spectrum** (toolkit #39 / prm #8) *decoupled from the installer*, so the spec change is ready to land with PRM's contribution. (Today the installer is deferred pending the distribution decision, and the distribution decision was deferred pending the installer — writing the spectrum first cuts the loop.)
 12. **PRM v0.2 (in flight):** custom relationship schema (~1 day) + per-field **AI-write tiers** (this week) → the first usable slice — *import → add private fields → fill values → set permissions* — targeted for user testing the week of Jun 15. Multi-source dedup pulls in the Contact Data Atlas (Phase 1). PRM's **reference-design attestation** (its M6 — `Architecture.md` + `design.toml` + AC attestation + archival) is the actual Tier-1 milestone: at attestation the distribution-axis split graduates (#39) and README criteria **3 & 5** are met, dropping the "draft" label. (PRM's own `plans/v0.1-implementation-plan.md` holds its M-chain detail.)
@@ -73,7 +74,7 @@ Now that fellows's attestation reflects Wave 1:
 > *reference-design attestation* is PRM's **M6** and follows the demo; a minimal attestation of an earlier
 > flavor remains a possible bridge if Tier 1 is wanted sooner.
 
-### Wave 5 — Mechanisms & exploration ride up as demonstrators mature *(T3/T4)*
+### Wave 5 — Mechanisms & exploration ride up as demonstrators mature · **owner: fellows → toolkit** *(T3/T4)*
 13. fellows #252 properties 2–3 (separation, legibility) + **fellows #259** (off-folder durability-model decision; feeds an ephemeral-viewer tier) → complete the invariant demonstration → ride up to **toolkit #40** as the **3rd general mechanism** (a doc sibling to `exceptions.md` / `constraints.md`).
 14. **fellows #257 / toolkit #42** cross-device replication (exploratory) — gated on the #259 decision + local-AI; the relocated EAR crypto envelope (encrypt-in-transit) lands here.
 

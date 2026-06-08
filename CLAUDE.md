@@ -51,6 +51,23 @@ When you add a fact, put it in the doc that owns its category and link from the 
   language about axis counts ("the axes", never "the six axes").
 - Run `just ci` after changes; put manual test/QA steps in the **PR description**.
 
+## Worktrees (multiple agents on one host)
+
+Worktrees are **cheap and fully isolated** here — this is a stdlib-only `python3` spec/lint/docs
+repo with **no server, port, database, or build artifacts** to share, and `just ci` runs against a
+tempdir copy, so concurrent `just ci` across worktrees can't collide. When more than one Claude
+Code / agent works on this host's checkout at once, give each its own worktree so a `git checkout`
+in one can't pull the branch (or uncommitted work) out from under another:
+
+```
+git worktree add ../pnt-wt-<branch> -b <branch>     # ready immediately — no setup
+git worktree remove ../pnt-wt-<branch>              # when done
+```
+
+No `wt` recipe or env-share script is needed (unlike the app reference designs, which gate on a
+shared workspace port). See [`docs/roadmap.md`](docs/roadmap.md) for which Claude Code instance owns
+which wave of work.
+
 ## Lint discipline — fail loudly
 
 - **Every check in `tools/lint-spec-ids.py` needs a fault-injection case in

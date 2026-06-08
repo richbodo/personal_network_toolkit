@@ -2,6 +2,18 @@
 
 ## v0.1 draft (in progress)
 
+### Worktree note + per-wave instance ownership (toolkit fix)
+
+- **`CLAUDE.md`** gains a **Worktrees** section: worktrees are cheap and fully isolated here (no
+  server/port/DB/build artifacts; `just ci` runs against a tempdir copy), so concurrent worktrees
+  need no setup or serialization — unlike the app reference designs, which gate on a shared workspace
+  port. Supports the one-Claude-Code-instance-per-repo working model.
+- **`docs/roadmap.md`** annotates each cross-repo execution wave with its **owning instance**
+  (Wave 1 → fellows, 2–3 → toolkit, 4 → prm, 5 → fellows→toolkit) so work dispatches as "do Wave N."
+  Also records a second gate on the Wave-2 keystone: the `[verify].entrypoint` needs fellows to emit
+  a schema-shaped `evaluate-report.json` (its own `conformance_report_and_gate.md`), separate from
+  the Wave-1 merges.
+
 ### Consolidated roadmap + inbound-findings registry (toolkit fix)
 
 - **New `docs/roadmap.md`** — the prioritization/sequencing layer above the per-plan phases:
