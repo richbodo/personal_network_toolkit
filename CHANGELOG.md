@@ -2,6 +2,18 @@
 
 ## v0.1 draft (in progress)
 
+### Visual Validator Phase 2: single-report renderer (toolkit fix)
+
+- **`tools/report-viewer/index.html`** — a static, zero-dependency, engine-agnostic vanilla-JS
+  viewer (no build / framework / network / Chromium-only APIs; DOM built with `textContent` so report
+  strings can't inject HTML). Loads a report via drag-drop, file picker, `?report=<path>`, or the
+  bundled-sample buttons, and renders the **developer register**: candidate header + axis picks,
+  summary posture + status counts + leading concerns, and a card per finding (status, goals,
+  requirement, rationale, citations, evidence tagged `deterministic`/`llm`/`human`,
+  `needs_human_review`). Implements [`plans/visual-validator-plan.md`](plans/visual-validator-plan.md)
+  Phase 2; Phase 3 adds the end-user register + the side-by-side view. Drag-drop / file-picker work
+  over `file://`; `?report=` and the sample buttons need `python3 -m http.server`.
+
 ### Visual Validator Phase 1: sample reports + render-contract lint (toolkit fix)
 
 - **`tools/report-viewer/sample-reports/`** — three valid `evaluate-report.schema.json` instances

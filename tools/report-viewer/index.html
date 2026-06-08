@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PNA evaluate-report viewer</title>
+<!--
+  Visual Validator — Phase 2 single-report renderer (plans/visual-validator-plan.md).
+  Static, zero-dependency, engine-agnostic vanilla JS. No build, no framework, no
+  network. Renders one instance of tools/evaluate-report.schema.json (the developer
+  register; Phase 3 adds the end-user register + side-by-side). DOM is built with
+  textContent so report strings cannot inject HTML.
+
+  Open it: drag a report onto the page, or use the file picker — both work over file://.
+  ?report=<path> and the sample buttons use fetch(), which needs the folder served:
+      python3 -m http.server   (then open http://localhost:8000/index.html)
+-->
+<style>
+  :root {
+    --bg:#f6f7f9; --panel:#ffffff; --ink:#1c2330; --muted:#5c6573; --line:#e1e5ea;
+    --accent:#2f6feb;
+    --ok-bg:#e7f5ec; --ok-fg:#1c7a3f; --ok-bd:#b7dfc1;
+    --no-bg:#fdeaec; --no-fg:#b02a37; --no-bd:#f3b6bb;
+    --na-bg:#eef0f3; --na-fg:#5c636a; --na-bd:#d5d9dd;
+    --ud-bg:#fff5e1; --ud-fg:#946000; --ud-bd:#f3dca0;
+    --det-bg:#e8f0fe; --det-fg:#1b4fb3; --llm-bg:#f0e9fd; --llm-fg:#6b35c9; --hum-bg:#e3f6f4; --hum-fg:#0f7b71;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+    font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
+  a { color:var(--accent); }
+  header { position:sticky; top:0; z-index:5; background:var(--panel); border-bottom:1px solid var(--line);
+    padding:10px 18px; display:flex; gap:14px; align-items:center; flex-wrap:wrap; }
+  header h1 { font-size:15px; margin:0; font-weight:650; letter-spacing:.2px; }
+  header .controls { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-left:auto; }
+  .btn { font:inherit; font-size:13px; padding:5px 10px; border:1px solid var(--line); border-radius:7px;
+    background:#fff; color:var(--ink); cursor:pointer; }
+  .btn:hover { border-color:var(--accent); color:var(--accent); }
+  .hint { color:var(--muted); font-size:13px; }
+  main { max-width:1000px; margin:0 auto; padding:22px 18px 80px; }
+
+  .empty { text-align:center; color:var(--muted); padding:64px 16px; border:2px dashed var(--line);
+    border-radius:14px; background:var(--panel); }
+  .empty strong { color:var(--ink); }
+  body.dragging .empty, body.dragging main { outline:3px dashed var(--accent); outline-offset:-6px; }
+  .error { background:var(--no-bg); color:var(--no-fg); border:1px solid var(--no-bd);
+    padding:14px 16px; border-radius:10px; white-space:pre-wrap; }
+
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:16px 18px; margin:14px 0; }
+  .cand-name { font-size:18px; font-weight:680; margin:0 0 4px; }
+  .meta { color:var(--muted); font-size:13px; display:flex; gap:14px; flex-wrap:wrap; }
+  .chips { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
+  .chip { font-size:12px; background:#f1f3f6; border:1px solid var(--line); border-radius:20px; padding:2px 9px; color:var(--muted); }
+  .chip b { color:var(--ink); font-weight:600; }
+
+  .headline { font-size:16px; margin:6px 0 10px; }
+  .counts { display:flex; gap:8px; flex-wrap:wrap; }
+
+  .badge { display:inline-block; font-size:12px; font-weight:650; padding:2px 9px; border-radius:20px; border:1px solid; vertical-align:middle; }
+  .st-conformant{background:var(--ok-bg);color:var(--ok-fg);border-color:var(--ok-bd);}
+  .st-non-conformant{background:var(--no-bg);color:var(--no-fg);border-color:var(--no-bd);}
+  .st-not-applicable{background:var(--na-bg);color:var(--na-fg);border-color:var(--na-bd);}
+  .st-unable-to-determine{background:var(--ud-bg);color:var(--ud-fg);border-color:var(--ud-bd);}
+  .st-mixed{background:var(--ud-bg);color:var(--ud-fg);border-color:var(--ud-bd);}
+  .st-indeterminate{background:var(--na-bg);color:var(--na-fg);border-color:var(--na-bd);}
+
+  .finding { border-left:4px solid var(--line); padding:12px 0 12px 14px; margin:10px 0; }
+  .finding.s-conformant{border-left-color:var(--ok-fg);}
+  .finding.s-non-conformant{border-left-color:var(--no-fg);}
+  .finding.s-not-applicable{border-left-color:var(--na-bd);}
+  .finding.s-unable-to-determine{border-left-color:var(--ud-fg);}
+  .finding h3 { margin:0; font-size:15px; display:flex; gap:9px; align-items:center; flex-wrap:wrap; }
+  .finding h3 .ac { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; }
+  .src { font-size:11px; color:var(--muted); }
+  .field { margin:8px 0 0; }
+  .field .k { font-size:12px; text-transform:uppercase; letter-spacing:.4px; color:var(--muted); margin-bottom:2px; }
+  .req { background:#fbfcfd; border:1px solid var(--line); border-radius:8px; padding:8px 10px; }
+  ul.cites, ul.evi { list-style:none; margin:4px 0 0; padding:0; }
+  ul.cites li, ul.evi li { padding:4px 0; border-top:1px dashed var(--line); }
+  ul.cites li:first-child, ul.evi li:first-child { border-top:0; }
+  code.path { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:13px; background:#f1f3f6; padding:1px 5px; border-radius:5px; }
+  .note { color:var(--muted); }
+  .ev-src { display:inline-block; font-size:11px; font-weight:650; padding:1px 7px; border-radius:6px; margin-right:6px; }
+  .ev-deterministic{background:var(--det-bg);color:var(--det-fg);} .ev-llm{background:var(--llm-bg);color:var(--llm-fg);} .ev-human{background:var(--hum-bg);color:var(--hum-fg);}
+  .hr-flag { color:var(--ud-fg); font-size:12px; font-weight:650; }
+  footer { max-width:1000px; margin:0 auto; padding:0 18px 40px; color:var(--muted); font-size:12px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>PNA evaluate-report viewer</h1>
+  <span class="hint">drag a report onto the page, or</span>
+  <label class="btn">open file…<input id="file" type="file" accept=".json,application/json" hidden></label>
+  <div class="controls">
+    <span class="hint">samples:</span>
+    <button class="btn" data-sample="01-conformant-minimal-pna.json">conformant</button>
+    <button class="btn" data-sample="02-non-conformant-leaky-app.json">non-conformant</button>
+    <button class="btn" data-sample="03-mixed-exceptions-and-constraints.json">mixed</button>
+  </div>
+</header>
+<main id="content"></main>
+<footer>Developer register (Phase 2). Renders <code>tools/evaluate-report.schema.json</code> instances. Phase 3 adds the end-user register + side-by-side.</footer>
+
+<script>
+"use strict";
+const content = document.getElementById("content");
+const STATUSES = ["conformant","non-conformant","not-applicable","unable-to-determine"];
+
+function el(tag, attrs, ...kids) {
+  const n = document.createElement(tag);
+  if (attrs) for (const k in attrs) {
+    const v = attrs[k];
+    if (v == null) continue;
+    if (k === "class") n.className = v;
+    else if (k === "text") n.textContent = v;
+    else if (k.slice(0,2) === "on" && typeof v === "function") n.addEventListener(k.slice(2), v);
+    else n.setAttribute(k, v);
+  }
+  for (const kid of kids) {
+    if (kid == null) continue;
+    n.append(kid.nodeType ? kid : document.createTextNode(String(kid)));
+  }
+  return n;
+}
+function field(label, ...kids) {
+  return el("div", {class:"field"}, el("div", {class:"k", text:label}), ...kids);
+}
+function safeLink(url, label) {
+  return /^https?:\/\//i.test(url) ? el("a", {href:url, target:"_blank", rel:"noopener", text:label || url})
+                                   : document.createTextNode(label || url);
+}
+
+function renderCitation(c) {
+  if (!c || typeof c !== "object") return el("li", {text:String(c)});
+  const path = el("code", {class:"path", text:(c.lines ? c.path + ":" + c.lines : c.path)});
+  const kids = [path];
+  if (c.note) kids.push(el("span", {class:"note", text:" — " + c.note}));
+  return el("li", null, ...kids);
+}
+function renderEvidence(e) {
+  if (!e || typeof e !== "object") return el("li", {text:String(e)});
+  const src = el("span", {class:"ev-src ev-" + (e.source||""), text:(e.source||"?") + (e.tool ? " · " + e.tool : "")});
+  const li = el("li", null, src, el("span", {text:e.detail || ""}));
+  if (Array.isArray(e.citations) && e.citations.length) {
+    li.append(el("ul", {class:"cites"}, ...e.citations.map(renderCitation)));
+  }
+  return li;
+}
+
+function renderFinding(f) {
+  const status = STATUSES.includes(f.status) ? f.status : "indeterminate";
+  const card = el("div", {class:"finding s-" + status});
+  const h = el("h3", null,
+    el("span", {class:"ac", text:f.ac_id || "(no ac_id)"}),
+    el("span", {class:"badge st-" + status, text:f.status || "?"}));
+  if (f.ac_source) h.append(el("span", {class:"src", text:f.ac_source}));
+  if (Array.isArray(f.goals) && f.goals.length) h.append(el("span", {class:"src", text:"Goals " + f.goals.join(", ")}));
+  if (f.needs_human_review) h.append(el("span", {class:"hr-flag", text:"⚑ needs human review"}));
+  card.append(h);
+
+  if (f.requirement) card.append(field("Requirement", el("div", {class:"req", text:f.requirement})));
+  if (f.rationale)   card.append(field("Rationale", el("div", {text:f.rationale})));
+  if (Array.isArray(f.citations) && f.citations.length)
+    card.append(field("Citations", el("ul", {class:"cites"}, ...f.citations.map(renderCitation))));
+  if (Array.isArray(f.evidence) && f.evidence.length)
+    card.append(field("Evidence", el("ul", {class:"evi"}, ...f.evidence.map(renderEvidence))));
+  return card;
+}
+
+function renderReport(obj, sourceLabel) {
+  if (!obj || typeof obj !== "object") throw new Error("top level is not an object");
+  const findings = Array.isArray(obj.findings) ? obj.findings : [];
+  const cand = obj.candidate || {};
+  const summ = obj.summary || {};
+
+  // Candidate header
+  const head = el("div", {class:"card"});
+  head.append(el("p", {class:"cand-name", text:cand.name || "(unnamed candidate)"}));
+  const meta = el("div", {class:"meta"});
+  if (cand.repo_url) meta.append(el("span", null, safeLink(cand.repo_url)));
+  if (cand.commit) meta.append(el("span", {text:"commit " + String(cand.commit).slice(0,12)}));
+  if (cand.pna_spec_version) meta.append(el("span", {text:"PNA Spec " + cand.pna_spec_version}));
+  if (cand.picks_source) meta.append(el("span", {text:"picks: " + cand.picks_source}));
+  if (obj.report_schema_version) meta.append(el("span", {text:"report v" + obj.report_schema_version}));
+  if (sourceLabel) meta.append(el("span", {text:"⟵ " + sourceLabel}));
+  head.append(meta);
+  if (cand.axis_picks && typeof cand.axis_picks === "object") {
+    const chips = el("div", {class:"chips"});
+    for (const ax in cand.axis_picks) chips.append(el("span", {class:"chip"}, el("b", {text:ax + ": "}), cand.axis_picks[ax]));
+    head.append(chips);
+  }
+
+  // Summary
+  const sum = el("div", {class:"card"});
+  const posture = summ.posture || "indeterminate";
+  sum.append(el("div", null, el("span", {class:"badge st-" + posture, text:posture})));
+  if (summ.headline) sum.append(el("p", {class:"headline", text:summ.headline}));
+  // status counts
+  const counts = {};
+  for (const f of findings) counts[f.status] = (counts[f.status]||0) + 1;
+  const countRow = el("div", {class:"counts"});
+  countRow.append(el("span", {class:"chip"}, el("b", {text:findings.length + " "}), "findings"));
+  for (const s of STATUSES) if (counts[s]) countRow.append(el("span", {class:"badge st-" + s, text:counts[s] + " " + s}));
+  sum.append(countRow);
+  if (Array.isArray(summ.leading_concerns) && summ.leading_concerns.length) {
+    sum.append(field("Leading concerns", el("div", {class:"chips"},
+      ...summ.leading_concerns.map(ac => el("span", {class:"chip"}, el("b", {text:ac}))))));
+  }
+
+  // Findings
+  const list = el("div", null, ...findings.map(renderFinding));
+
+  content.replaceChildren(head, sum, list);
+  document.title = (cand.name ? cand.name + " — " : "") + "PNA evaluate-report";
+}
+
+function showEmpty() {
+  content.replaceChildren(el("div", {class:"empty"},
+    el("p", null, el("strong", {text:"Drop an evaluate-report.json here"}), " — or use ", el("strong", {text:"open file…"}), " above, or a sample."),
+    el("p", {class:"hint", text:"A valid instance of tools/evaluate-report.schema.json."})));
+}
+function showError(msg) { content.replaceChildren(el("div", {class:"error", text:msg})); }
+function loadText(text, label) {
+  let obj;
+  try { obj = JSON.parse(text); } catch (e) { showError("Not valid JSON: " + e.message); return; }
+  try { renderReport(obj, label); } catch (e) { showError("Could not render report: " + e.message); }
+}
+function loadUrl(url) {
+  fetch(url).then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.text(); })
+    .then(t => loadText(t, url))
+    .catch(e => showError("Could not fetch " + url + " (" + e.message + ").\n\n" +
+      "fetch is blocked on file:// — drag a report onto the page, use “open file…”, " +
+      "or serve this folder:  python3 -m http.server"));
+}
+
+// --- wiring ---
+document.getElementById("file").addEventListener("change", e => {
+  const f = e.target.files && e.target.files[0];
+  if (f) f.text().then(t => loadText(t, f.name));
+});
+for (const b of document.querySelectorAll("[data-sample]"))
+  b.addEventListener("click", () => loadUrl("sample-reports/" + b.getAttribute("data-sample")));
+
+["dragenter","dragover"].forEach(ev => document.addEventListener(ev, e => { e.preventDefault(); document.body.classList.add("dragging"); }));
+["dragleave","drop"].forEach(ev => document.addEventListener(ev, e => { e.preventDefault(); document.body.classList.remove("dragging"); }));
+document.addEventListener("drop", e => {
+  const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+  if (f) f.text().then(t => loadText(t, f.name));
+});
+
+// initial: ?report=<path>, else empty state
+const want = new URLSearchParams(location.search).get("report");
+if (want) loadUrl(want); else showEmpty();
+</script>
+</body>
+</html>
