@@ -2,6 +2,14 @@
 
 ## v0.1 draft (in progress)
 
+### CI: bump GitHub Actions off Node 20 (toolkit fix)
+
+- Bumped the pinned action majors ahead of GitHub forcing Node 24 on **2026-06-16**:
+  `actions/checkout@v4 → @v6`, `actions/setup-python@v5 → @v6` (and `actions/cache@v4 → @v5` where used).
+  Applies to `spec-lint.yml` + `conformance.yml`; the new `viewer-e2e.yml` is bumped in its own
+  (unmerged) PR so it lands Node-24-correct. CI behavior unchanged — `just ci` is local-only and uses
+  no actions.
+
 ### Plan: Visual Validator browser-render testing (Playwright) (toolkit fix)
 
 - **New `plans/viewer-e2e-testing-plan.md`** — a phased plan to add real-browser render tests for the
