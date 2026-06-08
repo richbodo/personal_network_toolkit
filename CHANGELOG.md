@@ -2,6 +2,22 @@
 
 ## v0.1 draft (in progress)
 
+### Visual Validator browser-render tests — Playwright (e2e plan Phases 1–2) (toolkit fix)
+
+- **`tools/report-viewer/tests/`** — an opt-in Playwright suite that render-tests the viewer in a real
+  browser (6 tests: the three samples render with the right posture / finding count / `ac_id`s /
+  evidence-source badges / title and no console errors, plus the empty-state and malformed-report
+  error paths). Closes the VV Phase-2 "render unverified" gap; verified load-bearing (making
+  `broken.json` valid turns the error-path test red).
+- **Harness:** a stdlib `http.server` fixture serves `tools/report-viewer/` on port **8791** (distinct
+  from fellows 8765 / PRM 8770); `just setup-test` installs the deps (`requirements-dev.txt`: pytest,
+  playwright, pytest-playwright) + Chromium; `just test-viewer` runs the suite.
+- **Scoped convention exception** (the toolkit's first third-party / pytest dep) recorded in
+  `CLAUDE.md` § Conventions + Worktrees: it runs in its **own** CI job and is **never** part of
+  `just ci`, which stays bare `python3` (24/24, unaffected). `docs/users-guide.md` updated. Implements
+  [`plans/viewer-e2e-testing-plan.md`](plans/viewer-e2e-testing-plan.md) Phases 1–2; Phase 3 (the
+  dedicated CI job) is a follow-up.
+
 ### Visual Validator Phase 2: single-report renderer (toolkit fix)
 
 - **`tools/report-viewer/index.html`** — a static, zero-dependency, engine-agnostic vanilla-JS

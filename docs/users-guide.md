@@ -147,7 +147,7 @@ You've built or are operating a PNA against the spec and want to contribute it b
 
 For developers working **on the toolkit itself** (the spec, lints, contracts, skill, docs).
 
-**Commands.** Everything is driven through `just` (a `justfile` at the repo root); run `just` for the menu. No setup or virtualenv is needed — the tools are stdlib-only `python3` (3.10+).
+**Commands.** Everything is driven through `just` (a `justfile` at the repo root); run `just` for the menu. No setup or virtualenv is needed — the tools are stdlib-only `python3` (3.10+). *(The lone exception is the opt-in browser render tests for the Visual Validator viewer — `just setup-test` creates a `.venv` + installs Playwright; they are never part of `just ci`.)*
 
 | Command | What it does |
 |---|---|
@@ -161,10 +161,12 @@ For developers working **on the toolkit itself** (the spec, lints, contracts, sk
 | `just report-lint <path>` | Validate `evaluate-report.json` instance(s) against the render contract the Visual Validator reads — a single file or a reports directory (e.g. a cron drop). |
 | `just swh-save <repo-url> [ref] [clone]` | Request Software Heritage archival of a design's repo and print the SWHID fields to paste into its `design.toml`. |
 | `just test-design <name>` | *(Scaffold, inert)* the planned per-design conformance harness — see [`plans/conformance-suite-plan.md`](../plans/conformance-suite-plan.md) § Phase 4. |
+| `just setup-test` | **(Opt-in, one-time)** Create `.venv` and install the browser-test deps (`pytest` + Playwright + Chromium) from `requirements-dev.txt`. Needed only for `just test-viewer`. |
+| `just test-viewer` | **(Opt-in; NOT in `just ci`)** Render-test the Visual Validator viewer in a real browser (Playwright). See [`plans/viewer-e2e-testing-plan.md`](../plans/viewer-e2e-testing-plan.md). |
 
 **Conventions** (full list in [`CLAUDE.md`](../CLAUDE.md)):
 
-- Tools are **stdlib-only `python3` (3.10+)** — no third-party runtime deps.
+- Tools are **stdlib-only `python3` (3.10+)** — no third-party runtime deps. *(One opt-in exception: the viewer's browser render tests use `pytest` + Playwright via `just setup-test` → `just test-viewer`, in their own CI job, never in `just ci` — see [`plans/viewer-e2e-testing-plan.md`](../plans/viewer-e2e-testing-plan.md).)*
 - **Every lint check needs a fault-injection self-test** in `tools/tests/lint_selftest.py`, added in the same change — a check with no self-test can silently rot.
 - **Keep the docs current:** any change a developer would notice (a `just` recipe, a lint check or message, a skill flow, a contract/AC/manifest field, a contribution step) updates this guide in the **same PR**. Put manual test/QA steps in the PR description.
 

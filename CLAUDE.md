@@ -43,6 +43,11 @@ When you add a fact, put it in the doc that owns its category and link from the 
 
 - **Stdlib-only `python3` (3.10+).** No third-party runtime deps — no `pytest`, no
   `tomllib` (hand-roll a small parser if needed). CI runs bare `python3`.
+  - **One scoped exception:** the Visual Validator viewer is browser JS that can't be tested in
+    stdlib, so it has an **opt-in** `pytest` + Playwright suite (`just test-viewer`; dev deps in
+    `requirements-dev.txt`) that runs in its **own** CI job and is **never** part of `just ci`. This
+    is the sole sanctioned third-party / `pytest` dependency, scoped to browser-UI rendering. See
+    [`plans/viewer-e2e-testing-plan.md`](plans/viewer-e2e-testing-plan.md).
 - **RFC 2119 language in spec files** — `MUST`/`SHOULD`/`MAY` only when capitalized;
   plain English (motivation, examples) otherwise.
 - **The toolkit is versioned as a unit** — every artifact carries a `Toolkit-Version:`
@@ -53,9 +58,11 @@ When you add a fact, put it in the doc that owns its category and link from the 
 
 ## Worktrees (multiple agents on one host)
 
-Worktrees are **cheap and fully isolated** here — this is a stdlib-only `python3` spec/lint/docs
-repo with **no server, port, database, or build artifacts** to share, and `just ci` runs against a
-tempdir copy, so concurrent `just ci` across worktrees can't collide. When more than one Claude
+Worktrees are **cheap and nearly isolated** here — this is a stdlib-only `python3` spec/lint/docs
+repo where `just ci` runs against a tempdir copy, so concurrent `just ci` across worktrees can't
+collide. The **one** shared host resource is the opt-in browser test's server on **port 8791**
+(`just test-viewer`, and the Phase-5 `just view-reports`) — serialize those across worktrees;
+everything else (edits, `just ci`, the lints) stays parallel-safe. When more than one Claude
 Code / agent works on this host's checkout at once, give each its own worktree so a `git checkout`
 in one can't pull the branch (or uncommitted work) out from under another:
 
@@ -64,9 +71,9 @@ git worktree add ../pnt-wt-<branch> -b <branch>     # ready immediately — no s
 git worktree remove ../pnt-wt-<branch>              # when done
 ```
 
-No `wt` recipe or env-share script is needed (unlike the app reference designs, which gate on a
-shared workspace port). See [`docs/roadmap.md`](docs/roadmap.md) for which Claude Code instance owns
-which wave of work.
+No `wt` recipe or env-share script is needed for the normal stdlib work (the app reference designs
+gate on a shared workspace port; here only the opt-in viewer test does — see above). See
+[`docs/roadmap.md`](docs/roadmap.md) for which Claude Code instance owns which wave of work.
 
 ## Lint discipline — fail loudly
 

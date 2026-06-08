@@ -1,0 +1,11 @@
+# Dev/test-only dependencies — NOT runtime deps, NOT used by `just ci`.
+#
+# The toolkit's runtime and its `just ci` gate stay stdlib-only `python3` (see CLAUDE.md
+# § Conventions). These three power the ONE sanctioned exception: the opt-in browser
+# render tests for the Visual Validator viewer (`just test-viewer`), which run in their
+# own CI job and are never part of `just ci`. See plans/viewer-e2e-testing-plan.md.
+#
+# Install once with:  just setup-test   (creates .venv, then `playwright install chromium`)
+pytest>=7.0
+playwright>=1.40
+pytest-playwright>=0.4

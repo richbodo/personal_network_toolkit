@@ -13,6 +13,7 @@
 set shell := ["bash", "-euo", "pipefail", "-c"]
 
 python := "python3"
+venv := ".venv"
 
 # Show the recipe menu.
 default:
@@ -73,3 +74,19 @@ test-design name:
     @echo "verify 'git rev-parse HEAD^{tree} == swhid_dir', build it, and run its"
     @echo "[verify] entrypoint. See plans/conformance-suite-plan.md § Phase 4."
     @exit 1
+
+
+# ---- browser-test (opt-in; NOT part of `just ci`) ------------------------
+
+# One-time: create .venv + install the opt-in browser-test deps (pytest + Playwright + chromium).
+[group('browser-test')]
+setup-test:
+    {{python}} -m venv {{venv}}
+    {{venv}}/bin/pip install --quiet --upgrade pip
+    {{venv}}/bin/pip install --quiet -r requirements-dev.txt
+    {{venv}}/bin/playwright install chromium
+
+# Render-test the Visual Validator viewer in a real browser (opt-in; NOT in `just ci`; run `just setup-test` first).
+[group('browser-test')]
+test-viewer *args:
+    {{venv}}/bin/pytest tools/report-viewer/tests/ {{args}}

@@ -14,3 +14,6 @@ __pycache__/
 *.py[cod]
 *.egg-info/
 .pytest_cache/
+
+# Opt-in browser-test venv (just setup-test / just test-viewer) — never used by `just ci`
+.venv/
