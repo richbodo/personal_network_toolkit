@@ -2,6 +2,16 @@
 
 ## v0.1 draft (in progress)
 
+### Plan: Visual Validator browser-render testing (Playwright) (toolkit fix)
+
+- **New `plans/viewer-e2e-testing-plan.md`** — a phased plan to add real-browser render tests for the
+  viewer (`tools/report-viewer/`), mirroring `fellows_local_db`'s Python-Playwright setup shrunk to a
+  static-file viewer (stdlib `http.server` fixture; no app server). Records the **scoped convention
+  exception**: an opt-in `pytest` + `pytest-playwright` suite (`just test-viewer`, deps in a new
+  `requirements-dev.txt`) running in its **own** CI job — the toolkit's sole sanctioned third-party /
+  pytest dependency, scoped to browser-UI rendering and **never** part of the stdlib-only `just ci`.
+  Planning artifact only — no deps added yet, no spec/AC/contract change.
+
 ### Visual Validator Phase 1: sample reports + render-contract lint (toolkit fix)
 
 - **`tools/report-viewer/sample-reports/`** — three valid `evaluate-report.schema.json` instances
