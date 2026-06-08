@@ -98,7 +98,7 @@ You're starting (or extending) a personal network application.
    - **Verification** — the test, LLM rubric, or human-review note that verifies it for *your* design. A `conformant` row needs **executable evidence** (a resolvable test) or an explicitly declared review kind — a bare doc pointer is not evidence, and a negative invariant ("X must NOT happen") needs a *negative* test. See the [evaluate flow's attestation-evidence rules](../pna-build-eval-contrib/SKILL.md) for the full bar.
    - **Status** — `conformant` / `partial` (with the known gap) / `not-applicable` (with reason).
 
-8. **Self-check.** Run the [Audit](#audit-a-candidate-pna-before-installing-it) flow on your own in-progress code before declaring done. For the AC-1 (private-data-sovereignty) row, add an `egress-allow.json` to your repo listing the remote origins your flavor legitimately uses, and run `just egress-lint <your-source-dir>` — it's the deterministic half of that check and makes a ready-made Verification entry. Wire it into your own CI so a future change can't silently introduce an off-device data path.
+8. **Self-check.** Run the [Audit](#audit-a-candidate-pna-before-installing-it) flow on your own in-progress code before declaring done, and **save its `evaluate-report.json`** (e.g. under `docs/conformance/`) — the contribution PR commits this artifact, so producing it now is part of building. For the AC-1 (private-data-sovereignty) row, add an `egress-allow.json` to your repo listing the remote origins your flavor legitimately uses, and run `just egress-lint <your-source-dir>` — it's the deterministic half of that check and makes a ready-made Verification entry. Wire it into your own CI so a future change can't silently introduce an off-device data path.
 
 ### Audit a candidate PNA before installing it
 
@@ -106,7 +106,7 @@ You have a PNA in front of you (someone else's, or your own in-progress one) and
 
 1. **Get the candidate's source.** Clone the repo. If you only have a bundle, ask for the source — you can't audit a black box.
 
-2. **Open Claude Code with the toolkit and the candidate both reachable.** The skill lives at [`pna-build-eval-contrib/SKILL.md`](../pna-build-eval-contrib/SKILL.md); the agent reads it when the prompt matches.
+2. **Open Claude Code in the PNA Toolkit repo, with the candidate's source at a known path.** Run the audit from the toolkit, not the candidate: the skill ([`pna-build-eval-contrib/SKILL.md`](../pna-build-eval-contrib/SKILL.md)), the [`evaluate-report.schema.json`](../tools/evaluate-report.schema.json), and the deterministic `just` lints all live here, and the agent reads the skill when the prompt matches. (If you've installed the skill globally you can run from anywhere — but you still need a toolkit checkout reachable for the `just` lints.)
 
 3. **Ask the agent to run the audit:**
 
@@ -114,7 +114,7 @@ You have a PNA in front of you (someone else's, or your own in-progress one) and
 
    If the candidate ships its own Architecture document, the agent validates it against the code (do cited locations match? do declared verifications pass?). Otherwise it infers axis picks from the source and walks every applicable AC from scratch. It also **detects and verifies Exceptions** (`EX-*`) and **Constraints** (`CST-*`) — confirming each declared deviation is handled honestly and flagging any *undeclared* one. As part of the audit it runs the deterministic checks in `tools/` (`just egress-lint <path>` for AC-1 off-device leaks; `just export-lint <path>` for PR-6 export readability; `just attestation-lint <path>` to confirm the candidate's own `conformant` attestation rows cite live, non-deferred evidence) and folds their results into the matching AC findings as `source: deterministic` evidence.
 
-4. **Read the AC-keyed report.** The agent emits a typed artifact ([`tools/evaluate-report.schema.json`](../tools/evaluate-report.schema.json)) with a human-readable rendering over it. Per-finding status is one of `conformant` / `non-conformant` / `not-applicable` / `unable-to-determine`, each keyed by AC, EX, or CST ID. Because the report is typed, two runs over the same candidate are diffable — save the artifact, re-audit after an update, and diff the JSON for the per-finding status changes (the "did anything quietly stop conforming?" signal).
+4. **Read the AC-keyed report.** The agent emits a typed artifact ([`tools/evaluate-report.schema.json`](../tools/evaluate-report.schema.json)) with a human-readable rendering over it. Per-finding status is one of `conformant` / `non-conformant` / `not-applicable` / `unable-to-determine`, each keyed by AC, EX, or CST ID. **Save the JSON** (e.g. as `docs/conformance/evaluate-report.json` in the candidate's repo) and validate it against the render contract with `just report-lint <path>` — a schema-valid artifact is what the [Visual Validator](../tools/report-viewer/) renders and what a contribution PR commits ([Contribute](#contribute-your-design-back-as-a-reference-design) step 2). Because the report is typed, two runs over the same candidate are diffable — re-audit after an update and diff the JSON for per-finding status changes (the "did anything quietly stop conforming?" signal).
 
 5. **Decide.** Goals 1–5 are the load-bearing user-facing concerns — private-data sovereignty (Goal 1), sourced-data honesty (Goal 2), user-controlled communication (Goal 3), durability (Goal 4), local diagnosability (Goal 5). If any of those are non-conformant (and not honestly handled via a declared Exception), the design is not safe to trust with your data. You can emphasize a concern at runtime — *"Focus on Goal 1 — make sure my Private DB rows can't leave my device"* — which shapes the summary, not the underlying check.
 
@@ -124,22 +124,22 @@ You've built or are operating a PNA against the spec and want to contribute it b
 
 **Should I submit?** Three patterns justify a submission: a **new architectural commitment** (your design surfaced a constraint the spec doesn't capture — your PR includes a spec diff); **existing patterns on a new platform** (you exercise existing ACs on a substrate/use-case not yet attested — no spec change needed); or an **ecosystem value-add** (you fill a use-case gap or bring something no existing design demonstrates). If your design is *identical* to an existing reference with no novelty, reach out before authoring.
 
-1. **Preflight via the skill — iterate until clean.** Open Claude Code in your design's repo and ask:
+1. **Preflight via the skill — iterate until clean.** Run this from **your design's repo**, and make sure two things are reachable from there: the skill (install it per [Install the skill](#install-the-skill) — globally, or repo-scoped) **and** a PNA Toolkit checkout (preflight runs the deterministic `just` lints, which live in the toolkit). Then open Claude Code in your design's repo and ask:
 
    > "Use the toolkit skill to validate this design for submission to the toolkit."
 
    The agent locates (or interactively creates) your Architecture document, asks what's architecturally interesting, and reports what's broken or missing as a structured list — missing files/sections, attestation rows without Verification, cited-but-absent code, a missing/malformed `design.toml`, failing tests, license problems. Fix things, re-run preflight, repeat until the report is clean.
 
-2. **Ask the agent to open the PR.** Once preflight is clean:
+2. **Switch to the PNA Toolkit repo and ask the agent to open the PR.** The PR adds files under `reference_designs/` *in the toolkit*, so it's authored from the toolkit repo (with your design repo still reachable at a known path), not from your design's repo. Once preflight is clean:
 
    > "Use the toolkit skill's contribute flow to open a PR adding this design at `<path>` (commit `<sha>`)."
 
-   The agent reads [`CONTRIBUTING.md`](../CONTRIBUTING.md), authors the design record at `reference_designs/<name>/README.md`, copies your Architecture document to `reference_designs/<name>/Architecture.md`, writes the machine-readable manifest `reference_designs/<name>/design.toml` (per [`reference_designs/templates/design.toml`](../reference_designs/templates/design.toml) — repo, `[flavor]` picks, the `[verify]` entrypoint, and the SWHID pin once archived), commits the evaluate-report, adds a spec diff if you're proposing one, and opens the PR. The PR template's [reference-design checklist](../.github/pull_request_template.md) lists every required artifact.
+   The agent reads [`CONTRIBUTING.md`](../CONTRIBUTING.md), authors the design record at `reference_designs/<name>/README.md`, copies your Architecture document to `reference_designs/<name>/Architecture.md`, writes the machine-readable manifest `reference_designs/<name>/design.toml` (per [`reference_designs/templates/design.toml`](../reference_designs/templates/design.toml) — repo, `[flavor]` picks, the `[verify]` entrypoint, and the SWHID pin once archived), commits the `evaluate-report.json` you saved during [Build](#build-a-conformant-pna) step 8 / the audit, adds a spec diff if you're proposing one, and opens the PR. The PR template's [reference-design checklist](../.github/pull_request_template.md) lists every required artifact.
 
 3. **Address maintainer feedback.** A maintainer reviews at the judgment layer: does the spec change make sense? Does the Architecture document accurately describe the design? Is the attestation table complete with real Verification evidence? License must be OSI-approved and permit Software Heritage archival. Fix, push, repeat.
 
 4. **After your PR is accepted.** Acceptance is the merge. Then:
-   - The maintainer archives your source with `just swh-save <your-repo-url> <tag>` (a wrapper over Software Heritage's Save Code Now that prints the git-compatible SWHIDs), and records the returned `swh:1:dir`/`swh:1:rev` in your `design.toml` (flipping `archival = "archived"`) and design record. Your source then survives even if your upstream repo is deleted. For high-signal designs the maintainer may also mirror to a `pnt-archive` fork; the SWHID alone is sufficient for the archival promise.
+   - **The maintainer archives your source to Software Heritage** at the accepted commit — a post-merge maintainer step (you MAY pre-compute the SWHIDs and include them in the PR). The exact command and its one gotcha live in [Working in this repo → Archive a design](#archive-a-design-to-software-heritage-compute-its-swhid); the maintainer records the printed `commit` / `swhid_rev` / `swhid_dir` into your `design.toml` (flipping `archival = "archived"`) and design record, so your source survives even if your upstream repo is deleted. For high-signal designs they may also mirror to a `pnt-archive` fork; the SWHID alone is sufficient for the archival promise.
    - The Toolkit-Version is bumped per [`CONTRIBUTING.md` § Versioning](../CONTRIBUTING.md#versioning) (Patch for clarifications, Minor for additive changes, Major for breaking ones; an axis carries its own version too).
    - Run preflight once more against the merged state — it should come out clean.
 
@@ -161,11 +161,28 @@ For developers working **on the toolkit itself** (the spec, lints, contracts, sk
 | `just export-lint <path> [args]` | Check a Private-DB human-readable export is readable with no PNA tooling — the deterministic PR-6 check. |
 | `just attestation-lint <dir> [args]` | Check a design's Architecture document — every `conformant` attestation row cites a live, non-deferred (`xfail`/`skip`-free) test or a declared review kind. The deterministic half of "exists **and** passes." |
 | `just report-lint <path>` | Validate `evaluate-report.json` instance(s) against the render contract the Visual Validator reads — a single file or a reports directory (e.g. a cron drop). |
-| `just swh-save <repo-url> [ref] [clone]` | Request Software Heritage archival of a design's repo and print the SWHID fields to paste into its `design.toml`. |
+| `just swh-save <repo-url> [ref] [clone]` | Request Software Heritage archival of a design's repo and print the SWHID fields to paste into its `design.toml`. **Pass the `clone` path (3rd arg) when running from the toolkit** — otherwise it computes the toolkit's own SWHIDs from the cwd. See [Archive a design](#archive-a-design-to-software-heritage-compute-its-swhid). |
 | `just test-design <name>` | *(Scaffold, inert)* the planned per-design conformance harness — see [`plans/conformance-suite-plan.md`](../plans/conformance-suite-plan.md) § Phase 4. |
 | `just setup-test` | **(Opt-in, one-time)** Create `.venv` and install the browser-test deps (`pytest` + Playwright + Chromium) from `requirements-dev.txt`. Needed only for `just test-viewer`. |
 | `just test-viewer` | **(Opt-in; NOT in `just ci`)** Render-test the Visual Validator viewer in a real browser (Playwright). See [`plans/viewer-e2e-testing-plan.md`](../plans/viewer-e2e-testing-plan.md). |
 | `just view-reports [dir]` | **(Opt-in)** Serve the Visual Validator and flip through a directory of `evaluate-report.json` files (← / →). No arg flips through the bundled samples. |
+
+### Archive a design to Software Heritage (compute its SWHID)
+
+A reference design's source is pinned with a Software Heritage ID (SWHID) so it survives even if the upstream repo disappears. Run this when you **accept** a design, or **re-archive an existing one** at a newer commit (e.g. after its attestation changes). It's a maintainer step — `swh-save` needs no PR.
+
+```bash
+# Run from the TOOLKIT repo, with a local clone of the design checked out at the ref to archive.
+just swh-save <design-repo-url> <git-ref> <path-to-local-clone>
+
+# Example — re-archive fellows_local_db at its current HEAD:
+git -C ~/src/fellows_local_db pull                                       # be on the latest pushed commit
+just swh-save https://github.com/richbodo/fellows_local_db HEAD ~/src/fellows_local_db
+```
+
+- **The 3rd arg (clone path) is required** here: the SWHIDs are computed from that local clone, and without it the script falls back to the toolkit's own repo and prints the *wrong* IDs. *(Shortcut: run the script from inside the design's repo and you can drop it — `~/src/personal_network_toolkit/tools/swh-save.sh <url> <ref>`.)*
+- **`<git-ref>`** is the commit/tag whose attestation you're archiving; it must already be **pushed** so Save Code Now can ingest it. Tag first for a stable ref: `git tag v0.1.1 && git push origin v0.1.1`.
+- The command POSTs the Save-Code-Now request (ingest is async — minutes to hours) and prints paste-ready `commit` / `swhid_rev` / `swhid_dir` lines. Put them in the design's `reference_designs/<name>/design.toml` (and its README), then set `archival = "archived"`.
 
 **Conventions** (full list in [`CLAUDE.md`](../CLAUDE.md)):
 
