@@ -122,19 +122,19 @@ SPEC_ID_FAULTS = [
         expect="status 'live' not one of",
     ),
     dict(
-        # The clean fellows manifest now carries valid SWHIDs while archival="pending"
-        # (lint permits that). To exercise the archived→requires-pin check, this fault
-        # flips to "archived" AND empties the commit in one multi-line replace.
+        # The clean fellows manifest is now archival="archived" with valid SWHIDs and
+        # a [verify] entrypoint (the Tier-0 keystone). To exercise the archived→requires-pin
+        # check, this fault empties the commit — an archived design MUST carry its commit pin.
         name="manifest: archived design without its SWHID pin (honest-deferral)",
         file="reference_designs/fellows_local_db/design.toml",
-        old='archival = "pending"   # → "archived" once SH ingest completes AND a [verify] entrypoint lands\n\ncommit    = "bbaf66e874ed3b97d0ce5f01f468f9e8fc4193e5"',
-        new='archival = "archived"\n\ncommit    = ""',
+        old='commit    = "dc3e0cffbbca44547c6987602fbbb1003d6920e6"',
+        new='commit    = ""',
         expect="requires 'commit'",
     ),
     dict(
         name="manifest: malformed SWHID value",
         file="reference_designs/fellows_local_db/design.toml",
-        old='swhid_dir = "swh:1:dir:a52fa259b71d0b42261a5f3926fffb66a2d0c4ab"',
+        old='swhid_dir = "swh:1:dir:d69ecdfbee779a45d8c5a129e6787b623f6bc4c4"',
         new='swhid_dir = "swh:1:dir:not-a-real-hash"',
         expect="malformed",
     ),

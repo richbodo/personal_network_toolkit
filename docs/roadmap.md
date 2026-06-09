@@ -8,6 +8,53 @@
 > detail or the normative spec — it links. The *success criteria* live in
 > [`README.md` § Status](../README.md#status); per-phase detail lives in the plans linked below.
 
+## Progress snapshot — 2026-06-09
+
+One day past the 2026-06-08 snapshot below; every delta pushes the **same** critical path forward.
+Verified against live PRs/issues **plus** the three local checkouts (not just merged-PR claims).
+
+**Headline: the Tier-0 keystone is COMPLETE.** fellows #267 merged → `fellows_local_db` **archived** @
+`dc3e0cf` → `[verify].entrypoint = just evaluate-report` → `just ci` green (24/24). (Finalized later on
+2026-06-09; the bullets below record what the blocker was and how it closed — see the Tier 0 § for the
+done-state.)
+- **fellows PR #267** (merged 2026-06-09) added **`just evaluate-report`** — a
+  deterministic, stdlib-only emitter that derives a **schema-valid `evaluate-report.json`** from
+  `docs/Architecture.md`'s attestation table + git HEAD (no LLM audit; byte-stable on re-run; deploy-gated).
+  This **is** the reproducible `[verify].entrypoint` Tier 0 was waiting on. Report posture **conformant**
+  (23 conformant / 2 N/A / 0 non-conformant). Merge-ready — blocks on review, not code.
+- **Re-pin consequence (new, load-bearing):** the keystone's archival commit is pinned at `bbaf66e`, which
+  **predates #267**. Because `[verify].entrypoint = just evaluate-report` must be runnable *at the archived
+  commit*, the archival target MUST advance to a **post-#267** commit: merge #267 → Save-Code-Now at the new
+  HEAD → re-record SWHIDs → set entrypoint → flip `archived`. (`bbaf66e` already carries the UM attestation
+  (#265), so nothing is lost by moving forward.)
+- **Drift still open (new):** the toolkit's `reference_designs/fellows_local_db/Architecture.md` copy does
+  **not** yet carry fellows' **User-mediation § (UM-1/2/3)** from #265 — it was synced for #248/AC-5/EAR but not
+  UM. Fold the UM § into the same post-#267 re-sync. Toolkit `just ci` is **green**.
+
+**fellows — Wave 1 done; UM MVD (Tier 1.5 Step A) DONE; only #267 left on the critical path.**
+- #258/#261/#262 + #263/#264/#265 merged; #256/#154/#156 closed; #260 done.
+- **UM MVD attestation merged (#265):** UM-1/2/3 green, #259 restore-legibility gap attested as an **honest
+  frontier** (not a blocker), workspace-AI **proposer** stance pinned, fellows AI-writes feature **deferred**.
+  Tier 1.5 Step A is **complete**, not "upcoming."
+- Off-critical-path: telemetry #147 Phase B/C; app-UX issues (#169/#145/#138/#107/#87) — prune/park.
+
+**PRM — M0–M5 + EX-H7 all merged; M6 (attestation) is the only milestone left; unblocked NOW.**
+- M2–M5 (#16–#27), EX-H7 (#28), dedup-doc consolidation (#29–#32) all merged. No open PRs; clean tree.
+- **M6 has not started**, and **none** of its submission artifacts exist yet (`docs/Architecture.md`,
+  `design.toml`, `docs/conformance/evaluate-report.json` — all missing). Est. ~2–3 days. **M6 does NOT depend
+  on Tier 0** — it runs fully parallel.
+- Two M6 risks surfaced from the checkout: **AC-7 debug-substrate scope** (attest partial/deferred honestly)
+  and a **test-suite bootstrap** gap (`vobjectx` missing in the venv — confirm the suite is green before
+  attesting). EX-H2–H5 workspace consent stays v0.2 (the server-side EX-H7 handshake is the v0.1 surface).
+- **Note:** PRM **end-user testing** of the usable slice (import → add private fields → fill → set permissions)
+  is a *separate track* from M6 attestation; the demo can precede the submission.
+
+**Visual Validator — ahead of the roadmap.** Wave 3 expected Phases 1–3; **Phases 1–5 shipped** + the
+Playwright e2e suite + the `viewer-e2e` CI job. Only the optional VV **Phase 4 "generate" seam** is unbuilt
+(low priority). fellows' real `evaluate-report.json` is already its content.
+
+---
+
 ## Progress snapshot — 2026-06-08
 
 Where the three repos stand right now (claimed progress confirmed via merged PRs — implementation
@@ -82,7 +129,7 @@ low-cost, high-reversibility moves.
 ## Dependency graph (the critical path)
 
 ```
-[T0] Finalize fellows keystone  (small: archival + flip design.toml + [verify] entrypoint + reconcile README↔manifest SWHID drift)
+[T0] Finalize fellows keystone  ✓ DONE 2026-06-09 (fellows #267 merged → archived @ dc3e0cf → [verify].entrypoint=`just evaluate-report` + Architecture.md re-synced incl UM § + flipped archived; the #41 CST note remains as an off-path toolkit note)
         ├──► conformance-suite Phase 4 activates (first archived design + verify entrypoint)
         ├──► README success criteria 1 / 3 / 4 / 6 satisfied (toolkit proven end-to-end)
         └──► evaluate flow runs on fellows ──► a REAL evaluate-report.json
@@ -96,7 +143,7 @@ low-cost, high-reversibility moves.
         └──► pulls in multi-source ingestion ──► Contact Data Format Atlas (Phase 1)
 
 [T1.5] User-mediation = 3rd general mechanism (MVD-primary, demonstrate-now)   [parallelizes with T0/T1]
-        A) fellows MVD prep (now; parallel to keystone; off critical path) — frame UM-1/2/3 green tests + boundary audit (#259 gap attested) + attest
+        A) fellows MVD prep — DONE (#265 merged 2026-06-08): UM-1/2/3 green + #259 gap attested as honest frontier + workspace-AI proposer stance pinned
         B) PRM M6 carries the mutation-side boundary list ──► two designs, two substrates
         C) PNT spec draft (after T0 frees the toolkit instance; test-first; cites fellows + PRM) ──► toolkit #40 ──► criterion 5 (spec evolves ≥1 minor) reinforced
         └──► builds on merged Exceptions + Constraints (done); files only on maintainer go-ahead
@@ -223,19 +270,19 @@ Which in-progress plan each wave advances:
   `archival = "archived"`; **reconcile the README↔manifest SWHID drift** (the README prints a
   computed `swh:1:dir:2fff6ff…` while the manifest still says `pending` with empty fields); confirm
   `just attestation-lint reference_designs/fellows_local_db` is green.
-- **Status:** **~90% done (updated 2026-06-08).** Landed: Save-Code-Now requested at the post-MVD
-  `bbaf66e` (request 2352383); SWHIDs **recorded** in `design.toml` + README; the **README↔manifest
-  drift is reconciled**; `attestation-lint` green against the fellows repo root; `just ci` green. The
-  evaluate flow was **dogfought against fellows and came back conformant** (25 findings: 23 conformant
-  / 2 N/A) — a real schema-shaped `evaluate-report.json` now exists at
-  `fellows/docs/conformance/evaluate-report.json`, so **the Visual Validator has real content**.
-  `archival` stays **`pending`** (honest): the lint correctly blocks `archived` without a `[verify]`
-  entrypoint, and SH ingest is async. **Remaining (the only blockers to `archived`):** (a) a
-  *reproducible* `[verify].entrypoint` — fellows must emit a schema-shaped report **from a command**
-  (its `just conformance` emits a non-schema format today; the LLM audit produced the artifact but not
-  a re-runnable command) — a small **fellows-side** task; (b) re-sync the toolkit's
-  `reference_designs/fellows_local_db/Architecture.md` copy to the post-MVD `bbaf66e` state (snapshot
-  lag). Also pending: VV `/audit`-style entry UX → toolkit **#55**.
+- **Status:** **DONE (2026-06-09).** fellows **PR #267 merged** (the deterministic `just evaluate-report`
+  emitter); the maintainer ran Save-Code-Now at the post-#267 HEAD **`dc3e0cf`** (request `2352911`). The
+  toolkit keystone was then finalized: `reference_designs/fellows_local_db/Architecture.md` **re-synced** to
+  `dc3e0cf` (now carries the User-mediation § UM-1/2/3 + the encrypt-in-transit note + updated `CST-PWA-*`
+  rows); `design.toml` re-pinned (`commit`/`swhid_rev`/`swhid_dir` → `dc3e0cf`),
+  **`[verify].entrypoint = "just evaluate-report"`**, **`archival = "archived"`**; README SWHIDs reconciled;
+  the two `lint_selftest.py` fault anchors moved with the manifest. **`just ci` green (24/24)**; authoritative
+  `attestation-evidence-lint` against the fellows checkout green (every `conformant` row cites live evidence).
+  **Conformance-suite Phase 4 is now activatable; README criteria 1/4/6 met** and the precondition for **3** is
+  in place. *Remaining (off the critical path — not archival blockers):* (1) the toolkit-side **#41**
+  encrypt-in-transit CST frontier note in `spec/constraints.md` (non-normative; the Architecture.md copy
+  already carries the design-side note); (2) confirm SH ingest completed — tracked in toolkit **#56**
+  (async; the SWHIDs are git-verified regardless); (3) VV `/audit`-style entry UX → toolkit **#55**.
 - **Unblocks:** conformance-suite Phase 4 ([`plans/conformance-suite-plan.md`](../plans/conformance-suite-plan.md));
   README criteria 1/3/4/6; the real `evaluate-report.json` is now the Visual Validator's content.
 
@@ -302,7 +349,7 @@ Which in-progress plan each wave advances:
 See the registry below. fellows writes the demonstrating work **test-first**; each finding rides up
 to the toolkit at the next fellows re-sync, per the `CONTRIBUTING.md` reference-driven rule.
 - **#40** (fellows#252) — workspace user-mediation invariant → **3rd general mechanism. PROMOTED to Tier 1.5 (scheduled) on 2026-06-08** — MVD-primary, demonstrate-now (fellows MVD + PRM 2nd demonstrator); #261 merged (UM-1 proven). No longer "tracked, not scheduled."
-- **#41** (fellows#256) — EAR rejected for the live store; light CST frontier note (encrypt-in-transit). *Decision recorded: fellows PR #258.*
+- **#41** (fellows#256) — EAR rejected for the live store; light CST frontier note (encrypt-in-transit). *Decision recorded: fellows PR #258; toolkit note pending (toolkit-fix PR).*
 - **#42** (fellows#257) — cross-device over commodity channels; exploratory; 4 candidates.
 
 ### Tier 4 — Parked / later
@@ -322,7 +369,7 @@ is accepted only with a demonstrating design — so each row names its demonstra
 |---|---|---|---|---|---|---|
 | Distribution = verifiability spectrum (not binary); + code-only vs. code+data | prm#8 | **#39** | PRM | lands with PRM's M6 attestation (weeks); break the installer↔decision circular dep by writing the spectrum first | `spec/axes.md` Distribution split + new dimension | Write-up pending → Tier 1 (Wave 4) |
 | Workspace user-mediation invariant ("human is the actuator; workspace is ground truth") | fellows#252 | **#40** | **fellows_local_db + PRM** (two substrates) | fellows MVD (UM-1/2/3 green) + PRM mutation-side at M6 — test-first | new mechanism doc, sibling to `exceptions.md`/`constraints.md` | **MVD-ready → Tier 1.5 (scheduled).** UM-1 proven (#261 merged); demonstrate-now decided 2026-06-08, fellows AI-writes feature deferred |
-| EAR rejected for live store; encrypt the portable export instead | fellows#256 | **#41** | fellows_local_db | decision recorded | non-normative frontier note on `CST-PWA-NO-SYNC` / `-PRIVATE-SNAPSHOT` | **Decision locked** — fellows PR #258; toolkit note folds in at next re-sync |
+| EAR rejected for live store; encrypt the portable export instead | fellows#256 | **#41** | fellows_local_db | decision recorded | non-normative frontier note on `CST-PWA-NO-SYNC` / `-PRIVATE-SNAPSHOT` | **Decision locked** (fellows PR #258); toolkit note pending (folds in via a toolkit-fix PR; no AC) |
 | Cross-device private data over commodity channels (4 candidates) | fellows#257 | **#42** | fellows_local_db | fellows prototype + local-AI | axis picks / CST frontier resolution / a skill | Exploratory |
 
 **In-flight in the demonstrators (2026-06-07).** fellows **PR #261** fixes a real private-store

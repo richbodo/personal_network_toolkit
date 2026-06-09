@@ -2,22 +2,24 @@
 # reference_designs/templates/design.toml for the field reference.
 #
 # This design is "accepted by definition" (the toolkit was distilled from it).
-# Software Heritage archival was requested 2026-06-08 (Save Code Now request
-# 2352383) at the post-MVD commit below, and the git-compatible SWHIDs are
-# recorded now. archival stays "pending" until SH ingest completes (async) AND a
-# [verify] entrypoint lands — the latter awaits a schema-shaped evaluate-report.json
-# (docs/roadmap.md Tier 0). The lint permits a pending design to carry valid
-# SWHIDs; flip to "archived" once both conditions are met.
+# Archived at the post-#267 commit below (fellows main @ dc3e0cf). The Tier-0
+# keystone is complete: the [verify] entrypoint `just evaluate-report` now lands
+# (fellows PR #267 — a deterministic, stdlib evaluate-report.json emitter that is
+# schema-valid and byte-stable). The git-compatible SWHIDs were computed by
+# tools/swh-save.sh and are content-addressed (valid independent of ingest timing);
+# the Software Heritage Save Code Now request 2352911 was submitted 2026-06-09 and
+# ingest is async (minutes to hours). swhid_rev == swh:1:rev:<commit>, cross-checked
+# by tools/lint-spec-ids.py. (docs/roadmap.md Tier 0.)
 
 name = "fellows_local_db"
 repo = "https://github.com/richbodo/fellows_local_db"
 toolkit_version = "0.1"
 status = "active"
-archival = "pending"   # → "archived" once SH ingest completes AND a [verify] entrypoint lands
+archival = "archived"   # Tier-0 keystone complete: [verify] entrypoint landed (fellows #267); SWHIDs git-verified; SH ingest (req 2352911) async
 
-commit    = "bbaf66e874ed3b97d0ce5f01f468f9e8fc4193e5"
-swhid_rev = "swh:1:rev:bbaf66e874ed3b97d0ce5f01f468f9e8fc4193e5"
-swhid_dir = "swh:1:dir:a52fa259b71d0b42261a5f3926fffb66a2d0c4ab"
+commit    = "dc3e0cffbbca44547c6987602fbbb1003d6920e6"
+swhid_rev = "swh:1:rev:dc3e0cffbbca44547c6987602fbbb1003d6920e6"
+swhid_dir = "swh:1:dir:d69ecdfbee779a45d8c5a129e6787b623f6bc4c4"
 
 [flavor]
 distribution = "web-bundle-with-magic-link"
@@ -29,5 +31,5 @@ mcp-exposure = "shared+private+comms"
 
 [verify]
 runner = "container"
-entrypoint = ""    # TODO(maintainer): command that builds + runs the e2e/conformance suite
+entrypoint = "just evaluate-report"    # fellows #267: deterministic, stdlib evaluate-report.json emitter (schema-valid, byte-stable)
 emits_report = "evaluate-report.json"

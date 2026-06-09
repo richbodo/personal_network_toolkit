@@ -9,11 +9,11 @@
 
 - **Accepted:** 2026-05-31, by the maintainer (Rich Bodo). As the design the toolkit was distilled from, `fellows_local_db` is accepted *by definition* for Toolkit-Version 0.1 (see [`CONTRIBUTING.md` § Acceptance process](../../CONTRIBUTING.md#acceptance-process)).
 - **Validated against:** Toolkit-Version 0.1. The AC + `EX-CLOUD-LLM` exception attestation is in [`Architecture.md`](Architecture.md); its Verification column cites real tests that are lint-green in CI.
-- **Archival commit:** `bbaf66e874ed3b97d0ce5f01f468f9e8fc4193e5` — the post-MVD attestation state; archival requested 2026-06-08 (supersedes the earlier `v0.1.0` / `046584c` snapshot). The manifest stays `archival = "pending"` until Software Heritage ingest completes and the design's `[verify]` entrypoint lands.
+- **Archival commit:** `dc3e0cffbbca44547c6987602fbbb1003d6920e6` — fellows `main` at the post-#267 state (the deterministic `just evaluate-report` emitter; supersedes the `bbaf66e` / `046584c` / `v0.1.0` snapshots). The manifest is now `archival = "archived"`: the `[verify]` entrypoint (`just evaluate-report`) has landed and the SWHIDs are git-verified.
 - **Software Heritage SWHID:**
-  - `swh:1:dir:a52fa259b71d0b42261a5f3926fffb66a2d0c4ab` (the archived source tree — canonical permanent identifier)
-  - `swh:1:rev:bbaf66e874ed3b97d0ce5f01f468f9e8fc4193e5` (the accepted revision)
-  - These are git-compatible (SH's `dir`/`rev` identifiers equal the git tree/commit hashes), computed at the archived commit. The Software Heritage *Save Code Now* request `2352383` was submitted 2026-06-08 for `https://github.com/richbodo/fellows_local_db`; the identifiers are content-addressed and resolve unchanged once ingest completes (asynchronous — minutes to hours). Re-run any time via [`tools/swh-save.sh`](../../tools/swh-save.sh).
+  - `swh:1:dir:d69ecdfbee779a45d8c5a129e6787b623f6bc4c4` (the archived source tree — canonical permanent identifier)
+  - `swh:1:rev:dc3e0cffbbca44547c6987602fbbb1003d6920e6` (the accepted revision)
+  - These are git-compatible (SH's `dir`/`rev` identifiers equal the git tree/commit hashes), computed at the archived commit. The Software Heritage *Save Code Now* request `2352911` was submitted 2026-06-09 for `https://github.com/richbodo/fellows_local_db`; the identifiers are content-addressed and resolve unchanged once ingest completes (asynchronous — minutes to hours). Re-run any time via [`tools/swh-save.sh`](../../tools/swh-save.sh).
 
 ## Summary
 
