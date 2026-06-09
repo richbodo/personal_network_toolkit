@@ -279,10 +279,11 @@ Which in-progress plan each wave advances:
   the two `lint_selftest.py` fault anchors moved with the manifest. **`just ci` green (24/24)**; authoritative
   `attestation-evidence-lint` against the fellows checkout green (every `conformant` row cites live evidence).
   **Conformance-suite Phase 4 is now activatable; README criteria 1/4/6 met** and the precondition for **3** is
-  in place. *Remaining (off the critical path — not archival blockers):* (1) the toolkit-side **#41**
-  encrypt-in-transit CST frontier note in `spec/constraints.md` (non-normative; the Architecture.md copy
-  already carries the design-side note); (2) confirm SH ingest completed — tracked in toolkit **#56**
-  (async; the SWHIDs are git-verified regardless); (3) VV `/audit`-style entry UX → toolkit **#55**.
+  in place. *Remaining (off the critical path — not archival blockers):* (1) **✓ DONE 2026-06-09** —
+  toolkit-side **#41** encrypt-in-transit CST frontier note added to `spec/constraints.md`
+  (`CST-PWA-PRIVATE-SNAPSHOT` + `-NO-SYNC`; non-normative, no AC; rationale in PriorArt § Design notes);
+  (2) confirm SH ingest completed — tracked in toolkit **#56** (async; the SWHIDs are git-verified
+  regardless); (3) VV `/audit`-style entry UX → toolkit **#55**.
 - **Unblocks:** conformance-suite Phase 4 ([`plans/conformance-suite-plan.md`](../plans/conformance-suite-plan.md));
   README criteria 1/3/4/6; the real `evaluate-report.json` is now the Visual Validator's content.
 
@@ -349,7 +350,7 @@ Which in-progress plan each wave advances:
 See the registry below. fellows writes the demonstrating work **test-first**; each finding rides up
 to the toolkit at the next fellows re-sync, per the `CONTRIBUTING.md` reference-driven rule.
 - **#40** (fellows#252) — workspace user-mediation invariant → **3rd general mechanism. PROMOTED to Tier 1.5 (scheduled) on 2026-06-08** — MVD-primary, demonstrate-now (fellows MVD + PRM 2nd demonstrator); #261 merged (UM-1 proven). No longer "tracked, not scheduled."
-- **#41** (fellows#256) — EAR rejected for the live store; light CST frontier note (encrypt-in-transit). *Decision recorded: fellows PR #258; toolkit note pending (toolkit-fix PR).*
+- **#41** (fellows#256) — EAR rejected for the live store; light CST frontier note (encrypt-in-transit). *Decision recorded: fellows PR #258; toolkit note written 2026-06-09 — close on merge.*
 - **#42** (fellows#257) — cross-device over commodity channels; exploratory; 4 candidates.
 
 ### Tier 4 — Parked / later
@@ -369,7 +370,7 @@ is accepted only with a demonstrating design — so each row names its demonstra
 |---|---|---|---|---|---|---|
 | Distribution = verifiability spectrum (not binary); + code-only vs. code+data | prm#8 | **#39** | PRM | lands with PRM's M6 attestation (weeks); break the installer↔decision circular dep by writing the spectrum first | `spec/axes.md` Distribution split + new dimension | Write-up pending → Tier 1 (Wave 4) |
 | Workspace user-mediation invariant ("human is the actuator; workspace is ground truth") | fellows#252 | **#40** | **fellows_local_db + PRM** (two substrates) | fellows MVD (UM-1/2/3 green) + PRM mutation-side at M6 — test-first | new mechanism doc, sibling to `exceptions.md`/`constraints.md` | **MVD-ready → Tier 1.5 (scheduled).** UM-1 proven (#261 merged); demonstrate-now decided 2026-06-08, fellows AI-writes feature deferred |
-| EAR rejected for live store; encrypt the portable export instead | fellows#256 | **#41** | fellows_local_db | decision recorded | non-normative frontier note on `CST-PWA-NO-SYNC` / `-PRIVATE-SNAPSHOT` | **Decision locked** (fellows PR #258); toolkit note pending (folds in via a toolkit-fix PR; no AC) |
+| EAR rejected for live store; encrypt the portable export instead | fellows#256 | **#41** | fellows_local_db | decision recorded | non-normative frontier note on `CST-PWA-NO-SYNC` / `-PRIVATE-SNAPSHOT` | **Decision locked** (fellows PR #258); **toolkit note written 2026-06-09** (encrypt-in-transit, non-normative, no AC) — close #41 on merge |
 | Cross-device private data over commodity channels (4 candidates) | fellows#257 | **#42** | fellows_local_db | fellows prototype + local-AI | axis picks / CST frontier resolution / a skill | Exploratory |
 
 **In-flight in the demonstrators (2026-06-07).** fellows **PR #261** fixes a real private-store

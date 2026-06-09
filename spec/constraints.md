@@ -150,6 +150,16 @@ explicit manual backup/export path and SAY SO. The reduction MUST enforce at the
 durable private writes when no verified folder backs the store), not UI-only. Demonstrated by
 `fellows_local_db` (reference_designs/fellows_local_db/).
 
+**Encrypt-in-transit, not at-rest (non-normative).** The snapshot-export candidate named in the
+Frontier above is where encryption belongs on this frontier: the *portable export/backup once it leaves
+the device* (emailed-to-self, synced to a drive) — not the live store. App-layer encryption-at-rest of
+the *live* private store is a deliberate non-goal: its threat-set is a strict subset of device full-disk
+encryption, and a `.locked` ciphertext would contradict [`CST-PWA-SANDBOX-SEALED`](#cst-pwa-sandbox-sealed)'s
+tool-readable-folder openness. This clarification confirms the toolkit's existing at-rest scope decline
+(PR #19; [`PNA_Spec.md` § Scope and versioning](PNA_Spec.md#scope-and-versioning)) and adds no AC.
+Origin: `fellows_local_db`'s EAR decision (fellows#256); the encrypt-in-transit export is being
+prototyped there (fellows#257, toolkit#41).
+
 <a id="cst-pwa-sandbox-sealed"></a>
 ### CST-PWA-SANDBOX-SEALED — OPFS store is invisible to the user and to their other tools
 
@@ -210,6 +220,13 @@ store between a user's devices or browsers, and no authority to reconcile diverg
 write-generation + a human device label) so the user (and a re-pick chooser) can answer "which copy is
 canonical?" by content; offer a manual `.db` export/import as the cross-device bridge. Declare sync
 explicitly out of scope rather than implying it. Demonstrated by `fellows_local_db`.
+
+**Encrypt-in-transit note (non-normative).** The manual `.db` export bridge named above is the
+sanctioned home for encryption on this frontier: a snapshot leaving the device for another device (or a
+cloud relay) can be encrypted end-to-end as an `encrypt-then-export-to-self` artifact, while the live
+store stays tool-readable. That is a transport property of the *exported copy*, not at-rest encryption
+of the live store (declined — PR #19); it imposes no new AC. See the parallel note on
+[`CST-PWA-PRIVATE-SNAPSHOT`](#cst-pwa-private-snapshot). Demonstrator: `fellows_local_db` (fellows#257).
 
 <a id="cst-pwa-single-owner"></a>
 ### CST-PWA-SINGLE-OWNER — Multi-tab contention with no OS file lock

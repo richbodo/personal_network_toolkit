@@ -2,6 +2,17 @@
 
 ## v0.1 draft (in progress)
 
+### Spec: encrypt-in-transit frontier note on `CST-PWA-PRIVATE-SNAPSHOT` / `CST-PWA-NO-SYNC` (toolkit fix, #41)
+
+- **Non-normative clarification** on the two `CST-PWA-*` frontiers that name a snapshot-export candidate:
+  encryption's sanctioned home is the **portable export once it leaves the device** (encrypt-in-transit),
+  not the live private store — app-layer encryption-at-rest of the *live* store stays a non-goal (its
+  threat-set is a subset of device FDE; a `.locked` file contradicts `CST-PWA-SANDBOX-SEALED`'s
+  tool-readability). Confirms the PR #19 at-rest scope decline (`PNA_Spec.md` § Scope and versioning);
+  **adds no AC**. Folds in inbound finding **#41** (from fellows#256; demonstrator fellows#257). Rationale
+  in `docs/PriorArt.md` § Design notes. No `docs/users-guide.md` change (no developer-facing recipe / lint
+  / flow / field changed). `just ci` green.
+
 ### Tier-0 keystone complete: `fellows_local_db` archived with a live `[verify]` entrypoint (toolkit fix)
 
 - **`reference_designs/fellows_local_db/design.toml` flipped `archival = "pending" → "archived"`**,
