@@ -2,6 +2,23 @@
 
 ## v0.1 draft (in progress)
 
+### Docs: name the canonical evaluate-report artifact + recognize a deterministic emitter (toolkit fix)
+
+- An audit of `fellows_local_db` mistook its design-internal `docs/conformance/report.json` (a
+  fellows-format ship-gate readout) for the toolkit's render-contract artifact, which is
+  `evaluate-report.json`. Clarified across the docs so the two can't be confused:
+  - **`CONTRIBUTING.md` § PR contents** now names the **canonical filename (`evaluate-report.json`)**,
+    states that a design's *other* conformance readouts are not this artifact, and recognizes **two
+    equally-valid producers** — the skill's LLM evaluate flow *or* a design's deterministic
+    `[verify].entrypoint` emitter (e.g. `just evaluate-report`).
+  - **`pna-build-eval-contrib/SKILL.md`** — evaluate-flow step 7 tells the agent to confirm which file
+    is a schema instance when a candidate ships several, and to prefer a cooperating design's
+    deterministic emitter; PR-authoring step 6 now lists `evaluate-report.json` among the required PR
+    artifacts (it was previously omitted there, though § PR contents already required it).
+  - **`docs/users-guide.md`** audit step notes the canonical filename and the internal-readout trap.
+- No new obligation on any design — the artifact was already required by `CONTRIBUTING.md` § PR
+  contents; this is purely a naming/discoverability clarification. `just ci` green.
+
 ### Visual Validator: clearer end-user caveat + link to the spec Goals (toolkit fix)
 
 - **`tools/report-viewer/index.html`** — the end-user posture caveat now states what the test
