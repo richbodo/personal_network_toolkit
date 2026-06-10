@@ -45,9 +45,9 @@ What backs the data layer — the bytes on disk or in OPFS that hold the Shared 
 ### Picks
 
 - **`opfs-sqlite-wasm`** — sqlite-wasm running in a dedicated worker, with OPFS-SAH-Pool VFS as the underlying storage. Browser-only. Attested in [fellows_local_db](https://github.com/richbodo/fellows_local_db/blob/main/docs/Architecture.md). Triggers AC-3, AC-12; combines with `dist:web-served` to trigger AC-13. **Inherits constraints** `CST-PWA-SANDBOX-SEALED`, `CST-PWA-STORAGE-EVICTABLE`, `CST-PWA-SINGLE-OWNER` — and, combined with a `web-bundle` distribution, `CST-PWA-PRIVATE-SNAPSHOT` and `CST-PWA-NO-SYNC` (see [constraints.md](constraints.md)). (The forced worker-owned single-connection architecture is captured directly in AC-3 above.)
-- **`native-sqlite-via-filesystem`** — Native SQLite library (libsqlite3) opens database files directly via OS filesystem APIs. WAL mode + advisory file locks recommended. CLI / native PNAs only. PRT-inspired (not yet against this spec). Triggers AC-PRM-C **[draft]**.
+- **`native-sqlite-via-filesystem`** — Native SQLite library (libsqlite3) opens database files directly via OS filesystem APIs. WAL mode + advisory file locks recommended. CLI / native PNAs only. PRT-inspired; attested in [prm](https://github.com/richbodo/prm/blob/main/docs/Architecture.md). Triggers AC-PRM-C.
 - **`idb-only-browser`** — IndexedDB without SQLite. Less expressive (no SQL); mostly hypothetical for PNA. No flavor-derived ACs in v0.1 (the relevant ACs assume sqlite); a future toolkit version may add IDB-specific ACs if a reference design picks this.
-- **`native-sqlcipher`** — Encrypted-at-rest variant of `native-sqlite-via-filesystem`. Inherits AC-PRM-C **[draft]** plus additional commitments about key storage and rotation that v0.1 doesn't yet name. Deferred ACs land when a SQLCipher-flavored reference design is built.
+- **`native-sqlcipher`** — Encrypted-at-rest variant of `native-sqlite-via-filesystem`. Inherits AC-PRM-C plus additional commitments about key storage and rotation that v0.1 doesn't yet name. Those deferred key-management ACs land when a SQLCipher-flavored reference design is built.
 
 ### Extra commitments these picks add
 
@@ -57,7 +57,7 @@ What backs the data layer — the bytes on disk or in OPFS that hold the Shared 
 | **Single OPFS owner.** All OPFS handles and SQLite-WASM instances MUST live in one dedicated worker. The workspace MUST act as an RPC client. Parallel main-thread OPFS MUST NOT exist. *Realizes AC-1 + AC-11 for this substrate.* This worker-owned, single-writer architecture is **forced by the substrate**, not a stylistic choice: durable SQL in a browser (sqlite-wasm + OPFS-SAH-Pool) requires `crossOriginIsolated`, one worker owning every OPFS handle, and a single writer connection — a multi-connection or main-thread design is not available. Builders must know this up front; it is a property of the medium, not a defect to fix. | `storage:opfs-sqlite-wasm`. | <a id="ac-3"></a>AC-3 |
 | **Capability detection inside the worker, UA-parsing for messaging only.** Browsers lie about main-thread OPFS support; the worker MUST be the only context that performs capability detection. UA strings MAY inform error messages but MUST NOT gate. | `storage:opfs-sqlite-wasm`. | <a id="ac-12"></a>AC-12 |
 | **COOP/COEP required.** OPFS-SAH-Pool needs `crossOriginIsolated`; both dev server and prod reverse proxy MUST send `Cross-Origin-Opener-Policy: same-origin` and `Cross-Origin-Embedder-Policy: require-corp`. Without this the storage substrate silently fails to install. | `storage:opfs-sqlite-wasm` **and** a web-served distribution. | <a id="ac-13"></a>AC-13 |
-| **Single-instance file-lock.** Native SQLite demands one writer; a second process MUST refuse cleanly with a specific message naming the holding process. *Realizes AC-11 for this substrate.* **[draft — no reference design yet]** | `storage:native-sqlite-via-filesystem`. | <a id="ac-prm-c"></a>AC-PRM-C **[draft]** |
+| **Single-instance file-lock.** Native SQLite demands one writer; a second process MUST refuse cleanly with a specific message naming the holding process. *Realizes AC-11 for this substrate.* Attested in [prm](https://github.com/richbodo/prm/blob/main/docs/Architecture.md). | `storage:native-sqlite-via-filesystem`. | <a id="ac-prm-c"></a>AC-PRM-C |
 
 ---
 
@@ -69,7 +69,7 @@ How the Shared DB is filled and refreshed — whether from a single export, a si
 
 - **`single-source-static-mirror`** — One external source produces a complete Shared DB on each refresh; ingestion stages → validates → atomically swaps. No dedup needed. Re-imports are opt-in per AC-10. Attested in [fellows_local_db](https://github.com/richbodo/fellows_local_db/blob/main/docs/Architecture.md) (Knack-JSON ETL). Triggers no axis-specific ACs.
 - **`single-source-live-pull`** — One external source queried live (REST API, OAuth, etc.). Same single-source dedup story (none needed). Triggers no axis-specific ACs in v0.1; a future toolkit version may add live-pull contracts (rate limiting, partial-failure handling, etc.).
-- **`multi-source-merge-with-dedup`** — Multiple external sources (Google + Apple + Facebook + organizational directories) merged into one Shared DB. Dedup wizard surfaces conflicts; per-field provenance preserved. PRT-inspired (not yet against this spec). Triggers AC-PRM-B **[draft]**.
+- **`multi-source-merge-with-dedup`** — Multiple external sources (Google + Apple + Facebook + organizational directories) merged into one Shared DB. Dedup wizard surfaces conflicts; per-field provenance preserved. PRT-inspired; attested in [prm](https://github.com/richbodo/prm/blob/main/docs/Architecture.md). Triggers AC-PRM-B.
 - **`federated-read`** *(deferred)* — Reading from peer PNAs. Out of scope for v0.1.
 
 ### Extra commitments these picks add
@@ -77,7 +77,7 @@ How the Shared DB is filled and refreshed — whether from a single export, a si
 <!-- machine-parsed table — see the EDITING NOTE at the top of this file before changing its columns, headers, or IDs. -->
 | Commitment | Applies when you pick | AC |
 |---|---|---|
-| **Multi-source dedup contract.** A stable `record_id` MUST survive merge across sources. The dedup flow MUST surface conflicts via a wizard. Per-source provenance MUST be recorded *per field*, not just per record. Lifts the deferred "multi-source dedup contract" from § Scope into v0.1 for PRM-flavor PNAs. **[draft — no reference design yet]** | `ingestion:multi-source-merge-with-dedup`. | <a id="ac-prm-b"></a>AC-PRM-B **[draft]** |
+| **Multi-source dedup contract.** A stable `record_id` MUST survive merge across sources. The dedup flow MUST surface conflicts via a wizard. Per-source provenance MUST be recorded *per field*, not just per record. Lifts the deferred "multi-source dedup contract" from § Scope into v0.1 for PRM-flavor PNAs. Attested in [prm](https://github.com/richbodo/prm/blob/main/docs/Architecture.md). | `ingestion:multi-source-merge-with-dedup`. | <a id="ac-prm-b"></a>AC-PRM-B |
 
 ---
 
@@ -104,6 +104,7 @@ Which outreach mechanisms the workspace offers — what shows up in the user's "
 
 ### Picks
 
+- **`none`** — No outreach surface: the workspace offers no "reach out" picker. A contacts-consolidation or directory PNA whose loop stops at *recording* relationship data (no *gathering*-by-outreach). Attested in [prm](https://github.com/richbodo/prm/blob/main/docs/Architecture.md) (v0.1 consolidates + dedups; outreach is a later version). The outreach comms ACs — AC-16, AC-18, AC-19, AC-MCP-B — are vacuous; AC-PRM-A (LLM-as-transport) still applies via the MCP surface.
 - **`mailto-only`** — Just `mailto:` (plus `tel:` for phone). Attested in [fellows_local_db](https://github.com/richbodo/fellows_local_db/blob/main/docs/Architecture.md); Signal planned.
 - **`mailto-plus-signal`** — Adds Signal protocol (encrypted-in-protocol; passes AC-18).
 - **`mailto-plus-matrix`** — Adds Matrix (encrypted-room mode; passes AC-18).

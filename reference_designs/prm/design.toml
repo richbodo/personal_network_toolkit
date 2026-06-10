@@ -1,0 +1,32 @@
+# Reference-design manifest for prm (Personal Relationship Manager). See
+# reference_designs/templates/design.toml for the field reference; the Security
+# Target is reference_designs/prm/Architecture.md (a copy of the canonical
+# docs/Architecture.md in the design's own repo).
+#
+# archival stays "pending" until Software Heritage ingest completes (async) and
+# the SWHIDs are recorded. The [verify] entrypoint is `just conformance` in the
+# canonical repo: it regenerates + shape-checks the attestation and runs the full
+# test suite (nonzero on any failure); it emits docs/conformance/evaluate-report.json.
+
+name = "prm"
+repo = "https://github.com/richbodo/prm"
+toolkit_version = "0.1"
+status = "active"
+archival = "pending"   # → "archived" once SH ingest completes and the SWHIDs below are recorded
+
+commit    = ""         # filled at archival (tools/swh-save.sh)
+swhid_rev = ""         # swh:1:rev:<commit>
+swhid_dir = ""         # swh:1:dir:<tree>
+
+[flavor]
+distribution = "never-distributed-single-user"
+storage = "native-sqlite-via-filesystem"
+ingestion = "multi-source-merge-with-dedup"
+workspace = "vanilla-js-spa"
+comms = "none"
+mcp-exposure = "shared-only"
+
+[verify]
+runner = "just"
+entrypoint = "just conformance"          # regenerate + shape-check the attestation, run the full suite
+emits_report = "evaluate-report.json"

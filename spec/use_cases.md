@@ -8,7 +8,7 @@ v0.1 attests three named use cases plus one longer-arc target:
 
 - [Minimum Viable PNA](#minimum-viable-pna-personal-vault) — the smallest conformant shape (ingest + store + a minimal workspace)
 - [Directory Archive](#directory-archive) — realized in fellows_local_db
-- [Personal Relationship Manager](#personal-relationship-manager-draft) — draft (no PNA-spec-conforming reference design yet)
+- [Personal Relationship Manager](#personal-relationship-manager) — realized in prm
 - [Multi-PNA ecosystem](#multi-pna-ecosystem-target-v02) — target (v0.2+, no reference design)
 
 ---
@@ -45,21 +45,21 @@ The use case doesn't *determine* these picks — a hypothetical Directory Archiv
 
 ---
 
-## Personal Relationship Manager [draft]
+## Personal Relationship Manager
 
 The user's *own* contact databases (Google + Apple + Facebook + LinkedIn + organizational directories) mirrored locally, plus rich private overlays (notes, tags, groups, comms history, message recency) and tools (LLM-mediated search, visual recall, eventual P2P). Shared data has multiple sources the user controls; ingestion involves a dedup pass. Typically single-user, not distributed onward — the PRM is for one person's contact graph.
 
-**Likely flavor (draft, [PRT](https://github.com/richbodo/prt)-inspired — PRT, the predecessor "Personal Relationship Toolkit" project, is the graveyard codebase from which this toolkit and fellows_local_db grew):**
+**Realized flavor ([prm](https://github.com/richbodo/prm/blob/main/docs/Architecture.md), Toolkit-Version 0.1):**
 
-`distribution:never-distributed-single-user + storage:native-sqlite-via-filesystem + ingestion:multi-source-merge-with-dedup + workspace-shell:tui-textual + comms:shell-out-to-cli-clients + mcp-exposure:full`
+`distribution:never-distributed-single-user + storage:native-sqlite-via-filesystem + ingestion:multi-source-merge-with-dedup + workspace-shell:vanilla-js-spa + comms:none + mcp-exposure:shared-only`
 
-This is a draft — a future PRM reference design built against Toolkit-Version 0.1 will live in its own repo and may pick differently. The TUI shell choice in particular is PRT's current direction; a Tauri-wrapped GUI or a CLI-subcommand-only flavor are equally plausible alternatives.
+prm is [PRT](https://github.com/richbodo/prt)-inspired (PRT, the predecessor "Personal Relationship Toolkit" project, is the graveyard codebase from which this toolkit and fellows_local_db grew) but built fresh against Toolkit-Version 0.1. It picked a hand-written JS SPA over PRT's TUI direction, and for v0.1 ships a propose-only `shared-only` MCP surface with no outreach (`comms:none`); a TUI, a Tauri-wrapped GUI, richer comms, or `mcp-exposure:full` remain equally valid PRM flavors a later design may pick.
 
-**Triggered flavor-derived ACs (via likely picks):** AC-PRM-B **[draft]** (ingestion-derived), AC-PRM-C **[draft]** (storage-derived). MCP-related universal ACs (AC-MCP-A, AC-MCP-B) apply when `mcp-exposure` is non-`none`.
+**Triggered flavor-derived ACs (via likely picks):** AC-PRM-B (ingestion-derived), AC-PRM-C (storage-derived) — both now attested by [prm](https://github.com/richbodo/prm/blob/main/docs/Architecture.md). MCP-related universal ACs (AC-MCP-A, AC-MCP-B) apply when `mcp-exposure` is non-`none`.
 
-**Reference design:** None yet. PRT (`../../prt/`, a sibling repo) is the inspiration but pre-dates this spec.
+**Reference design:** [prm](https://github.com/richbodo/prm/blob/main/docs/Architecture.md) (Toolkit-Version 0.1). PRT (`../../prt/`, a sibling repo) is the predecessor inspiration but pre-dates this spec.
 
-**Why include a draft use case in v0.1?** Capturing PRM's outlines now stress-tests the universal-vs-flavor partition. An AC that fires for both Directory Archive *and* PRM is genuinely universal; an AC that fires for only one is flavor-derived and gets axis-pick triggers. With only one realized use case, every AC would look universal; the second case (even in draft) forces the right partition.
+**Why a second realized use case matters.** PRM stress-tests the universal-vs-flavor partition. An AC that fires for both Directory Archive *and* PRM is genuinely universal; an AC that fires for only one is flavor-derived and gets axis-pick triggers. With only one use case every AC would look universal; the second forces the right partition — and PRM is the design that promoted AC-PRM-B / AC-PRM-C from draft into attested flavor-derived ACs.
 
 ---
 
@@ -81,7 +81,7 @@ The longer-arc goal introduced in [`PNA_Spec.md` § Vision](PNA_Spec.md#vision):
 
 **v0.2+ work:**
 
-Achieving the unified meta-view requires per-source database connectors, careful dedup and conflict resolution, and disciplined provenance — substantial work that's deferred to later toolkit versions. The eventual *ecosystem reference design* would demonstrate this; v0.1 establishes the architectural seams (the five canonical MCP server contracts, AC-10's opt-in non-destructive re-imports, AC-PRM-B's draft multi-source dedup contract, AC-MCP-A's cloud-client consent rule, AC-MCP-B's workspace-mediated outreach) that let the ecosystem grow into place.
+Achieving the unified meta-view requires per-source database connectors, careful dedup and conflict resolution, and disciplined provenance — substantial work that's deferred to later toolkit versions. The eventual *ecosystem reference design* would demonstrate this; v0.1 establishes the architectural seams (the five canonical MCP server contracts, AC-10's opt-in non-destructive re-imports, AC-PRM-B's multi-source dedup contract, AC-MCP-A's cloud-client consent rule, AC-MCP-B's workspace-mediated outreach) that let the ecosystem grow into place.
 
 This is the deep "why" behind defining slot contracts substrate-neutrally: when the second PNA exists, an AI agent can wire it to the first without modifying either; when the fifth PNA exists, the same. Composability isn't bolted on; it's the architecture's primary deliverable.
 

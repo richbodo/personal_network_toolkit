@@ -2,6 +2,27 @@
 
 ## v0.1 draft (in progress)
 
+### PRM: second reference design + `comms:none` pick + AC-PRM-B/C out of draft (reference design)
+
+- Adds **prm** ([richbodo/prm](https://github.com/richbodo/prm)) as the **2nd PNT reference design**
+  (Personal Relationship Manager use case), validated against Toolkit-Version 0.1. Flavor:
+  `never-distributed-single-user × native-sqlite-via-filesystem × multi-source-merge-with-dedup ×
+  vanilla-js-spa × comms:none × mcp-exposure:shared-only`. New `reference_designs/prm/` (README,
+  Architecture.md, design.toml, evaluate-report.json).
+- **`spec/axes.md`** — new **`comms:none`** pick (a PNA whose loop stops at *recording* relationship data;
+  AC-16/18/19/MCP-B become not-applicable), demonstrated by prm.
+- **AC-PRM-B (multi-source dedup) + AC-PRM-C (native-sqlite file-lock) promoted out of `[draft]`** — prm is
+  the first design to exercise them (`spec/axes.md`, `spec/use_cases.md`, `spec/PNA_Spec.md` § Scope).
+- **PRM use case realized** — `spec/use_cases.md` + `spec/PNA_Spec.md` § Use cases flip from `[draft]` to
+  realized-in-prm; the speculative "likely flavor" is replaced with prm's actual picks.
+- First never-distributed / build-from-verifiable-source distribution; demonstrates the
+  propose→review→apply mutation-mediation loop. Two `partial-conformance` rows (AC-PRM-A, AC-MCP-A) are
+  honestly handled — an MCP server cannot identify the consuming LLM. Validated: prm suite **131 passed**;
+  toolkit lints (`lint-spec-ids`, `report-fixtures-lint`, `attestation-evidence-lint` vs the live repo) green.
+- `archival = "pending"` — SWHIDs recorded post-merge via `tools/swh-save.sh` against the attested commit
+  (`37806aa`). Deferred riders (AC-PRM-E/F, the UM-1/2/3 framework, the distribution-verifiability split)
+  are a planned follow-up, not part of this PR.
+
 ### Docs: name the canonical evaluate-report artifact + recognize a deterministic emitter (toolkit fix)
 
 - An audit of `fellows_local_db` mistook its design-internal `docs/conformance/report.json` (a
