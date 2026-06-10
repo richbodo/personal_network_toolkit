@@ -186,7 +186,12 @@ const POSTURE_PLAIN = {
   "indeterminate": "Couldn't be fully assessed — a human should take a closer look.",
 };
 const POSTURE_CLS = {conformant:"v-ok", "non-conformant":"v-no", mixed:"v-ud", indeterminate:"v-na"};
-const CAVEAT = "This measures the app against the PNA spec's specific promises. An app may not be trying to be a PNA — a poor result is a mismatch with these particular commitments, not a claim that the app is bad.";
+const SPEC_GOALS_URL = "https://github.com/richbodo/personal_network_toolkit/blob/main/spec/PNA_Spec.md#goals";
+// Caveat under the end-user posture. Split around the "goals of a PNA" link so it
+// renders as a real <a> (via safeLink), not innerHTML.
+const CAVEAT_PRE = "This measures the app against the PNA spec's specific promises — a measurement of the application's architecture. An app may not be trying to be a PNA — a poor result is a mismatch with these particular commitments, not a claim that the app is bad. A good result on this test means its architecture matches the PNA spec closely, and is architecturally aligned with the ";
+const CAVEAT_GOALS_LABEL = "goals of a PNA";
+const CAVEAT_POST = ".";
 const STATUS_RANK = {"non-conformant":0, "unable-to-determine":1, "conformant":2, "not-applicable":3};
 
 const params = new URLSearchParams(location.search);
@@ -322,7 +327,8 @@ function renderSummaryA1(summ, findings) {
   if (c["conformant"]) tally.push(c["conformant"] + " good");
   if (c["not-applicable"]) tally.push(c["not-applicable"] + " not relevant");
   if (tally.length) box.append(el("div", {class:"a1-tally", text:tally.join(" · ")}));
-  box.append(el("div", {class:"caveat", text:CAVEAT}));
+  box.append(el("div", {class:"caveat"},
+    CAVEAT_PRE, safeLink(SPEC_GOALS_URL, CAVEAT_GOALS_LABEL), CAVEAT_POST));
   return box;
 }
 function renderCandidateCard(obj, cand, label) {
