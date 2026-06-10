@@ -2,6 +2,16 @@
 
 ## v0.1 draft (in progress)
 
+### Visual Validator: clearer end-user caveat + link to the spec Goals (toolkit fix)
+
+- **`tools/report-viewer/index.html`** — the end-user posture caveat now states what the test
+  *is* ("a measurement of the application's architecture") and what a **good** result means
+  ("its architecture matches the PNA spec closely, and is architecturally aligned with the
+  **goals of a PNA**"), with "goals of a PNA" linked to [`spec/PNA_Spec.md` § Goals](spec/PNA_Spec.md#goals).
+  Rendered as a real `<a>` via the existing `safeLink()` helper (no `innerHTML`); the viewer stays
+  static / zero-dep / engine-agnostic. No render-contract or schema change; the broader plain-language
+  rework of the end-user register is tracked in #62.
+
 ### Tier-0 keystone complete: `fellows_local_db` archived with a live `[verify]` entrypoint (toolkit fix)
 
 - **`reference_designs/fellows_local_db/design.toml` flipped `archival = "pending" → "archived"`**,
