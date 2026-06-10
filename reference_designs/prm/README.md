@@ -7,6 +7,7 @@
 
 ## Acceptance & validation
 
+- **Accepted:** 2026-06-10 · accepted-by Rich Bodo (maintainer) · validated against Toolkit-Version 0.1. The merge of [PR #61](https://github.com/richbodo/personal_network_toolkit/pull/61) is the acceptance; this line is the durable record of what was validated.
 - **Validated against:** Toolkit-Version 0.1. The AC attestation — universal + flavor-derived, the
   `EX-CLOUD-LLM` exception, and the `UM-1/2/3` user-mediation rows — is in [`Architecture.md`](Architecture.md);
   every `conformant` row's Verification cites a real, passing test, and the design's own evidence lint
