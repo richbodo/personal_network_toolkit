@@ -8,7 +8,7 @@ Universal PNA architecture — vocabulary, goals, the two-store ownership split,
 
 ## Spec conformance
 
-**Toolkit-Version:** [0.1 (draft)](https://github.com/richbodo/personal_network_toolkit/blob/main/CHANGELOG.md)
+**Toolkit-Version:** [0.1 (draft)](https://github.com/richbodo/personal_network_toolkit/blob/main/CHANGELOG.md) — the PNT version (spec + contracts + skill + lint + templates) this design was built and validated against.
 **Use case:** [Directory Archive](https://github.com/richbodo/personal_network_toolkit/blob/main/use_cases.md#directory-archive)
 
 ### Flavor — fellows's six axis picks
@@ -30,6 +30,18 @@ test, rubric, or human-review note that proves it), and a **Status**. Verificati
 note is named (both acceptable per the template). Status is `conformant` / `partial-conformance` /
 `not-applicable`. Partial rows state honestly what is and isn't covered.
 
+> **Evidence rule (enforced by `tests/test_attestation_has_evidence.py`).** A
+> `conformant` row is a Security-Target claim, and a claim with no executable
+> evidence is a finding. Every `conformant` row's **Verification** (or **Status**)
+> must name either a resolvable test ref (`path/to/test.py[::name]`) or an
+> explicitly **declared verification kind** — `human-review`, `LLM rubric`,
+> `code inspection`, `by architecture`, `by bounding`, or `by construction`. A
+> bare doc pointer (`*.md`) is **not** evidence: a doc that *asserts* a property
+> does not *prove* it. **Negative invariants** ("X must NOT happen off-folder")
+> need a **negative test** — the happy-path test does not cover them. The checker
+> exempts `partial` / `Open` / `not-applicable` rows from resolution; those must
+> carry that honest status. See [`../plans/conformance_discipline.md`](../plans/conformance_discipline.md).
+
 ### Universal ACs
 
 | AC | Realization | Verification | Status |
@@ -43,7 +55,7 @@ note is named (both acceptable per the template). Status is `conformant` / `part
 | AC-11 (concurrent-access detection) | Worker `isOwnershipConflictError()` → `OWNERSHIP_CONFLICT` with a specific "another tab/window of this app is already open" message; Web Lock `fellows-relationships-folder-write` guards folder writes. | `tests/e2e/test_user_folder_storage.py::TestPhase2WriteLock::test_lock_held_during_write_surfaces_failure_then_recovers`; `test_worker_spawn_failure.py` | conformant |
 | AC-15 (build label tied to source revision) | `build/build_pwa.py:compute_build_label()` → `<YYYY-MM-DD>-<short-sha>`, stamped into `app.js`/`sw.js`/`vendor/sqlite-worker.js` at build time; `app/server.py` substitutes the same at serve time. | `tests/test_build_pwa.py`; `tests/e2e/test_update_check.py`; `test_bug_report.py` (asserts `app: <YYYY-MM-DD>-<sha>`); `test_boot_beacon.py` | conformant |
 | AC-16 (user-driven transport selection) | Group/fellow export surfaces `mailto:` (+ `tel:`); the user picks per outreach; no transport is hardcoded as the sole option. Axis pick is `comms-transport-set: mailto-only` (Signal planned). | `tests/e2e/test_groups_export.py`; `tests/test_comms.py` | partial-conformance (conformant to the `mailto-only` axis pick; richer transports planned) |
-| AC-17 (sourced provenance) | `build/restore_from_knack_scrapefile.py` maps every column to a Knack `field_*` (raw_dump fallback); no contact data introduced beyond the configured Knack source. | `tests/test_database.py`; `build/diff_fellows_db.py` (bytewise vs `fellows.db.backup.2026-04-08`, via `just db-verify`); [`./data_provenance.md`](./data_provenance.md) (human review) | conformant |
+| AC-17 (mirrored data is sourced) | `build/restore_from_knack_scrapefile.py` maps every column to a Knack `field_*` (raw_dump fallback); no contact data introduced beyond the configured Knack source. | `tests/test_database.py`; `build/diff_fellows_db.py` (bytewise vs `fellows.db.backup.2026-04-08`, via `just db-verify`); [`./data_provenance.md`](./data_provenance.md) (human review) | conformant |
 | AC-18 (transports cannot read message contents) | Only `mailto:` / `tel:` offered — no centralized SaaS message broker (Slack/Discord). `mailto:` hands to the user's client; MCP comms only stages a `mailto:` URL. | Architectural / human-review; `tests/test_comms.py` (stage-only, returns `mailto:` URL); `tests/test_private_data_ops.py` (`mode=ro`) | conformant |
 | AC-19 (user-visible payload before send) | Group export panel shows recipients + subject + body + merged data before launch, editable/cancelable; bulk shows recipient count + warning. | `tests/e2e/test_groups_export.py`; `tests/e2e/test_groups_compose.py` | conformant |
 | AC-PRM-A (LLM calls over user data are transports) | Cloud-LLM use is opt-in via the `EX-CLOUD-LLM` exception (consent gate → non-PNA mode); a local model is the default green path. Per-call prompt + merged-data visibility lives in the cloud client's own UI (the user drives Claude Desktop). | `tests/e2e/test_pna_exception_mode.py`; `test_mcpb_settings.py`; see Exception attestation below | partial-conformance (cloud opt-in via per-install consent; per-call prompt visibility is the cloud client's UI, not the workspace's) |
@@ -58,7 +70,7 @@ Cross-referenced to the toolkit's [axes.md](https://github.com/richbodo/personal
 | AC | Triggered by | Realization | Verification | Status |
 |---|---|---|---|---|
 | AC-2 (no SaaS surface) | `dist:web-bundle-with-magic-link` | `deploy/server.py` ships no per-user RW endpoints; the dev server's retired `/api/groups` and `/api/settings` were the only ones that ever existed (Phase 1 cutover). | `tests/test_deploy_auth_round_trip.py::test_directory_api_is_403_without_session`; `test_deploy_sqlite_api.py`; `test_deploy_mcpb_routes.py` | conformant |
-| AC-3 (single OPFS owner) | `storage:opfs-sqlite-wasm` | `app/static/vendor/sqlite-worker.js` is the sole context that calls `navigator.storage.getDirectory` or opens a `FileSystemSyncAccessHandle`. | `tests/e2e/test_worker_rpc.py`; `test_worker_cold_start.py`; `test_local_first_boot.py` | conformant |
+| AC-3 (single OPFS owner) | `storage:opfs-sqlite-wasm` | `app/static/vendor/sqlite-worker.js` is the sole context that calls `navigator.storage.getDirectory` or opens a `FileSystemSyncAccessHandle`. Durable SQL in a browser *forces* this worker-owned, cross-origin-isolated, single-connection architecture — a property of the medium accepted as the substrate's cost, not a defect. (PNT folded the former `CST-PWA-DURABLE-SQL-ARCH` constraint directly into AC-3; the worker-owned-OPFS convention is the handling.) | `tests/e2e/test_worker_rpc.py`; `test_worker_cold_start.py`; `test_local_first_boot.py` | conformant |
 | AC-5 (stale session never locks users out of cache) | `dist:web-bundle-with-magic-link` (auth-gated) | Three-tier `window.__dataProvider` hot-swaps `worker` → `api+idb` on 401/403 mid-boot; the cached directory stays readable. | `tests/e2e/test_offline_only_mode.py::test_401_with_cached_data_shows_directory_from_cache`; `test_search_offline_fallback.py`; `test_local_first_boot.py` | conformant |
 | AC-8 (anti-enumeration + abuse-bounded analytics) | `dist:web-bundle-with-magic-link` + `debug:has-error-sink` | `deploy/server.py` auth endpoints return neutral payloads with per-IP rate limits (`deploy/magic_link_auth.py:check_rate_limit`); the `/api/client-errors` sink is sanitized (`deploy/client_error_sanitizer.py`). See [`./email_gate.md`](./email_gate.md). | `tests/test_magic_link_auth.py`; `test_deploy_auth_round_trip.py`; `test_deploy_client_errors.py`; `test_client_error_sanitizer.py` | conformant |
 | AC-12 (capability detection inside worker) | `storage:opfs-sqlite-wasm` | Worker `init` reports `opfsCapable`; the main thread reads the field and renders the unsupported-browser panel rather than UA-sniffing. | `tests/e2e/test_unsupported_browser.py::test_no_sah_falls_back_to_api_idb_provider`; `test_worker_cold_start.py` | conformant |
@@ -85,44 +97,128 @@ for the upstream-contribution plan (the handler contract `EX-H1..EX-H8`).
 |---|---|---|---|---|---|
 | EX-CLOUD-LLM | PNA-DEFINITION (local-only / never-SaaS), AC-MCP-A; stresses Goal 1 | yes; reversible (mode only) | Workspace-side handler: consent gate in Settings before the user wires up the cloud client (`recordMcpbConsent()`); persistent dismissable "Going rogue — not a PNA" banner naming the exception (`syncNotAPnaBanner()`, `index.html`); in-app explainer `#/exception/EX-CLOUD-LLM` rendering the **per-dimension strength profile** (`PNA_EXCEPTION_STRENGTH` → `renderExceptionPage()`, EX-H8); "Return to PNA mode" control (`returnToPnaMode()`); `<body data-pna-mode/data-pna-exceptions>` machine-readable marker. **EX-H7** consent-to-human propagation is surfaced best-effort via the MCP `instructions` handshake on the data-returning servers (`CLOUD_LLM_PROPAGATION_NOTICE` in `mcp_servers/private_data_ops.py` + `mcp_servers/shared_data_ops.py`); servers stay `mode=ro`, not per-call gated. Code: `app/static/app.js`, `app/static/index.html`, `mcp_servers/`. | `tests/e2e/test_pna_exception_mode.py` (raise/dismiss/persist, banner→explainer, return-to-PNA from explainer + Settings, explainer active/inactive/unknown, `test_explainer_shows_per_dimension_strength_profile`); `tests/e2e/test_mcpb_settings.py`; `tests/test_private_data_ops.py::test_instructions_carry_cloud_llm_propagation_notice`; `tests/test_shared_data_ops.py::test_instructions_carry_cloud_llm_propagation_notice` | conformant for EX-H1–H6 and EX-H8; EX-H7 (consent-to-human) surfaced best-effort via MCP `instructions` |
 
----
+### Constraint attestation
 
-## Constraint attestation
-
-fellows inherits the `CST-PWA-*` family by its `distribution:web-bundle-with-magic-link` ×
-`storage:opfs-sqlite-wasm` picks (see [`constraints.md`](../../spec/constraints.md) and the
-cross-references in [`axes.md`](../../spec/axes.md)). A **Constraint** is a platform-imposed ceiling;
-handling one honestly does **not** exit PNA mode. The realization is the **private-data capability
-gate** ([`../plans/private_data_capability_gate.md`](../plans/private_data_capability_gate.md)):
-private data is live only when a verified folder is attached; off-folder the app is browse-only with
-no durable private store. See [`./architectural_findings.md`](./architectural_findings.md) § 2026-06-01
+A **constraint** (`CST-*`) is the dual of an exception: a platform-imposed
+ceiling, inherited automatically by one or more axis picks, that the app
+must catch and handle honestly via capability reduction — never silently.
+See [`./architectural_findings.md` § 2026-06-01](./architectural_findings.md)
 for the discovery and [`../plans/pna_toolkit_constraints_contribution.md`](../plans/pna_toolkit_constraints_contribution.md)
-for this upstream-contribution plan.
+for the upstream-contribution plan. The realization below is the
+**private-data capability gate** ([`../plans/private_data_capability_gate.md`](../plans/private_data_capability_gate.md)):
+private data (groups, members, fellow tags, fellow notes, group-related
+settings, MCP) is live **only** when a verified folder is attached;
+off-folder the app is **browse-only** (directory + search + open a fellow
++ email/call) with no durable private store.
 
 | CST | Inherited by | Handling (capability reduction) | Frontier | Verification | Status |
 |---|---|---|---|---|---|
-| CST-PWA-PRIVATE-SNAPSHOT | web-bundle × opfs | Folder mode (real file) on Chromium desktop; off-folder there is **no durable private store** — durable private writes are refused at the worker (load-bearing) + page (defense-in-depth), so off-folder is browse-only, not false durability. Manual `.db` export is the portability bridge. Code: `app/static/vendor/sqlite-worker.js` (folder write path + browse-only refusal), `app/static/app.js` (`privateDataEnabled()`, gate). | Open | `tests/e2e/test_private_data_enforcement.py`, `test_browse_only_durability.py`, `test_user_folder_storage.py`, `test_unsupported_browser.py`; `docs/browser_support.md` | handled (frontier Open) |
-| CST-PWA-SANDBOX-SEALED | opfs | Folder mode dissolves the boundary — the private MCP server reads the live file. Off-folder there is no folder-resident private store for an external tool to read; the shared MCP server still reads `fellows.db`; the setup flow warns. Code: folder write path; `mcp_servers/private_data_ops.py` reads an external file `mode=ro`. | Solved-on-chromium | `tests/e2e/test_sandbox_sealed_mcp.py`; `tests/test_private_data_ops.py`; `docs/architectural_findings.md` § 2026-06-01 | handled |
-| CST-PWA-STORAGE-EVICTABLE | opfs | **Avoided** for the private store: nothing durable rides evictable OPFS — folder mode's canonical store is a real on-disk file (outside browser storage), and off-folder only localStorage-grade prefs persist (durable private writes refused). #248 closed the last residual: the worker mints workspace-identity only on the first canonical folder write, so the browse-only settings store is now *literally empty*. Code: `sqlite-worker.js` (browse-only refusal + identity-on-canonical-write), `app.js` prefs. | Avoided | `tests/e2e/test_private_data_enforcement.py` (off-folder settings empty + localStorage-only prefs + on-disk identity guards); AC-9 row | handled (Avoided) |
-| CST-PWA-NO-SYNC | web-bundle × opfs | In-db workspace identity (`workspace_uuid` + monotonic `write_generation` + `device_label`) disambiguates the canonical copy for the content-previewed re-pick chooser; `.db` export is the manual cross-device bridge. Sync explicitly out of scope. Code: `app.js` identity stamp; `sqlite-worker.js`. | Open | `tests/e2e/test_user_folder_storage.py` (reconnect/chooser); `tests/e2e/test_folder_probe.py` (identity stamp) | handled (frontier Open) |
-| CST-PWA-SINGLE-OWNER | opfs | Web Lock `fellows-relationships-folder-write` + `OWNERSHIP_CONFLICT` panel. Code: `sqlite-worker.js` (`isOwnershipConflictError`, locks). | Solved-on-chromium | `tests/e2e/test_user_folder_storage.py::TestPhase2WriteLock`; AC-11 row | handled |
-| CST-PWA-NO-BACKGROUND | web-bundle | Per-boot debounced auto-backup; no scheduled-protection promise. Code: `maybeBackupRelationshipsDb`. | Mitigated | AC-9 row; code inspection | handled |
-| CST-PWA-SERVER-FLOOR | web-bundle | Server bounded to distribution/update only (Never-SaaS); no per-user RW endpoints. Code: `deploy/server.py`. | Inherent | `tests/test_deploy_auth_round_trip.py`; AC-2 row | handled (by bounding) |
+| CST-PWA-PRIVATE-SNAPSHOT | web-bundle × opfs, non-FSA browser | Private store **requires** a verified real file; absent one there is **no** private store (browse-only, not a degraded store). The timestamped `.db` export (`ehf-fellows-private-data-<date>.db`) is the honest **portability bridge** between installs, not a live store. | **Open** (the real fix is a durable cross-platform private store — a future-version architecture change; the gate is the honest handling, not a solution) | `tests/e2e/test_browse_only_durability.py::test_gate_defaults_to_browse_only_without_folder` (gate default); `tests/e2e/test_private_data_enforcement.py::test_browse_only_refuses_create_group`, `tests/e2e/test_private_data_enforcement.py::test_no_durable_private_write_when_browse_only`, `tests/e2e/test_private_data_enforcement.py::test_folder_attached_allows_create_group`, `tests/e2e/test_private_data_enforcement.py::test_permission_lapse_reduces_capability_then_reconnect_restores` (the gate keys off *live* folder permission — capability reduces on a permission lapse and restores on reconnect, so "requires a verified file" holds dynamically, not just at first attach); `tests/e2e/test_private_data_enforcement.py::test_browse_only_refuses_import_relationships_bytes`, `tests/e2e/test_private_data_enforcement.py::test_worker_is_load_bearing_off_folder_via_raw_rpc` (the #261 no-bypass guards: the restore/email-import path is refused, and the **worker itself** — not just the page — refuses every mutating RPC off-folder when driven through the raw worker `_rpc`, so the negative invariant is enforced at the data layer, not UI-only); `browser_support.md` probe; `feature_platform_matrix.md` matrix | **conformant** (as a *handling*): the capability reduction is complete — UI/route reduction **plus** data-layer refusal of off-folder durable writes (worker-side load-bearing + page-side defense-in-depth, PR #244 `d2706a9`, extended in PR #261 to the restore/email-import path with a raw-RPC no-bypass proof; [`../plans/private_data_enforcement.md`](../plans/private_data_enforcement.md)). The negative invariant is now a hard guard, not a strict-xfail. Frontier stays **Open**: this is honest handling, not a durable cross-platform store. |
+| CST-PWA-SANDBOX-SEALED | opfs storage | A verified folder dissolves the sandbox boundary — `relationships.db` becomes a real file the user's other tools (MCP `private_data_ops`, backups, CLIs) read directly. **Off-folder there is no folder-resident private store** for an external tool to read: the durable-write guard (#244) means no canonical `relationships.db` exists off-folder, so the OPFS slot stays sealed and invisible. The Claude Desktop setup flow does **not** hide MCP off-folder — `shared_data_ops` legitimately reads the on-device `fellows.db` — but it surfaces a folder warning naming that the *private* bundle needs a connected folder (or a `.db` export). So off-folder it is the *private* store's external readability that is bounded, handled honestly, not the whole affordance. | **Solved-on-chromium** (folder mode dissolves the boundary); off-folder bounded to shared + manual export | `tests/e2e/test_sandbox_sealed_mcp.py::test_no_folder_resident_private_store_off_folder`, `tests/e2e/test_sandbox_sealed_mcp.py::test_mcp_setup_warns_no_folder_off_folder`, `tests/e2e/test_sandbox_sealed_mcp.py::test_mcp_folder_warning_hidden_when_folder_attached`; `use_with_claude_desktop.md` | conformant |
+| CST-PWA-STORAGE-EVICTABLE | opfs / IndexedDB | **Avoided** for private data — nothing durable lives in evictable OPFS in the first place (browse-only is localStorage-only; folder mode's canonical file is on disk, outside browser storage). Stronger than *mitigated*. | **Avoided** (for private data) | `tests/e2e/test_private_data_enforcement.py::test_prefs_stay_localstorage_only_off_folder`; `tests/e2e/test_private_data_enforcement.py::test_off_folder_settings_are_empty`; `tests/e2e/test_private_data_enforcement.py::test_browse_only_refuses_import_relationships_bytes` (the restore/email-import path can't land a durable private store in evictable OPFS off-folder either — #261 closed this leak at the worker); `tests/e2e/test_private_data_enforcement.py::test_folder_file_on_disk_carries_identity` (byte-level: folder mode's durable home is the on-disk file, opened back as a real SQLite DB — not evictable OPFS); `persistence_and_upgrades.md` state-survival table (browse-only = localStorage-only) | **conformant**: the two prefs (`has_email_only` / `self_email`) are localStorage-only off-folder — the boot reconciles no longer write `settings` to OPFS in browse-only mode (PR #244 `d2706a9`; [`../plans/private_data_enforcement.md`](../plans/private_data_enforcement.md)). #248 closed the last residual: the worker no longer mints workspace-identity metadata into OPFS off-folder either (it's minted only when a store becomes canonical — the first folder write), so the browse-only settings store is now *literally* empty. `test_off_folder_settings_are_empty` is a hard guard, not a strict-xfail. The "Avoided" claim holds in its strongest reading. |
+| CST-PWA-NO-SYNC | web-bundle × opfs | Origin/device-local silos, no built-in portability. The in-db **workspace identity** (`workspace_uuid` + monotonic `write_generation` + `device_label` in the `settings` table) answers "which copy is canonical?" for the content-previewed re-pick chooser; the `.db` export is the manual cross-device bridge. | **Open** (identity stamp + export discipline; no automatic sync) | `tests/e2e/test_user_folder_storage.py` (reconnect/chooser); `tests/e2e/test_folder_probe.py` (identity stamp); `tests/e2e/test_private_data_enforcement.py::test_folder_file_on_disk_carries_identity`, `tests/e2e/test_private_data_enforcement.py::test_folder_backup_on_disk_carries_identity` (byte-level: the canonical-copy identity + monotonic `write_generation` the chooser ranks by are durably in the folder file *and* its backup ring) | conformant: canonical-copy disambiguation shipped (durably on disk, verified byte-level); sync explicitly out of scope |
+| CST-PWA-SINGLE-OWNER | opfs-sqlite-wasm | Multi-tab contention with no OS file lock → Web Locks + ownership-conflict detection guard the canonical folder write. | **Solved-on-chromium** (Web Locks) | `tests/e2e/test_user_folder_storage.py::TestPhase2WriteLock` (folder-write lock) | conformant |
+| CST-PWA-NO-BACKGROUND | web-bundle | No reliable scheduled background execution (esp. iOS) → backups are opportunistic: a per-boot debounced snapshot in folder mode, never a scheduled promise. | **Mitigated** (per-boot debounced; never promise scheduled protection) | `tests/e2e/test_user_folder_storage.py` (per-boot snapshot); `code inspection` (debounce cadence); `persistence_and_upgrades.md` § Auto-backup | conformant: opportunistic-only, honestly framed |
+| CST-PWA-SERVER-FLOOR | web-bundle | Needs an origin + TLS + secure context; true serverless-local is unreachable. Bounded to distribution/update only (Never-SaaS) — no per-user RW state on the server. | **Inherent** (bounded to distribution; Never-SaaS) | `never-saas.md`; `email_gate.md` | conformant by bounding |
 
-> **Honest frontiers.** `Open` rows (`CST-PWA-PRIVATE-SNAPSHOT`, `CST-PWA-NO-SYNC`) are *not solved* —
-> the gate and the identity stamp are honest *handlings*, and the underlying ceilings stand until a
-> future version beats them and documents *how*. fellows claims only what it has done (capability
-> reduction, avoidance, bounding), never that it overcame a ceiling it merely reduced — over-reach
-> (false durability) would itself be a silent conformance failure.
+**Honest frontiers note.** The **Frontier** column is what keeps this
+attestation truthful: `Open` rows (`CST-PWA-PRIVATE-SNAPSHOT`,
+`CST-PWA-NO-SYNC`) are *not solved* — the gate and the identity stamp are
+honest *handlings*, and the underlying ceilings stand until a future
+version beats them and documents *how*. We claim only what we have done
+(capability reduction, avoidance, bounding), never that we overcame a
+ceiling we merely reduced — over-reach (false durability) would itself be
+a silent conformance failure, which this gate exists to prevent.
 
-> **Non-goal — encryption-at-rest for the live private store.** App-layer EAR of `relationships.db`
-> is intentionally **not** done (decision 2026-06-07;
-> [#256](https://github.com/richbodo/fellows_local_db/issues/256)): it is *dominated* by device
-> full-disk encryption and *contradicts* `CST-PWA-SANDBOX-SEALED` — a `.locked` file is unreadable by
-> the MCP / CLI / backup tools folder mode exists to feed, so "encrypted" and "tool-readable" are
-> mutually exclusive. Encryption's sanctioned home is **in-transit** (the encrypted portable export,
-> [#257](https://github.com/richbodo/fellows_local_db/issues/257)); device FDE is the recommended
-> at-rest layer.
+**Non-goal — encryption-at-rest for the live private store.** App-layer
+EAR of `relationships.db` is **intentionally not done** (decision
+2026-06-07; see [`./ac_decisions_log.md`](./ac_decisions_log.md) +
+[`./architectural_findings.md`](./architectural_findings.md),
+[#256](https://github.com/richbodo/fellows_local_db/issues/256)). It is
+*dominated* by device full-disk encryption and *contradicts*
+`CST-PWA-SANDBOX-SEALED` — a `.locked` file is unreadable by the
+MCP/CLI/backup tools folder mode exists to feed, so "encrypted" and
+"tool-readable" are mutually exclusive. Encryption's sanctioned home is
+**in-transit**: the encrypted portable export
+([#257](https://github.com/richbodo/fellows_local_db/issues/257)), where
+the live store stays tool-readable. Device FDE is the recommended at-rest
+layer.
+
+### User-mediation attestation
+
+A third standing invariant sits beneath the AC-16/18/19/10 and AC-MCP/PRM
+families and unifies them: **the human is the actuator; the workspace is the
+locus of ground truth.** Every path that mutates the sovereign store
+(`relationships.db`) or egresses its data routes through a distinct,
+attributable, legible authorization the user performs in a surface they
+control — the *proposer* (an AI, the network, an importer) only **stages**;
+the *principal* **disposes**. This is the dual of the
+[Exception](#exception-attestation-non-pna-mode) (user-raised) and
+[Constraint](#constraint-attestation) (platform-imposed) mechanisms: nothing
+is raised or inherited, it is **always on**, and an un-mediated
+mutation/egress path is a *silent conformance failure* — the same class as an
+undeclared exception or a constraint over-reach. Discovery and the
+testability argument: [`./architectural_findings.md` § 2026-06-07](./architectural_findings.md)
+("the workspace is the user's actuation surface; test the gate, not the
+human"); the upstream-contribution arc and the `UM-1..UM-3` working IDs are
+staged in [`../plans/pna_toolkit_user_mediation_contribution.md`](../plans/pna_toolkit_user_mediation_contribution.md)
+(tracking [#252](https://github.com/richbodo/fellows_local_db/issues/252)).
+
+**The bounded claim (the honest part).** The invariant guarantees
+**separation, legibility, and attribution — not comprehension.** We do not,
+and cannot, probe whether the user understood the diff, and an automation
+driving the workspace can click *Approve* as readily as a person can; the
+enforceable property is a property of the *code* and is actor-agnostic.
+Stating the bound here is deliberate — over-claiming comprehension would be
+the same false-confidence failure this attestation exists to prevent (cf.
+EX-H7, which surfaces consent-to-human best-effort and *attests the residual*
+rather than pretending to close it). The naming choice — *actuator*, not
+*present human* — **is** the testability decision: "is this a human?" is an
+unwinnable detection arms race, and a guarantee built on it is false
+confidence, so none is made here.
+
+#### The three enforceable properties
+
+| Property | What it requires | Verification | Status |
+|---|---|---|---|
+| UM-1 (no bypass) | A **negative invariant**: no path mutates the sovereign store or egresses its data except through the dispose gate. Enforced at the worker/data layer, not UI-only — refused even when driven through the raw worker `_rpc`. | `tests/e2e/test_private_data_enforcement.py::test_worker_is_load_bearing_off_folder_via_raw_rpc`, `::test_no_durable_private_write_when_browse_only`, `::test_browse_only_refuses_import_relationships_bytes` | conformant |
+| UM-2 (separation) | The proposing surface carries **no actuation capability**; dispose is a distinct, attributable event decoupled from the proposer. The MCP servers open both DBs `mode=ro` with no write tools; comms `stage_email` returns a `mailto:` URL and never fires a transport. | `tests/test_private_data_ops.py::test_read_only_enforcement`; `tests/test_comms.py::test_stage_email_basic_to`, `::test_stage_email_bcc_group_send` | conformant |
+| UM-3 (legibility) | The dispose surface renders a **deterministic**, **human-readable** payload (names, not `record_id`s) and **escapes untrusted proposer strings** (the proposer's text is data, never trusted markup). | `tests/e2e/test_groups_export.py::test_html_export_downloads_single_self_contained_file`; `tests/e2e/test_groups_compose.py`; `tests/e2e/test_stored_xss.py::test_group_name_and_note_are_escaped_on_index` | conformant |
+
+#### Mediated-boundary registry
+
+Every mutation/egress boundary fellows exposes, the surface that may only
+*stage* it, the surface where the user *disposes*, and the test that proves
+UM-1/2/3 (or the honestly-named gap). The spec defines the invariant once;
+this design attests its **boundary list**.
+
+| Boundary | Mediates | Proposer → Dispose | Verification | Status |
+|---|---|---|---|---|
+| Create / edit group, `group_members` add/remove | mutation | in-workspace composer (and any future in-workspace AI) → user save; the OPFS-owning worker is the sole applier | `tests/e2e/test_private_data_enforcement.py::test_worker_is_load_bearing_off_folder_via_raw_rpc`, `::test_folder_attached_allows_create_group`, `::test_no_durable_private_write_when_browse_only` | conformant |
+| `mailto:` compose / send | egress:mailto | MCP `comms.stage_email` / compose panel stages a `mailto:` URL + payload preview → the user's mail client launches it | `tests/test_comms.py::test_stage_email_basic_to`, `::test_stage_email_bcc_group_send`; `tests/e2e/test_groups_compose.py` | conformant |
+| Group export (HTML / PDF) | egress:export | export panel renders recipients + subject + body + merged member data before launch → user downloads / launches | `tests/e2e/test_groups_export.py::test_html_export_downloads_single_self_contained_file`; `tests/e2e/test_stored_xss.py::test_group_name_and_note_are_escaped_on_index` | conformant |
+| Directory re-import (shared mirror; touches private FKs) | mutation:reimport | About-page importer stages new `fellows.db` bytes and previews `group_members` orphaned by the swap → user confirms / cancels | `tests/e2e/test_directory_data_update_flow.py::test_apply_with_group_impact_shows_dialog_and_can_cancel`, `::test_apply_with_group_impact_confirm_completes_swap` | conformant |
+| Private-data **restore** (`importRelationshipsBytes`) | mutation:wholesale-replace | file / auto-backup picker stages bytes → user confirms a row-count delta | **UM-1 + UM-2 hold:** off-folder the restore is refused at the worker (`tests/e2e/test_private_data_enforcement.py::test_browse_only_refuses_import_relationships_bytes`); the picker stages, the worker applies. **UM-3 gap:** in folder mode the dispose surface shows only a row-count delta — weaker "what is changing" legibility than AC-10's per-member orphan preview. | partial-conformance (UM-1 + UM-2 hold; UM-3 legibility weaker than AC-10 — frontier [#259](https://github.com/richbodo/fellows_local_db/issues/259)) |
+
+**Frontiers (kept honest, not closed).**
+
+- **Restore legibility ([#259](https://github.com/richbodo/fellows_local_db/issues/259), Open).**
+  Private-data restore is a wholesale replace; its folder-mode dispose surface
+  gives less per-item legibility than a directory re-import. The closure
+  decision (the off-folder durability model plus a Restore-affordance tidy —
+  including a visible-but-erroring off-folder Restore button) is tracked in
+  #259 and is **deferred, not urgent** — surfaced here à la EX-H7 (conformant
+  for the no-bypass / separation half, gap named for the legibility half), not
+  papered over. This attestation does **not** claim #259 closed.
+- **In-workspace AI (frontier line, not a closed guarantee).** "Review happens
+  in a non-AI surface" is true today only **by construction** — the workspace
+  is a vanilla-JS SPA with no embedded agent. The deferred in-app local model
+  and the `window.ai` search affordance are the pressure points. The standing
+  commitment, pinned **before** local-AI lands: **any in-workspace AI is a
+  *proposer* subject to the dispose gate, never an *actuator*.** When such an
+  affordance ships it must enter the registry above as another mediated
+  boundary with its own UM-1/2/3 evidence; until then this is a frontier line,
+  not a conformant row.
 
 ---
 
@@ -412,7 +508,7 @@ Architecture-adjacent docs that specialize one part of the spec or operator surf
 | [`./persistence_and_upgrades.md`](./persistence_and_upgrades.md) | Storage slot — state-survival matrix across Clear App Cache / Reset Everything / app update; auto-backup; restore. |
 | [`./browser_support.md`](./browser_support.md) | Storage slot — capability detection inside the worker, required versions, unsupported-browser surfacing (AC-12). |
 | [`./data_provenance.md`](./data_provenance.md) | Ingestion slot — column-by-column source mapping; backup/restore workflow; recovery paths. |
-| [`./architectural_findings.md`](./architectural_findings.md) | Findings that feed back into the spec — e.g. the cloud-LLM "exception" / non-PNA-mode concept (`EX-CLOUD-LLM`). |
+| [`./architectural_findings.md`](./architectural_findings.md) | Findings that feed back into the spec — the cloud-LLM "exception" / non-PNA-mode concept (`EX-CLOUD-LLM`) and the platform-ceiling **constraints** (`CST-*`) realized by the private-data capability gate (see *Constraint attestation* above). |
 
 ---
 

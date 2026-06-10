@@ -19,6 +19,37 @@
 - No new obligation on any design — the artifact was already required by `CONTRIBUTING.md` § PR
   contents; this is purely a naming/discoverability clarification. `just ci` green.
 
+### Visual Validator: clearer end-user caveat + link to the spec Goals (toolkit fix)
+
+- **`tools/report-viewer/index.html`** — the end-user posture caveat now states what the test
+  *is* ("a measurement of the application's architecture") and what a **good** result means
+  ("its architecture matches the PNA spec closely, and is architecturally aligned with the
+  **goals of a PNA**"), with "goals of a PNA" linked to [`spec/PNA_Spec.md` § Goals](spec/PNA_Spec.md#goals).
+  Rendered as a real `<a>` via the existing `safeLink()` helper (no `innerHTML`); the viewer stays
+  static / zero-dep / engine-agnostic. No render-contract or schema change; the broader plain-language
+  rework of the end-user register is tracked in #62.
+
+### Tier-0 keystone complete: `fellows_local_db` archived with a live `[verify]` entrypoint (toolkit fix)
+
+- **`reference_designs/fellows_local_db/design.toml` flipped `archival = "pending" → "archived"`**,
+  re-pinned to fellows `main` @ **`dc3e0cf`** (the post-#267 state) with `swhid_rev`/`swhid_dir`
+  recomputed by `tools/swh-save.sh` (SH *Save Code Now* request `2352911`, 2026-06-09; SWHIDs are
+  git-content-addressed, so valid independent of async ingest). The `[verify].entrypoint` is now
+  **`just evaluate-report`** — fellows PR #267's deterministic, stdlib emitter that derives a
+  schema-valid `evaluate-report.json` from the attestation table (byte-stable, CI-able). This is the
+  first archived reference design with a reproducible verify command, **activating conformance-suite
+  Phase 4** and satisfying README success criteria 1/4/6.
+- **`reference_designs/fellows_local_db/Architecture.md` re-synced** to the archived commit — picks up
+  fellows' **User-mediation attestation** (UM-1/2/3 + the mediated-boundary registry, #265), the
+  EAR-is-a-non-goal / encrypt-**in-transit** note, and the updated `CST-PWA-*` rows. README SWHIDs
+  reconciled to match the manifest. Authoritative `attestation-evidence-lint` against the fellows
+  checkout is green (every `conformant` row cites live, non-deferred evidence).
+- **`tools/tests/lint_selftest.py`** — re-anchored the two `design.toml` fault-injection cases
+  (archived-without-pin; malformed SWHID) to the new archived manifest, in the same change (lint
+  discipline: a check's self-test moves with the artifact it anchors on). `just ci` green (24/24).
+- No spec/AC/contract change; no new obligation on any design. Manifest *values* changed, not fields,
+  so no `docs/users-guide.md` change is required (the archival flow it documents is unchanged).
+
 ### CI: bump GitHub Actions off Node 20 (toolkit fix)
 
 - Bumped the pinned action majors ahead of GitHub forcing Node 24 on **2026-06-16**:
