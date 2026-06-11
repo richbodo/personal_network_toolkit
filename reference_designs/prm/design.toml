@@ -12,11 +12,11 @@ name = "prm"
 repo = "https://github.com/richbodo/prm"
 toolkit_version = "0.1"
 status = "active"
-archival = "pending"   # → "archived" once SH ingest completes and the SWHIDs below are recorded
+archival = "archived"  # SWHIDs recorded below; Save Code Now ingest requested at pnt-ref-0.1 (a70d35b)
 
-commit    = ""         # filled at archival (tools/swh-save.sh)
-swhid_rev = ""         # swh:1:rev:<commit>
-swhid_dir = ""         # swh:1:dir:<tree>
+commit    = "a70d35bcf5765001322b29d0acdc14b1ae14ae11"      # prm@pnt-ref-0.1 (PR #35 squash-merge to main)
+swhid_rev = "swh:1:rev:a70d35bcf5765001322b29d0acdc14b1ae14ae11"
+swhid_dir = "swh:1:dir:9d73887ae6a3b277a9232a5267be359387edb00f"
 
 [flavor]
 distribution = "never-distributed-single-user"

@@ -4,7 +4,7 @@
   "candidate": {
     "name": "prm",
     "repo_url": "https://github.com/richbodo/prm",
-    "commit": "37806aad0b58bb0f9e0f270916e9ec8ef91ba723",
+    "commit": "a70d35bcf5765001322b29d0acdc14b1ae14ae11",
     "pna_spec_version": "0.1",
     "picks_source": "declared",
     "axis_picks": {
