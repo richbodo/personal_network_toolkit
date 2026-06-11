@@ -17,8 +17,10 @@
   render contract — is **conformant** for the declared flavor: 12 conformant, 2 partial-conformance
   (flagged for human review: `AC-PRM-A`, `AC-MCP-A` — consent + signaling, because an MCP server cannot
   identify the consuming LLM), 4 not-applicable (`comms:none`) across 18 evaluated ACs.
-- **Archival:** `archival = "pending"` until a Software Heritage ingest completes and the SWHIDs are recorded
-  (`tools/swh-save.sh`). The `[verify].entrypoint` is `just conformance` in the canonical repo.
+- **Archival:** `archival = "archived"` — source pinned at `prm@pnt-ref-0.1` (`a70d35b`, the PR [#35](https://github.com/richbodo/prm/pull/35)
+  squash-merge to `main`): `swh:1:rev:a70d35bcf5765001322b29d0acdc14b1ae14ae11`,
+  `swh:1:dir:9d73887ae6a3b277a9232a5267be359387edb00f` (computed via `tools/swh-save.sh`; Save Code Now ingest
+  requested). The `[verify].entrypoint` is `just conformance` in the canonical repo.
 
 ## Summary
 
