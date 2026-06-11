@@ -185,7 +185,7 @@ just swh-save https://github.com/richbodo/fellows_local_db HEAD ~/src/fellows_lo
 ```
 
 - **The 3rd arg (clone path) is required** here: the SWHIDs are computed from that local clone, and without it the script falls back to the toolkit's own repo and prints the *wrong* IDs. *(Shortcut: run the script from inside the design's repo and you can drop it — `~/src/personal_network_toolkit/tools/swh-save.sh <url> <ref>`.)*
-- **`<git-ref>`** is the commit/tag whose attestation you're archiving; it must already be **pushed** so Save Code Now can ingest it. Tag first for a stable ref: `git tag v0.1.1 && git push origin v0.1.1`.
+- **`<git-ref>`** is the commit/tag whose attestation you're archiving; it must already be **pushed** so Save Code Now can ingest it. Tag first for a stable ref: `git tag v0.1.1 && git push origin v0.1.1`. Either an **annotated** (`git tag -a`) or lightweight tag works — `swh-save` peels the ref to its commit, so `swhid_rev` always names the commit (not the annotated-tag object).
 - The command POSTs the Save-Code-Now request (ingest is async — minutes to hours) and prints paste-ready `commit` / `swhid_rev` / `swhid_dir` lines. Put them in the design's `reference_designs/<name>/design.toml` (and its README), then set `archival = "archived"`.
 
 **Conventions** (full list in [`CLAUDE.md`](../CLAUDE.md)):

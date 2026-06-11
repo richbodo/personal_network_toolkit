@@ -17,6 +17,10 @@
 # Examples:
 #   tools/swh-save.sh https://github.com/richbodo/fellows_local_db v0.1.0 ~/src/fellows_local_db
 #   tools/swh-save.sh https://github.com/you/your-pna     # save default branch; no local SWHID computed
+#
+# Env:
+#   SWH_SAVE_NO_REQUEST=1   skip the Save Code Now POST and only compute/print the
+#                           local SWHIDs (offline use; exercised by the self-test).
 set -euo pipefail
 
 URL="${1:?usage: swh-save.sh <repo-url> [git-ref] [local-clone-path]}"
@@ -25,15 +29,19 @@ CLONE="${3:-}"
 URL="${URL%/}"
 SAVE_API="https://archive.softwareheritage.org/api/1/origin/save/git/url/${URL}/"
 
-echo "→ Requesting Software Heritage archival (Save Code Now) for:"
-echo "    ${URL}"
-if curl -fsS -X POST -H 'Accept: application/json' "$SAVE_API"; then
-  echo
-  echo "  queued — track at https://archive.softwareheritage.org/save/ (ingest can take minutes to hours)"
+if [ -n "${SWH_SAVE_NO_REQUEST:-}" ]; then
+  echo "→ SWH_SAVE_NO_REQUEST set — skipping the Save Code Now request; computing SWHIDs only."
 else
-  echo
-  echo "  ⚠ Save request failed (network or rate-limit). Submit manually:"
-  echo "    https://archive.softwareheritage.org/save/  → paste ${URL}"
+  echo "→ Requesting Software Heritage archival (Save Code Now) for:"
+  echo "    ${URL}"
+  if curl -fsS -X POST -H 'Accept: application/json' "$SAVE_API"; then
+    echo
+    echo "  queued — track at https://archive.softwareheritage.org/save/ (ingest can take minutes to hours)"
+  else
+    echo
+    echo "  ⚠ Save request failed (network or rate-limit). Submit manually:"
+    echo "    https://archive.softwareheritage.org/save/  → paste ${URL}"
+  fi
 fi
 
 echo
@@ -45,9 +53,12 @@ elif git rev-parse --git-dir >/dev/null 2>&1; then
   GITDIR="."
 fi
 
-if [ -n "$GITDIR" ] && git -C "$GITDIR" rev-parse "$REF" >/dev/null 2>&1; then
+if [ -n "$GITDIR" ] && git -C "$GITDIR" rev-parse "${REF}^{commit}" >/dev/null 2>&1; then
   fmt=$(git -C "$GITDIR" rev-parse --show-object-format 2>/dev/null || echo sha1)
-  commit=$(git -C "$GITDIR" rev-parse "$REF")
+  # Peel to the commit: `git rev-parse <annotated-tag>` yields the tag *object*
+  # hash, but a swh:1:rev names a revision (a git commit). `^{commit}` is a no-op
+  # for branches / lightweight tags / raw SHAs and unwraps an annotated tag.
+  commit=$(git -C "$GITDIR" rev-parse "${REF}^{commit}")
   tree=$(git -C "$GITDIR" rev-parse "${REF}^{tree}")
   echo "SWHIDs for ${URL} @ ${REF} (${commit:0:12}):"
   echo "  swh:1:rev:${commit}"
