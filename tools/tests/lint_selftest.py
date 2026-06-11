@@ -20,6 +20,7 @@ Exit: 0 if every case behaves as expected, 1 otherwise.
 """
 from __future__ import annotations
 
+import os
 import shutil
 import subprocess
 import sys
@@ -206,6 +207,53 @@ def case_attestation_pytestmark(results: list) -> None:
             ok, "" if ok else f"exit={d.returncode}, missing pytestmark finding in:\n{out}")
 
 
+def case_swh_save_annotated_tag(results: list) -> None:
+    """swh-save.sh must report `swh:1:rev:` as the *commit*, not the annotated-tag
+    object. `git rev-parse <annotated-tag>` returns the tag object's hash, but a
+    SWH revision is the commit it points to. The bug (caught during the prm
+    archival, toolkit PR #65) emitted a tag hash where a commit SHA belonged — a
+    wrong-but-lint-clean SWHID, since swhid_rev still matched the (wrong) commit.
+    This pins the `^{commit}` peel. The network POST is skipped via
+    SWH_SAVE_NO_REQUEST so the test stays offline and never spams Save Code Now."""
+    name = "swh-save.sh: annotated tag → rev is the commit, not the tag object"
+    git = shutil.which("git")
+    if git is None:
+        _record(results, name + " (SKIP: no git)", True, "")
+        return
+    env = {**os.environ,
+           "GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@e.x",
+           "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL": "t@e.x"}
+
+    def g(repo: Path, *a: str) -> subprocess.CompletedProcess:
+        return subprocess.run([git, "-C", str(repo), *a],
+                              capture_output=True, text=True, env=env)
+
+    with tempfile.TemporaryDirectory() as td:
+        repo = Path(td) / "fixture"
+        repo.mkdir()
+        g(repo, "init", "-q")
+        (repo / "f.txt").write_text("x\n")
+        g(repo, "add", "f.txt")
+        g(repo, "commit", "-q", "-m", "c")
+        g(repo, "tag", "-a", "v-test", "-m", "rel")   # annotated — the bug's trigger
+        commit = g(repo, "rev-parse", "v-test^{commit}").stdout.strip()
+        tagobj = g(repo, "rev-parse", "v-test").stdout.strip()
+        if not commit or commit == tagobj:
+            _record(results, name, False,
+                    "fixture did not produce an annotated tag (tag object == commit)")
+            return
+        cp = subprocess.run(
+            ["bash", str(REPO / "tools/swh-save.sh"),
+             "https://example.com/x", "v-test", str(repo)],
+            capture_output=True, text=True,
+            env={**env, "SWH_SAVE_NO_REQUEST": "1"},
+        )
+        out = cp.stdout + cp.stderr
+        ok = (f"swh:1:rev:{commit}" in out) and (f"swh:1:rev:{tagobj}" not in out)
+        _record(results, name, ok, "" if ok else
+                f"expected swh:1:rev:{commit} (commit), not the tag object {tagobj}; got:\n{out}")
+
+
 def _record(results: list, name: str, ok: bool, detail: str) -> None:
     results.append((name, ok, detail))
     print(f"  {'PASS' if ok else 'FAIL'}  {name}")
@@ -234,6 +282,7 @@ def main() -> int:
                       "tools/report-fixtures-lint-fixtures/dirty")
     case_attestation_marker_message(results)
     case_attestation_pytestmark(results)
+    case_swh_save_annotated_tag(results)
 
     passed = sum(1 for _, ok, _ in results if ok)
     total = len(results)

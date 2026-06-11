@@ -2,6 +2,21 @@
 
 ## v0.1 draft (in progress)
 
+### Fix `swh-save.sh` annotated-tag SWHID + add a regression self-test (toolkit fix)
+
+- **`tools/swh-save.sh` derived the commit with `git rev-parse "$REF"`** — which returns the *tag
+  object* hash for an **annotated** tag, not the commit it points to. Archiving from a `git tag -a`
+  ref therefore printed a wrong `commit` / `swhid_rev` (the tag-object hash — a SWH *release* — where a
+  *revision* belongs), and the manifest lint still accepted it because `swhid_rev` matched the (wrong)
+  `commit`. Now peels `^{commit}` (a no-op for branches / lightweight tags / raw SHAs, unwraps an
+  annotated tag); `swhid_dir` was already correct via `^{tree}`. Surfaced while archiving the **prm**
+  reference design from an annotated tag (#65).
+- **`tools/tests/lint_selftest.py`** — new offline regression case builds a throwaway repo with an
+  annotated tag and asserts the emitted `swh:1:rev:` is the commit, not the tag object. The Save Code
+  Now POST is skipped via a new `SWH_SAVE_NO_REQUEST=1` env so `just ci` stays offline and never spams
+  the archive. `just ci` green (25/25).
+- **`docs/users-guide.md`** notes that annotated and lightweight tags both pin the commit.
+- No spec/AC/contract change; no new obligation on any design.
 ### PRM: archival completed — Software Heritage SWHIDs recorded (reference design)
 
 - `reference_designs/prm/` flips `archival = "pending"` → `"archived"` now that prm
