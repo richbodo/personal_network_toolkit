@@ -2,6 +2,32 @@
 
 ## v0.1 draft (in progress)
 
+### Countermeasure library + the Harden sibling: the mitigation side of Exceptions (toolkit fix)
+
+- **`spec/exceptions.md`** — expands **EX-H6** ("recommended solution") into a reusable **Countermeasure
+  library**: a hazard-keyed catalog where each row carries a *hazard*, a *strength class* (reusing the
+  EX-H8 vocabulary, so the existing strength lint covers it), a *locus* (**PNA-intrinsic** vs
+  **environmental**), and a *demonstrator*. Seeded from the data-protection-vs-OS-automation research
+  (R3): consent-at-own-surface, surface minimization, the data-floor, human-presence gating (intrinsic);
+  sandbox-the-agent/`denyRead`, separate-OS-user, MCP per-request/JIT broker, honeytoken+watchdog
+  (environmental).
+- Adds the **environmental-threats / Harden** concept — a *sibling* of Exceptions (a detected hazard the
+  user mitigates with toolkit advice, vs. a user-raised deviation the app handles) — and the four-source
+  taxonomy of pressure on the guarantees (Constraints · Exceptions · Environmental threats ·
+  User-mediation), plus the line *app-security = build/evaluate/contribute; environment-security =
+  harden/advise*. The **Harden** flow's procedure (the advisor skill) is sequenced separately; this
+  establishes the concept and its home beside Exceptions.
+- **At-rest encryption stays deprecated** (re-confirmed by R3): the catalog favors mediating the access
+  path / detecting the intrusion while preserving the PNA's tool-readability promise
+  (`CST-PWA-SANDBOX-SEALED`), not scoped at-rest encryption.
+- **`tools/tests/lint_selftest.py`** — new fault-injection case pins the strength-class check (which had
+  none) against the new catalog's Strength column, closing the same dead-check gap that bit the
+  `Reversible:` check in PR #18. `just ci` green (26/26).
+- **No new obligation on any design** — EX-H6 stays a SHOULD; the catalog is a menu and the Harden flow
+  is advisory. The RFC predicate-split / EX-H7 fail-closed / un-relaxable-floor proposals are
+  **unchanged** (still demonstrator-gated; promotion to normative is tracked separately as a follow-up).
+- **`docs/PriorArt.md` § Design notes** — rationale entry recorded.
+
 ### Fix `swh-save.sh` annotated-tag SWHID + add a regression self-test (toolkit fix)
 
 - **`tools/swh-save.sh` derived the commit with `git rev-parse "$REF"`** — which returns the *tag

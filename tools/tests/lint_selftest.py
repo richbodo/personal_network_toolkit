@@ -88,6 +88,17 @@ SPEC_ID_FAULTS = [
         expect="malformed 'Reversible:",
     ),
     dict(
+        # The strength-class check (collect_strength_violations) had no fault case —
+        # the same dead-check rot that bit the Reversible: check in PR #18. It now
+        # also guards the Countermeasure library's Strength column, so pin it here:
+        # mutate the honeytoken catalog row's (unique) `recoverable-only` strength.
+        name="exceptions: countermeasure-catalog Strength column off the EX-H8 vocabulary",
+        file="spec/exceptions.md",
+        old="| recoverable-only | environmental (Harden) |",
+        new="| made-up-class | environmental (Harden) |",
+        expect="strength-profile names unknown class",
+    ),
+    dict(
         name="contract: Realizes names an AC the spec doesn't define",
         file="contracts/private-db.schema.sql",
         old="Realizes: AC-1, AC-9",

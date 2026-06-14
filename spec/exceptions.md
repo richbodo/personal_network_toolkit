@@ -25,6 +25,12 @@
 > to be demonstrated by the PRM reference design; it **complements, not replaces**, the three here.
 > Inline changes are tagged *(Proposed, RFC)*.
 
+This file also catalogs the **mitigation side** of exceptions — a reusable
+[Countermeasure library](#countermeasure-library) — and names its sibling for adversary-in-the-runtime
+hazards, the advisory [Harden flow](#environmental-threats-and-the-harden-flow). Both are **additive and
+impose no new obligation**: they organize the recommended solutions an exception already names (EX-H6),
+and are **not** part of the RFC above.
+
 ## Concept
 
 An Exception is modeled on a software exception. It is **raised** by a specific user action, must
@@ -142,7 +148,10 @@ each exception it can raise, a conforming PNA:
   Reversibility refers to **MODE ONLY**: a handler MUST NOT imply that returning to PNA mode undoes
   consequences already incurred (e.g. data already disclosed to a third party).
 - **EX-H6 — Recommended solution.** SHOULD name a recommended solution in its registry entry,
-  demonstrated by a reference design.
+  demonstrated by a reference design. Recommended solutions are drawn from the
+  [Countermeasure library](#countermeasure-library) below — a reusable, hazard-keyed catalog — and an
+  exception's entry composes the catalog rows it relies on. The library is a *menu*, not a new
+  obligation: EX-H6 stays a SHOULD.
 - **EX-H7 — Consent reaches the ultimate human; fail closed when it cannot.** *(Proposed, RFC —
   tightens EX-H7 from pure best-effort to fail-closed; a new obligation.)* Where the consuming actor
   is an agent/proxy rather than the ultimate human (e.g. an orchestrator agent invoking the PNA on a
@@ -210,6 +219,103 @@ flow judges accuracy):
 | `recoverable-only` | The app cannot prevent the harm but can undo/restore it. |
 | `none` | No guarantee is possible. |
 
+## Countermeasure library
+
+EX-H6 asks an exception to name a *recommended solution*. Those solutions are not one-off: the same
+hazard — an AI client over-reaching the Private DB, another process reading the store, a proxy
+consenting on the human's behalf — recurs across exceptions and across designs. This section collects
+the recommended solutions into a reusable, **hazard-keyed catalog**: the **mitigation side** of the
+Exceptions mechanism. An exception's `Recommended solution` (EX-H6) composes one or more catalog rows;
+a reference design demonstrates the PNA-intrinsic ones.
+
+A countermeasure is described by four fields, three of which reuse machinery this file already defines:
+
+- **Hazard addressed** — the threat the countermeasure reduces.
+- **Strength** — the honest assurance class, drawn from the **same fixed vocabulary as the strength
+  profile** (EX-H8): `enforced` / `verifiable` / `best-effort` / `provider-asserted` /
+  `recoverable-only` / `none`. A countermeasure that only *reduces* risk says so here; the catalog
+  refuses a collapsed "secure" label exactly as EX-H8 does. (Lint-checked for membership; the evaluate
+  flow judges accuracy.)
+- **Locus — PNA-intrinsic vs environmental.** *Intrinsic* countermeasures are realized by the PNA's own
+  code and tie to a named AC — the toolkit can require them and a design can demonstrate them.
+  *Environmental* countermeasures live in the user's operating environment (the OS, an agent sandbox, a
+  broker process); the PNA's code has no reach there, so the toolkit can only **advise** their adoption
+  — that advice is the [Harden flow](#environmental-threats-and-the-harden-flow). The Locus is why a
+  single hazard can carry both an `enforced` intrinsic row and a `best-effort` environmental row.
+- **Demonstrator** — the reference design (or proposed demonstrator) that exercises the countermeasure,
+  per the toolkit's reference-driven model. Environmental countermeasures are demonstrated by the Harden
+  flow's advice, not by a conformance attestation.
+
+> **On the strength of *environmental* rows.** An environmental countermeasure may be strongly enforced
+> *by the OS* once in place (a separate user account, an honoured `denyRead`), but the toolkit cannot
+> compel a user to deploy it; end-to-end, the assurance the toolkit can stand behind is bounded by
+> adoption, so those rows read `best-effort`. The Locus column carries the nuance the single Strength
+> value can't.
+
+<!-- machine-parsed: the Strength column is validated against the EX-H8 vocabulary by tools/lint-spec-ids.py; keep every value a bare class word. -->
+| Countermeasure | Hazard addressed | Strength | Locus | Demonstrator |
+|---|---|---|---|---|
+| **Consent enforced at the PNA's own surface, fail-closed** — disclosure needs a human action on a surface the PNA controls; refuse when a comprehending human can't be confirmed | A proxy / agent self-consents to a cloud disclosure on the user's behalf | enforced | PNA-intrinsic (AC-MCP-A; EX-H7 fail-closed, *RFC*) | `fellows_local_db` consent gate; fail-closed direction *RFC* |
+| **Surface minimization** — the cloud-facing private surface exposes only the tools a use needs; the most sensitive (notes, comms history) are simply not on it | A connected client reads more of the Private DB than the task needs | verifiable | PNA-intrinsic (AC-MCP-A) | `fellows_local_db` (`private_data_ops` = groups only) |
+| **Data-floor — sealed-by-default disclosure tiers** — most-sensitive fields are unreachable by any cloud-facing surface *by construction*, even with consent | Over-broad disclosure once consent is given | enforced | PNA-intrinsic (AC-MCP-C / PR-7, *proposed*) | PRM v0.2 (proposed; [data-floor note](../docs/design-notes/2026-06-data-floor-disclosure-tiers.md)) |
+| **Human-presence gating** — a fresh human-presence signal is required before private rows are returned | A headless / automated agent drains the Private DB with no human present | best-effort | PNA-intrinsic | none yet (proposed) |
+| **Sandbox the automation agent / `denyRead` the store** — the user confines an OS-automation agent so it cannot read the PNA's data files | An OS-level AI agent with broad filesystem access reads the store out-of-band | best-effort | environmental (Harden) | advisory — Harden flow |
+| **Run the PNA under a separate OS user** — file-permission isolation so an agent running as the primary user cannot read the store | An OS-automation agent reading the store as the primary user | best-effort | environmental (Harden) | advisory — Harden flow |
+| **MCP access broker with per-request / JIT grants** — an intermediary mediates each tool call with a just-in-time, scoped grant the user approves | A connected client over-pulls across a long-lived session | best-effort | environmental (Harden); intrinsic analog AC-MCP-A | advisory — Harden flow |
+| **Honeytoken + watchdog ("claw trap")** — a canary record plus a monitor that detects an unexpected read and raises an alert / triggers a response | An intrusion or rogue process reading the store goes unnoticed | recoverable-only | environmental (Harden) | advisory — Harden + watchdog-advisor skill |
+
+**At-rest encryption is deliberately *not* in this catalog.** Scoping at-rest encryption to "MCP-on"
+windows was considered (and revisited) as a countermeasure; the toolkit's standing decision —
+re-confirmed by the data-protection-vs-OS-automation research that seeded this catalog — is that
+**at-rest encryption stays deprecated** for the live store: it is dominated by full-disk encryption, and
+it contradicts the **tool-readability** the PNA promises (the user can open their own Private DB with
+ordinary SQLite tools; see [`constraints.md`](constraints.md), `CST-PWA-SANDBOX-SEALED`). Every
+countermeasure above was chosen because it **mediates the access path or detects the intrusion while
+preserving readability**, rather than encrypting the data away from its owner.
+
+## Environmental threats and the Harden flow
+
+*Advisory — this section adds no AC and imposes no new obligation on a conforming PNA. It names a
+category of pressure the toolkit responds to by **advising**, not by requiring.*
+
+An Exception is **raised by the user** and **handled by the app** — the software analogy is
+`raise` / `try-except`. Some hazards don't fit that shape: an adversary in the runtime (an OS-automation
+AI agent reading the store, another process opening the DB) is not something the user *raises* and not
+something the app's control flow *catches*. It arrives from outside, like a **signal or interrupt**, and
+defending against it lives mostly in the user's **operating environment**, where the PNA's code has no
+reach — so the toolkit's role is to **advise** which countermeasures work and are appropriate, not to
+mandate one.
+
+That makes **environmental threats a sibling of Exceptions**, not a kind of them. The two share the
+[Countermeasure library](#countermeasure-library) and the strength vocabulary, but differ on who acts:
+
+| Pressure | Raised / detected by | Handled by | Toolkit's role |
+|---|---|---|---|
+| **Exception** (`EX-*`) | the user — a deliberate action | the app — the handler contract | require + a design demonstrates |
+| **Environmental threat** | detection — a hazard appears in the runtime | the user — mitigates in their environment | **advise** — the Harden flow |
+
+This completes a small taxonomy of **the four sources of pressure** on a PNA's guarantees:
+
+- **Constraints** (`CST-*`, [`constraints.md`](constraints.md)) — a *platform* ceiling the PNA inherits.
+- **Exceptions** (`EX-*`, this file) — a *user* relaxation, app-handled.
+- **Environmental threats** (this section) — an *adversary in the runtime*, detected → user-mitigated with toolkit advice.
+- **User-mediation** (proposed; `UM-1/2/3`) — the *actuation* boundary, a human approving before the app acts.
+
+Constraints and Exceptions are duals (a ceiling imposed vs. a guarantee relaxed); environmental threats
+are the third party at the table — neither imposed by the platform nor chosen by the user, but brought
+by an adversary. The toolkit draws a clean line through them:
+
+> **App security is `build` / `evaluate` / `contribute`; environment security is `harden` / advise.**
+> What a *built PNA* must do lives in the ACs (and is checked by the first three flows). Securing the
+> *operating environment the PNA runs in* — compensating controls, monitoring, detect-and-respond — is
+> the **Harden** flow: a fourth, **advisory** toolkit flow that tells the user which environmental
+> countermeasures apply to their hazard and environment, which are in place, and what is still exposed.
+> (Compensating controls and monitor-and-respond echo NIST CSF *Identify → Protect → Detect → Respond*.)
+
+The Harden flow's procedure (the advisor skill) is sequenced separately — see [`roadmap.md`](../docs/roadmap.md);
+this section establishes the **concept** and its place beside Exceptions. The environmental rows of the
+[Countermeasure library](#countermeasure-library) are its catalog.
+
 ## Exception registry
 
 <!-- machine-parsed table — see the EDITING NOTE at the top of this file before changing its columns, headers, or IDs. -->
@@ -235,7 +341,10 @@ server).
 explainer; persistent dismissable "not a PNA right now" signal (EX-H3); runtime active-set explainer
 (EX-H4) surfacing the strength profile below; declared, reversible return-to-PNA-mode path (EX-H5);
 best-effort consent-propagation notice to cloud clients via the MCP `instructions` handshake (EX-H7).
-Demonstrated by `fellows_local_db` (`reference_designs/fellows_local_db/`).
+Demonstrated by `fellows_local_db` (`reference_designs/fellows_local_db/`). These compose
+[Countermeasure library](#countermeasure-library) rows — consent enforced at the PNA's own surface and
+surface minimization (both PNA-intrinsic, demonstrated by `fellows_local_db`), with the proposed
+data-floor (PRM v0.2) as the bounding twin.
 
 **Strength profile (EX-H8):**
 
