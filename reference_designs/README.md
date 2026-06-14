@@ -22,6 +22,7 @@ The skill at [`../pna-build-eval-contrib/SKILL.md`](../pna-build-eval-contrib/SK
 
 ## Accepted designs
 
-- [`fellows_local_db/`](fellows_local_db/) — Directory Archive PNA; magic-link distributed PWA flavor. The design from which most of the v0.1 toolkit was distilled. *(Status: placeholder — SWHID and full AC attestation pending Phase 5 of the reorganization plan.)*
+- [`fellows_local_db/`](fellows_local_db/) — Directory Archive PNA; magic-link distributed PWA flavor (`web-bundle-with-magic-link` + `opfs-sqlite-wasm` + `single-source-static-mirror` + `vanilla-js-spa` + `mailto-only` + `shared+private+comms`). The design from which most of the v0.1 toolkit was distilled, and the originating contributor of the Exceptions and Constraints mechanisms. Accepted 2026-05-31; archived at `dc3e0cf` (`swh:1:dir:d69ecdfbee779a45d8c5a129e6787b623f6bc4c4`).
+- [`prm/`](prm/) — Personal Relationship Manager PNA; never-distributed single-user native-SQLite flavor (`never-distributed-single-user` + `native-sqlite-via-filesystem` + `multi-source-merge-with-dedup` + `vanilla-js-spa` + `none` + `shared-only`). First multi-source-dedup demonstrator (`AC-PRM-B`) and the build-from-verifiable-source distribution case. Accepted 2026-06-10; archived at `pnt-ref-0.1` / `a70d35b` (`swh:1:dir:9d73887ae6a3b277a9232a5267be359387edb00f`).
 
-When a second design lands, it'll be linked here.
+When a further design lands, it'll be linked here.

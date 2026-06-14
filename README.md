@@ -9,7 +9,7 @@ When building a PNA, specs are foundational because users will increasingly comp
 Three deliverables, in dependency order:
 
 1. **Foundational specs.** Universal vocabulary, goals, axes, architectural commitments, and typed contracts for a PNA. — **shipping in v0.1 (draft)**.
-2. **Production-ready reference applications.** Working PNAs you can install, study, and adapt. — first reference design is a distributed directory archive (lives at [richbodo/fellows_local_db](https://github.com/richbodo/fellows_local_db)).
+2. **Production-ready reference applications.** Working PNAs you can install, study, and adapt. — the first two reference designs are a distributed directory archive ([richbodo/fellows_local_db](https://github.com/richbodo/fellows_local_db)) and a Personal Relationship Manager ([richbodo/prm](https://github.com/richbodo/prm)).
 3. **AI tooling — skill + MCP (Model Context Protocol) servers.** How AI agents work with the toolkit. The skill at [`pna-build-eval-contrib/SKILL.md`](pna-build-eval-contrib/SKILL.md) is what an agent reads to consume the spec at design time. The MCP servers (typed contracts in [`contracts/`](contracts/); three v1 stdio implementations in `fellows_local_db/mcp_servers/`) expose an already-built PNA's capabilities at runtime so AI clients (Claude Desktop, Cursor, local Ollama agents) can drive a PNA on the user's behalf.
 
 The PNA Toolkit supports three modes of use, all packaged in the [skill](pna-build-eval-contrib/SKILL.md). **Install it once** so your agent auto-discovers it — symlink the skill into your skills directory (run from your toolkit working directory):
@@ -86,7 +86,18 @@ A reference design is a working, deployed PNA that demonstrates one valid combin
   | MCP-exposure        | `shared+private+comms`        |
 
 
-When a second reference design (e.g. a Personal Relationship Manager) lands, it'll be linked from here.
+- **[prm](https://github.com/richbodo/prm)** — second reference design (accepted 2026-06-10). Personal Relationship Manager use case. Mirrors contacts scattered across Google / Apple / LinkedIn / Facebook / loose vCard / CSV into one user-owned store, deduplicates them, and lets an AI *propose* merges the user applies. First design to exercise multi-source dedup (`AC-PRM-B`) and the `native-sqlite-via-filesystem` substrate (`AC-PRM-C`), and the first build-from-verifiable-source distribution demonstrator. Its [`docs/Architecture.md`](https://github.com/richbodo/prm/blob/main/docs/Architecture.md) carries the AC attestation. Flavor:
+
+  | Axis                | Pick                            |
+  | ------------------- | ------------------------------- |
+  | distribution        | `never-distributed-single-user` |
+  | storage substrate   | `native-sqlite-via-filesystem`  |
+  | ingestion shape     | `multi-source-merge-with-dedup` |
+  | workspace shell     | `vanilla-js-spa`                |
+  | comms transport set | `none`                          |
+  | MCP-exposure        | `shared-only`                   |
+
+When a further reference design lands, it'll be linked from here.
 
 ## Prior Art
 
