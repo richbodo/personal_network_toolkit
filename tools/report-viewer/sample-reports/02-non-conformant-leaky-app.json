@@ -21,7 +21,7 @@
       "ac_id": "AC-1",
       "ac_source": "universal",
       "status": "non-conformant",
-      "goals": [1],
+      "goals": [1, 3],
       "requirement": "Shared data MUST be read-only and externally managed; private data MUST be read-write and locally owned. The two stores MUST occupy separate namespaces and private data MUST NOT leave the device on its own.",
       "citations": [
         { "path": "src/sync.js", "lines": "88-104", "note": "POSTs note bodies to https://telemetry.vendor.example/v1/events on every edit" }
@@ -35,7 +35,7 @@
         },
         {
           "source": "llm",
-          "detail": "The payload includes record_notes rows — private data by definition — so this is a Goal-1 sovereignty violation, not anonymous-counter telemetry."
+          "detail": "The payload includes record_notes rows — private data by definition — so this is a Goal-3 (protect-from-egress) sovereignty violation, not anonymous-counter telemetry."
         }
       ],
       "needs_human_review": false
@@ -44,7 +44,7 @@
       "ac_id": "AC-PRM-A",
       "ac_source": "universal",
       "status": "non-conformant",
-      "goals": [1, 3],
+      "goals": [3],
       "requirement": "Any LLM invocation over Private or Shared data MUST be treated as a transport: a local model is the default; a cloud model MUST be opt-in per call; the user MUST see the prompt and any merged data before send.",
       "citations": [
         { "path": "src/compose.js", "lines": "33-59", "note": "sends private fields to a cloud completion API on keystroke — no consent, no preview" }

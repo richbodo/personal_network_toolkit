@@ -29,7 +29,7 @@ The PNA Toolkit **validates behaviors against the Goals; it does not certify** (
 [`CONTRIBUTING.md`](../CONTRIBUTING.md) § "Acceptance is not certification"). The
 key realization for scope is that **the line is not between "PNA" and "not a
 PNA." It is between "evaluated against the toolkit's Goals" and "evaluated against goals
-the toolkit does not define."** The Goals (Goal 1–5 in
+the toolkit does not define."** The Goals (Goal 1–4 in
 [`PNA_Spec.md`](../spec/PNA_Spec.md)) are a fixed measuring stick. Pointing that
 stick at a non-PNA is legitimate and useful; *inventing new marks on the stick*
 to opine on general "privacy" or "software quality" is the creep that destroys
@@ -64,7 +64,7 @@ wants this, and the toolkit is uniquely positioned to say it precisely, because 
 crisply *defined* what "control of the personal-network root" means.
 
 Worked example — Signal: Goal 3 (user-controlled, content-blind transport) is
-**exemplary**; Goal 2 (a local sovereign root store of your contact graph) is
+**exemplary**; Goal 1 (a local sovereign root store of your contact graph) is
 **out-of-scope** (Signal isn't a root store); contact-graph metadata posture is a
 named, bounded *neutral/diminishes* note. That read is useful and honest. A
 PNA-membership verdict on Signal would be noise — it never claimed membership.

@@ -39,6 +39,13 @@ the others *link* to it rather than re-explaining:
 
 When you add a fact, put it in the doc that owns its category and link from the others.
 
+**Definition before first use.** In a term-defining document (the spec especially, but watch for
+others), a term is defined before it is first used. When you reorder such a doc — e.g. promoting a
+section toward the top — first check that every term the moved section relies on is already defined
+*above* it, and move or add those definitions ahead of it. (Concretely: § Goals and its cardinality
+table lean on *Goal*, *Axis*, *Flavor*, *Slot*, *Sub-contract*, *AC*, *Exception*, *Constraint* — all
+glossed in § Vocabulary, which therefore stays above § Goals.)
+
 ## Conventions
 
 - **Stdlib-only `python3` (3.10+).** No third-party runtime deps — no `pytest`, no

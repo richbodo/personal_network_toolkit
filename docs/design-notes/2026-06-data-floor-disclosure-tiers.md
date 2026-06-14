@@ -51,7 +51,7 @@ is at the **storage/query layer**, not the UI (per [`../../spec/constraints.md`]
 projection/view that physically selects only `private-shareable-on-consent` columns in the active
 projection.
 
-### `AC-MCP-C` (proposed universal AC; Serves Goal 1)
+### `AC-MCP-C` (proposed universal AC; Serves Goal 3)
 
 *A cloud-facing MCP surface MUST be projection-bound: it MUST expose only `private-shareable-on-consent`
 fields that the user has placed in a curated projection, and MUST be incapable — at the tool-schema and
