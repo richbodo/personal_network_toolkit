@@ -1,6 +1,6 @@
 ---
 name: pna-build-eval-contrib
-description: 'Use when building, extending, or evaluating a Personal Network Application (PNA) — local-first, private-by-default applications that mirror SaaS contact data into a user-owned workspace and operate on relationship data with no remote authority. Triggers on requests to build a local-first contact app, relationship manager, private CRM-like tool, or any app built around personal-network data; on requests to audit an existing application for PNA-spec conformance ("is this app safe to install?", "does my app conform?"); and on requests to contribute back to the PNA Toolkit — either a reference design, or (the common case) a lighter toolkit fix to the spec/tooling/docs. Three flows: build a conformant PNA from the spec, evaluate whether an existing application conforms, and contribute back to the toolkit (reference design or toolkit fix).'
+description: 'Use when building, extending, or evaluating a Personal Network Application (PNA) — local-first, private-by-default applications that mirror SaaS contact data into a user-owned workspace and operate on relationship data with no remote authority. Triggers on requests to build a local-first contact app, relationship manager, private CRM-like tool, or any app built around personal-network data; on requests to audit an existing application for PNA-spec conformance ("is this app safe to install?", "does my app conform?"); on requests to contribute back to the PNA Toolkit — either a reference design, or (the common case) a lighter toolkit fix to the spec/tooling/docs; and on requests to harden the operating environment a PNA runs in against runtime adversaries (an OS-level AI agent or another local process reaching the data out-of-band). Four flows: build a conformant PNA from the spec, evaluate whether an existing application conforms, contribute back to the toolkit (reference design or toolkit fix), and harden the environment a PNA runs in (advisory).'
 ---
 
 # Building, Evaluating, and Contributing to PNAs
@@ -14,7 +14,7 @@ The PNA Toolkit itself is a *generative + evaluative* application-class blueprin
 - **Generative.** AI agents read it to build conformant PNAs. The spec + contracts + reference designs are the materials.
 - **Evaluative.** AI agents read it to evaluate whether an existing application conforms. The user trusts the spec; they want to know whether a specific candidate honors it.
 
-This skill covers three flows: **build**, **evaluate**, **contribute**. Use whichever the user's request fits.
+This skill covers four flows: **build**, **evaluate**, **contribute**, and **harden** (advisory). Use whichever the user's request fits. The first three secure what the *built PNA* does (checked by the ACs); **harden** secures the *operating environment* the PNA runs in (advisory — it recommends environmental countermeasures, adds no AC, awards no pass/fail).
 
 ## Build flow
 
@@ -66,7 +66,7 @@ Inputs: a candidate PNA's source tree (or a description sufficient to read its b
    - `unable-to-determine` — with explanation; defaults to flagging for human review.
 
    Each finding may also carry `evidence` entries tagged by `source` (`deterministic` / `llm` / `human`). When a deterministic check in `tools/` (e.g. the egress lint) has run against the candidate, fold its output in as a `source: deterministic` evidence entry on the AC it bears on, so the deterministic and LLM layers land on one finding.
-8. **Summarize at the top** (the artifact's `summary` object): overall posture and the most concerning non-conformances. Goals 1–5 are the load-bearing user-facing concerns — anything compromising private-data sovereignty (Goal 1), sourced-data honesty (Goal 2), user-controlled communication (Goal 3), durability (Goal 4), or local diagnosability (Goal 5) leads the summary.
+8. **Summarize at the top** (the artifact's `summary` object): overall posture and the most concerning non-conformances. Goals 1–4 are the load-bearing user-facing concerns — anything compromising ownership of the root (Goal 1), integrity-by-validation (Goal 2 — which absorbs sourced-data honesty and local diagnosability), protection from egress / private-data sovereignty / user-controlled communication (Goal 3), or durability against entropy and accidents (Goal 4) leads the summary.
 
 Callers may ask you to emphasize specific Goals or axes at runtime (e.g., "focus on private-data sovereignty"). Treat that as a hint for the summary, not a structural variation.
 
@@ -143,6 +143,18 @@ Use when the change is to the toolkit's own artifacts and imposes **no** new con
 4. **Add a `CHANGELOG.md` entry.**
 5. **Record the rationale if it's a decision.** A toolkit fix that *chooses a direction* (adds or declines something, with reasoning worth preserving) appends an entry to [`docs/PriorArt.md` § Design notes](../docs/PriorArt.md) — the recurring log of toolkit-change rationale for contributions that aren't reference designs. A pure typo/mechanical fix doesn't need one.
 6. **Open the PR.** Check the **Toolkit fix / docs / tooling** box in the Type section and complete the toolkit-fix checklist; no reference-design checklist applies.
+
+## Harden flow
+
+Use when the user wants to secure the **operating environment** their PNA runs in — not the app's own conformance (that's *evaluate*), but the runtime around it: an OS-level AI agent that can read files, another local process that can open the DB, a shared machine. Harden is **advisory** — it recommends environmental countermeasures and reports what is covered vs. exposed; it adds no AC and awards no pass/fail. The line the toolkit draws: *app security is `build` / `evaluate` / `contribute`; environment security is `harden` / advise.* What a built PNA must do lives in the ACs; securing the environment it runs in — compensating controls, monitor-and-respond, echoing NIST CSF *Identify → Protect → Detect → Respond* — is this flow.
+
+Background and catalog: [`spec/exceptions.md` § Environmental threats and the Harden flow](../spec/exceptions.md) and its [§ Countermeasure library](../spec/exceptions.md). An *environmental threat* is the third source of pressure on a PNA's guarantees (alongside Constraints and Exceptions): an adversary in the runtime — detected, not user-`raise`d, and mitigated in the user's environment where the app's code has no reach.
+
+1. **Identify the environment and its hazards.** With the user, characterize where the PNA runs and which runtime adversaries it is exposed to: OS-automation AI agents with filesystem / MCP reach, other local processes that can open the store, shared or multi-user machines, long-lived MCP client sessions that over-pull. Each is an environmental threat — arriving like a signal/interrupt from outside the app's control flow.
+2. **Map each hazard to the Countermeasure library.** Read the **environmental** rows of `spec/exceptions.md` § Countermeasure library. For each applicable countermeasure, report its **strength class** (the EX-H8 vocabulary — `enforced` / `verifiable` / `best-effort` / `provider-asserted` / `recoverable-only` / `none`) and its demonstrator. The catalog seeded from the data-protection-vs-OS-automation research (R3): **sandbox the agent / `denyRead`** the store; run the PNA **under a separate OS user**; an **MCP access broker with per-request / JIT grants**; a **honeytoken + watchdog** ("claw trap") for detect-and-respond; **human-presence gating**. (At-rest encryption stays deprecated — mediate the access path or detect the intrusion while preserving the PNA's tool-readability, don't encrypt the bytes.)
+3. **Name the PNA-intrinsic analogs.** Some hazards already have an in-app guard the built PNA provides — e.g. AC-MCP-A's per-call consent is the intrinsic analog of an external MCP broker. Tell the user where the app already covers the hazard so they don't double-pay; environmental countermeasures fill the gap the app's code cannot reach.
+4. **Report the Protect / Detect / Respond posture, honestly.** For the user's environment, state which countermeasures are **in place**, which **apply but aren't**, and what is **still exposed** — each with its strength class, so `best-effort` and `recoverable-only` are not read as "solved." The output is advisory: no grade, no AC status.
+5. **Advise, don't mandate.** The user mitigates in their own environment; the toolkit's value is telling them *which* countermeasures work and are appropriate (complex to know), not requiring one. Where a countermeasure could become a PNA-intrinsic AC, that is a *contribute*-flow proposal (demonstrator-gated per `CONTRIBUTING.md`), not a Harden output.
 
 ## Principles to honor in every flow
 

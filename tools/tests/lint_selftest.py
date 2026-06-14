@@ -151,6 +151,23 @@ SPEC_ID_FAULTS = [
         new='swhid_dir = "swh:1:dir:not-a-real-hash"',
         expect="malformed",
     ),
+    dict(
+        # The 4-goal renumber is otherwise unguarded: a 'Serves' cell pointing at a goal
+        # the spec no longer defines must fail loudly (check 9, collect_goal_ref_violations).
+        name="goals: AC 'Serves' references an undefined goal",
+        file="spec/PNA_Spec.md",
+        old='| Goal 4 | <a id="ac-4"></a>AC-4 |',
+        new='| Goal 9 | <a id="ac-4"></a>AC-4 |',
+        expect="not a defined goal",
+    ),
+    dict(
+        # The cardinality cap (one primary + at most one cross-cut): a third goal on one AC fails.
+        name="goals: AC 'Serves' exceeds the two-goal cardinality cap",
+        file="spec/PNA_Spec.md",
+        old='| Goal 1, Goal 3 | <a id="ac-1"></a>AC-1 |',
+        new='| Goal 1, Goal 2, Goal 3 | <a id="ac-1"></a>AC-1 |',
+        expect="cardinality cap",
+    ),
 ]
 
 

@@ -77,7 +77,7 @@ We position this method in a white space bounded by **four mature traditions**, 
 - **The layered object.** The spec is layered: **Goals** (human-readable outcomes) → **Constraints** (the human-readable layer that motivates the architectural layer) → **Architectural Commitments (ACs)** (stable-ID'd, RFC-2119, the unit of identity) → **typed contracts** (JSON Schema / OpenAPI / SQL DDL / TypeScript) that *realize* named ACs. Under ACs sit platform-ceiling constraints (`CST-*`) and user-relaxable **Exceptions** (`EX-*`).
 - **Variability.** A PNA *varies* along **axes** (e.g. distribution, storage substrate, ingestion shape, workspace shell, comms transport set, MCP-exposure); each **pick** (flavor) triggers flavor-derived ACs. Use "variable language" about axis counts (the set may evolve) — this itself is a feature-modeling instinct.
 - **Reference designs.** Working, deployed PNAs that demonstrate one valid combination of picks: `fellows_local_db` (Directory Archive) and `prm` (Personal Relationship Manager). Each is archived (Software Heritage SWHID) and carries an AC attestation table.
-- **Three flows, one skill.** **Build**, **evaluate**, **contribute** are packaged as an Anthropic **Agent Skill** (`pna-build-eval-contrib/SKILL.md`) that an agent auto-discovers.
+- **Four flows, one skill.** **Build**, **evaluate**, **contribute** — the generative + evaluative + feedback loop — plus an advisory fourth, **harden** (secure the *operating environment* a PNA runs in; adds no AC, awards no pass/fail), are packaged as an Anthropic **Agent Skill** (`pna-build-eval-contrib/SKILL.md`) that an agent auto-discovers.
 - **The toolkit is versioned as a unit** (VERSION `0.1.0-draft`); every artifact carries a `Toolkit-Version:` stamp.
 
 **Citations**
@@ -191,7 +191,7 @@ We position this method in a white space bounded by **four mature traditions**, 
   3. **Human** — PR review is the deliberately-non-automated judgment gate.
   Investment is ~80/20 toward description-and-process over a bespoke test runner.
 - **Honest deferrals as a method rule.** A guarantee the code doesn't yet deliver must be an explicit in-artifact status (a strict-`xfail` with a tracking issue, a `partial`/`Open` attestation, a CHANGELOG "deferred" note) — never a bare comment that *claims* the property. "Convert an absent guarantee into a red test (or a lint failure), never a silent pass" is the method's spine and is independently echoed by the SDD field.
-- **Packaging.** All three flows ship as one Anthropic Agent Skill; progressive disclosure (name+description always loaded; body on demand) is what makes a class blueprint *discoverable by an agent without context cost*.
+- **Packaging.** All four flows (the three conformance flows + the advisory **harden** flow) ship as one Anthropic Agent Skill; progressive disclosure (name+description always loaded; body on demand) is what makes a class blueprint *discoverable by an agent without context cost*.
 
 **Citations**
 - Internal: `pna-build-eval-contrib/SKILL.md`; `tools/lint-spec-ids.py`, `tools/egress-lint.py`, `tools/attestation-evidence-lint.py`, `tools/evaluate-report.schema.json`; `CONTRIBUTING.md`; `CLAUDE.md` (lint discipline + honest deferrals).

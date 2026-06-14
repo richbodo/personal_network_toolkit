@@ -196,7 +196,7 @@ They appear in an exception's registry entry and in a reference design's handler
   `Reversal:` field MUST follow naming the mechanism (a route, control, or code reference the
   validation flow can confirm). See EX-H5.
 - **`Stresses:`** *(optional, non-normative)* — a Goal the exception puts under pressure without
-  strictly relaxing a single AC. Example: `Stresses: Goal 1`.
+  strictly relaxing a single AC. Example: `Stresses: Goal 3`.
 
 ## Strength profiles
 
@@ -321,13 +321,13 @@ this section establishes the **concept** and its place beside Exceptions. The en
 <!-- machine-parsed table — see the EDITING NOTE at the top of this file before changing its columns, headers, or IDs. -->
 | Name | Relaxes | Stresses | Reversible | Recommended solution | EX |
 |---|---|---|---|---|---|
-| Cloud-hosted AI over PNA data | PNA-DEFINITION, AC-MCP-A | Goal 1 | yes (mode only) | consent gate + persistent dismissable "not a PNA" signal + active-set explainer + return-to-PNA-mode — demonstrated by `fellows_local_db` | EX-CLOUD-LLM |
+| Cloud-hosted AI over PNA data | PNA-DEFINITION, AC-MCP-A | Goal 3 | yes (mode only) | consent gate + persistent dismissable "not a PNA" signal + active-set explainer + return-to-PNA-mode — demonstrated by `fellows_local_db` | EX-CLOUD-LLM |
 
 <a id="ex-cloud-llm"></a>
 ### EX-CLOUD-LLM — Cloud-hosted AI over PNA data
 
 **Relaxes:** PNA-DEFINITION, AC-MCP-A
-**Stresses:** Goal 1
+**Stresses:** Goal 3
 **Reversible:** yes
 **Reversal:** mode only — the user disconnects the cloud MCP client and returns to PNA mode.
 Returning to PNA mode does NOT undo any disclosure already made to the cloud provider (EX-H5).

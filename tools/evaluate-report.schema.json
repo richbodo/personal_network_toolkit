@@ -3,7 +3,7 @@
   "$id": "https://pna-spec.example/v0.1/evaluate-report.schema.json",
   "$comment": "Toolkit-Version: 0.1.",
   "title": "PNA Toolkit evaluate-report artifact",
-  "description": "Machine-comparable form of the report produced by the skill's evaluate flow (pna-build-eval-contrib/SKILL.md § Evaluate flow). Keyed by AC ID so two runs on the same candidate can be diffed to show exactly which ACs changed status. The human-readable report is a rendering (a view) over an instance of this schema; this artifact is the source of truth. This is NOT a PNA interface contract — it realizes no AC and intentionally lives in tools/, not contracts/ (the lint-spec-ids check requires every file in contracts/ to name an AC it realizes; this one realizes none). It is the typed output of the toolkit's own evaluative tooling. Deterministic checks in tools/ (for example the egress lint) emit evidence entries with source=deterministic that an LLM evaluator folds into the relevant AC finding alongside its own source=llm evidence; source=human covers maintainer or reviewer judgement. Goals 1-5 (see spec/PNA_Spec.md § Goals) are the load-bearing user-facing concerns and drive the summary.",
+  "description": "Machine-comparable form of the report produced by the skill's evaluate flow (pna-build-eval-contrib/SKILL.md § Evaluate flow). Keyed by AC ID so two runs on the same candidate can be diffed to show exactly which ACs changed status. The human-readable report is a rendering (a view) over an instance of this schema; this artifact is the source of truth. This is NOT a PNA interface contract — it realizes no AC and intentionally lives in tools/, not contracts/ (the lint-spec-ids check requires every file in contracts/ to name an AC it realizes; this one realizes none). It is the typed output of the toolkit's own evaluative tooling. Deterministic checks in tools/ (for example the egress lint) emit evidence entries with source=deterministic that an LLM evaluator folds into the relevant AC finding alongside its own source=llm evidence; source=human covers maintainer or reviewer judgement. Goals 1-4 (see spec/PNA_Spec.md § Goals) are the load-bearing user-facing concerns and drive the summary.",
   "type": "object",
   "required": ["report_schema_version", "candidate", "summary", "findings"],
   "additionalProperties": false,
@@ -44,21 +44,21 @@
     },
     "summary": {
       "type": "object",
-      "description": "Top-of-report posture. Per SKILL.md, anything compromising Goals 1-5 leads here.",
+      "description": "Top-of-report posture. Per SKILL.md, anything compromising Goals 1-4 leads here.",
       "required": ["posture", "headline"],
       "additionalProperties": false,
       "properties": {
         "posture": {
           "enum": ["conformant", "non-conformant", "mixed", "indeterminate"],
-          "description": "conformant = no non-conformances found and nothing left undetermined. non-conformant = at least one Goal 1-5 AC is non-conformant. mixed = some non-conformances but none on Goals 1-5, or non-conformances coexisting with conformant findings. indeterminate = too many unable-to-determine findings to take a posture."
+          "description": "conformant = no non-conformances found and nothing left undetermined. non-conformant = at least one Goal 1-4 AC is non-conformant. mixed = some non-conformances but none on Goals 1-4, or non-conformances coexisting with conformant findings. indeterminate = too many unable-to-determine findings to take a posture."
         },
         "headline": {
           "type": "string",
-          "description": "One- or two-sentence prose summary a human reads first. Should name the most concerning non-conformances, Goals 1-5 first."
+          "description": "One- or two-sentence prose summary a human reads first. Should name the most concerning non-conformances, Goals 1-4 first."
         },
         "leading_concerns": {
           "type": "array",
-          "description": "AC IDs (matching findings[].ac_id) the summary calls out as most concerning, in priority order. Typically the Goal 1-5 non-conformances.",
+          "description": "AC IDs (matching findings[].ac_id) the summary calls out as most concerning, in priority order. Typically the Goal 1-4 non-conformances.",
           "items": { "$ref": "#/$defs/ac_id" }
         }
       }
@@ -124,8 +124,8 @@
         },
         "goals": {
           "type": "array",
-          "description": "Which top-level Goals (1-5) this AC bears on. Used to compute summary.posture and order leading_concerns.",
-          "items": { "type": "integer", "minimum": 1, "maximum": 5 }
+          "description": "Which top-level Goals (1-4) this AC bears on. Used to compute summary.posture and order leading_concerns.",
+          "items": { "type": "integer", "minimum": 1, "maximum": 4 }
         },
         "requirement": {
           "type": "string",
