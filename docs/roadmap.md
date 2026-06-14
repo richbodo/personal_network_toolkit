@@ -18,8 +18,9 @@
   `[verify]` entrypoint; **PRM is accepted + archived as the 2nd reference design** (2026-06-10). Both
   reference designs are live. `VERSION` stays `0.1.0-draft` until the v0.2 cut (Tier 0).
 - **New direction (2026-06-14 strategy session — captured in the brainstorm):**
-  - **Goals restructured to FOUR**, app-framed and at outcome altitude: **G1 Own the root · G2
-    Integrity, by validation · G3 Govern what data leaves (egress) · G4 Survive entropy & accidents**,
+  - **Goals restructured to FOUR**, app-framed and at outcome altitude: **G1 Take ownership of the root ·
+    G2 Protect the root's integrity, by validation · G3 Protect the root from egress · G4 Protect the
+    root from entropy & accidents**,
     each gaining a readable *"constraints that fall out"* layer (a plain-language view of the ACs that
     serve it). (Durability became a distinct *protect-from-loss* goal; diagnosability folded into G2 as
     *validatability*; usability → a preamble assumption above the goals.)

@@ -2,6 +2,35 @@
 
 ## v0.1 draft (in progress)
 
+### Goals restructured 5 → 4, app-framed at outcome altitude (toolkit fix)
+
+- **`spec/PNA_Spec.md`** — the goal layer is re-pitched as **four** outcome-altitude goals, each with a
+  per-goal template (outcome → example mechanism → why it matters → the plain-language ACs it requires):
+  **G1 Take ownership of the root · G2 Protect the root's integrity, by validation · G3 Protect the root
+  from egress · G4 Protect the root from entropy & accidents.** Old G2 (local root) → G1; old G5
+  (diagnosability) folds into G2; old G1 (privacy) + old G3 (communication) merge into G3 (egress); old G4
+  (durability) → G4. Usability is named as a preamble assumption *above* the goals. **No AC's requirement
+  changes** — a re-presentation, no new obligation on any design.
+- **AC ↔ Goal is many-to-many, rendered primary-grouped.** A new **cardinality note** ("How the pieces fit
+  together") states how every spec component relates, and the AC table's `Serves` column is re-mapped from
+  the goal categorization (AC-1 → Goal 1, Goal 3; AC-10 → Goal 1, Goal 4; AC-17 → Goal 2 [provenance =
+  data-validation]; AC-MCP-A → Goal 2, Goal 3). Cross-cuts are capped at two.
+- **§ Vocabulary** gains *Architectural commitment, Constraint, Exception, Goal, Sub-contract* glosses
+  (definition-before-first-use, now a rule in **`CLAUDE.md`**) so the Goals + cardinality table are grounded.
+- **`tools/lint-spec-ids.py` (check 9, + 2 fault-injection self-tests)** — validates every `Goal N`
+  reference (the AC `Serves` column, constraints' `Bounds:`, exceptions' `Stresses:`) resolves to a
+  `### Goal N` the spec defines, and enforces the two-goal cardinality cap. Guards the renumber against
+  silent rot.
+- **Ripples carried through** `exceptions.md` (`Stresses`), the `evaluate-report.schema.json` goal range
+  (max 5 → 4), `SKILL.md` / `users-guide.md` (the Goals-1–N enumeration), the Visual Validator's
+  `GOAL_NAMES`, the three sample reports' `goals` arrays, both reference-design Architecture copies
+  (`stresses Goal 1` → `Goal 3`), `conformance-scope-and-lifecycle.md`, `PriorArt.md`, the data-floor note,
+  the `roadmap.md` labels, the egress-lint docstring, and `README.md` positioning. Downstream Architecture
+  re-syncs are tracked in fellows #284 / prm #38. `just ci` green (28/28).
+- Toolkit-Version stays **0.1-draft** (a re-presentation; no new obligation). Deferred to a fast-follow:
+  demoting § Vision below the Goals + the deeper preamble rework.
+- **`docs/PriorArt.md` § Design notes** — rationale entry recorded.
+
 ### Countermeasure library + the Harden sibling: the mitigation side of Exceptions (toolkit fix)
 
 - **`spec/exceptions.md`** — expands **EX-H6** ("recommended solution") into a reusable **Countermeasure

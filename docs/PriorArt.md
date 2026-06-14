@@ -179,6 +179,24 @@ These references inform the toolkit's design without constraining it to any of t
 
 A running log of toolkit-shaping decisions and their rationale — most often a mapping of the toolkit against the prior art above driving a spec change (or a deliberate decision *not* to make one), but also discipline and tooling decisions distilled from a real finding in a reference design. This is where the *why* of a toolkit fix lives when it isn't itself a reference design. Newest first; each entry is dated and names what it changed.
 
+### 2026-06 — Goals restructured 5 → 4 (outcome altitude; mechanism ≠ goal)
+
+The goal layer read as a list of *mechanisms* ("store two databases", "locally diagnosable") rather than
+*outcomes*, which invited mis-filing and made the goals do little partitioning work. Restructured to four
+app-framed, outcome-altitude goals — **Take ownership of the root · Protect the root's integrity by
+validation · Protect the root from egress · Protect the root from entropy & accidents** — each with a
+readable per-goal template (outcome → example mechanism → why it matters → the ACs it requires), validated
+by an AC→goal categorization (all 25 ACs fit; ~92% single-home). Privacy/disclosure and communication
+merged into one *egress* goal (both are "control what leaves the root"); diagnosability folded into
+validation; durability kept as its own *protect-from-loss* goal; usability promoted to a preamble
+assumption above the goals. **Goal ↔ AC is many-to-many, rendered primary-grouped** — each AC has one
+primary home plus at most one cross-cut (capped and now lint-enforced) — and a new cardinality note states
+how every spec component relates (rule of thumb: Goals are few and crisp; everything beneath composes
+many-to-many, but the reading views stay clean trees). No AC requirement changed (a re-presentation, no
+new obligation; Toolkit-Version stays 0.1-draft). A new lint check (check 9) plus the
+**definition-before-first-use** rule (memorialized in `CLAUDE.md`) keep the renumber from silently
+rotting. Worked out in the 2026-06-14 direction session.
+
 ### 2026-06 — The mitigation side of Exceptions: a countermeasure library + the Harden sibling
 
 The Exceptions mechanism made *declaring* a deviation honest; it said little about *defending* against
@@ -254,8 +272,8 @@ Mapping the spec against the Ink & Switch [*local-first software*](https://www.i
 | 3. Network is optional (offline) | Strong yes. AC-5 cached fallback, AC-PRM-D no background polling, Browser PNAs run offline by construction. | Aligned |
 | 4. Seamless collaboration (real-time multi-user) | Not a goal. PNAs are personal. A Directory Archive ships the same Shared DB to many users with independent Private overlays, but no merge, no CRDT, no real-time. | Deliberately not in scope |
 | 5. The Long Now (longevity) | Strong, arguably more concrete than I&S. SWHID archival of reference designs is mandatory. AC-2 forbids a SaaS surface on the distribution server. The Distribution slot is optional — a single-user PNA runs forever with no server. | Aligned, arguably stronger |
-| 6. Security and privacy by default | Stronger than I&S on the network threat: the Private DB never leaves the device (Goal 1) — more absolute than I&S's E2E-encrypted *sync*. AC-18, AC-19, AC-PRM-A, AC-MCP-A. **At-rest-against-local-access is the one gap — and a deliberate scope decision, not a missing AC** (see below). | Stronger on the network threat; at-rest deliberately out of scope |
-| 7. Ultimate ownership and control | Aligned and explicit. Goal 5 requires source availability to the user — stronger than I&S, which said open source isn't required. AC-2 prevents architectural lock-in; PR-5 idempotent backup/restore. **Gap closed by PR-6:** the export is now a format a non-developer can open in another tool, not just "your data is in a SQLite file." | Aligned; export-format gap closed |
+| 6. Security and privacy by default | Stronger than I&S on the network threat: the Private DB never leaves the device (Goal 3) — more absolute than I&S's E2E-encrypted *sync*. AC-18, AC-19, AC-PRM-A, AC-MCP-A. **At-rest-against-local-access is the one gap — and a deliberate scope decision, not a missing AC** (see below). | Stronger on the network threat; at-rest deliberately out of scope |
+| 7. Ultimate ownership and control | Aligned and explicit. Goal 2 (integrity-by-validation) requires source availability to the user — stronger than I&S, which said open source isn't required. AC-2 prevents architectural lock-in; PR-5 idempotent backup/restore. **Gap closed by PR-6:** the export is now a format a non-developer can open in another tool, not just "your data is in a SQLite file." | Aligned; export-format gap closed |
 
 **What it drove:**
 

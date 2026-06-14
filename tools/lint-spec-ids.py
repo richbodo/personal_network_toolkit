@@ -36,6 +36,10 @@ Checks:
      the commit) + a verify entrypoint; a `pending` design may defer those but
      any present value must still be well-formed. A design dir with an
      Architecture.md must have a manifest.
+  9. Every 'Goal N' reference resolves to a goal the spec defines (a '### Goal N'
+     heading in PNA_Spec.md), checked on the AC table's 'Serves' column, constraints'
+     'Bounds:', and exceptions' 'Stresses:'; and no AC's 'Serves' names more than two
+     goals (the primary + at-most-one-cross-cut cardinality cap).
 
 The lint validates the *shape* of declarations (presence + ID/vocabulary/
 version resolution), not their behavioral correctness — that is the LLM
@@ -593,6 +597,65 @@ def check_toolkit_versions() -> tuple[str | None, list[str]]:
     return minor, failures
 
 
+GOAL_HEADING_RE = re.compile(r"^### Goal (\d+)\b", re.MULTILINE)
+GOAL_REF_RE = re.compile(r"Goal[- ](\d+)")
+
+
+def collect_defined_goals() -> set[int]:
+    """The goal numbers the spec defines via '### Goal N' headings in PNA_Spec.md."""
+    spec = REPO / "spec" / "PNA_Spec.md"
+    if not spec.exists():
+        return set()
+    return {int(n) for n in GOAL_HEADING_RE.findall(spec.read_text())}
+
+
+def collect_goal_ref_violations(defined: set[int]) -> list[str]:
+    """Every 'Goal N' the spec references resolves to a *defined* goal, and no AC's
+    'Serves' cell names more than two goals (the primary + at-most-one-cross-cut
+    cardinality cap, per PNA_Spec.md § Goals). This guards the goal layer against a
+    botched renumber: a Serves / Bounds / Stresses reference pointing at a goal that no
+    longer exists would otherwise pass silently."""
+    spec = REPO / "spec" / "PNA_Spec.md"
+    if not spec.exists():
+        return []
+    if not defined:
+        return ["PNA_Spec.md: no '### Goal N' headings found — cannot validate goal references."]
+
+    out: list[str] = []
+
+    def check_refs(label: str, text: str) -> int:
+        nums = [int(n) for n in GOAL_REF_RE.findall(text)]
+        for n in nums:
+            if n not in defined:
+                out.append(f"{label}: references Goal {n}, not a defined goal "
+                           f"(defined: {sorted(defined)}).")
+        return len(nums)
+
+    # AC-table 'Serves' column (PNA_Spec.md): every ref resolves + the cardinality cap.
+    for headers, rows in iter_tables(spec.read_text()):
+        serves_col = next((k for k, h in enumerate(headers) if h == "serves"), None)
+        if serves_col is None:
+            continue
+        id_col = next((k for k, h in enumerate(headers) if h in AC_ID_HEADERS), None)
+        for cells in rows:
+            if serves_col >= len(cells):
+                continue
+            acid = "?"
+            if id_col is not None and id_col < len(cells):
+                m = AC_ID_RE.match(ANCHOR_PREFIX.sub("", cells[id_col]))
+                acid = m.group(0) if m else "?"
+            if check_refs(f"PNA_Spec.md Serves [{acid}]", cells[serves_col]) > 2:
+                out.append(f"PNA_Spec.md Serves [{acid}]: names more than two goals; the "
+                           "cardinality cap is two (one primary + at most one cross-cut).")
+
+    # Goal refs in the dual mechanisms: constraints 'Bounds:', exceptions 'Stresses:'.
+    for path, field in ((CONSTRAINTS_PATH, "Bounds"), (EXCEPTIONS_PATH, "Stresses")):
+        if path.exists():
+            for m in re.finditer(rf"(?mi)^\**{field}:[^\n]*", path.read_text()):
+                check_refs(f"{path.name} {field}", m.group(0))
+    return out
+
+
 def main() -> int:
     failures: list[str] = []
 
@@ -638,6 +701,10 @@ def main() -> int:
     constraint_ids = collect_constraint_ids()
     failures.extend(f"constraints.md: {v}" for v in collect_constraint_violations(spec_ids))
 
+    # --- Goal references (the goal layer; guards the renumber) ---
+    defined_goals = collect_defined_goals()
+    failures.extend(collect_goal_ref_violations(defined_goals))
+
     # --- Reference-design manifests (reference_designs/<name>/design.toml) ---
     n_manifests, manifest_failures = collect_design_manifest_violations(spec_ids)
     failures.extend(manifest_failures)
@@ -655,7 +722,7 @@ def main() -> int:
     n_realizing = sum(1 for v in contract_realizes.values() if v)
     print("lint-spec-ids: OK")
     print(f"  toolkit version {toolkit_minor} (/VERSION: {VERSION_PATH.read_text().strip()})")
-    print(f"  spec defines {len(spec_ids)} AC IDs")
+    print(f"  spec defines {len(defined_goals)} goal(s) and {len(spec_ids)} AC IDs")
     print(f"  {n_realizing}/{len(contract_realizes)} contract files declare a 'Realizes:' header")
     print(f"  exceptions.md defines {len(exception_ids)} exception ID(s)")
     print(f"  constraints.md defines {len(constraint_ids)} constraint ID(s)")

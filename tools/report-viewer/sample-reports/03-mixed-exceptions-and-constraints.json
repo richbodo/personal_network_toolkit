@@ -19,7 +19,7 @@
   },
   "summary": {
     "posture": "mixed",
-    "headline": "Conformant where it counts: the cloud-LLM path is handled as a declared EX-CLOUD-LLM exception (AC-MCP-A), and the off-folder durability ceiling (CST-PWA-PRIVATE-SNAPSHOT) is honestly capability-reduced at the data layer (AC-1 / Goal-4). One MCP bulk-confirmation question is left for human review.",
+    "headline": "Conformant where it counts: the cloud-LLM path is handled as a declared EX-CLOUD-LLM exception (AC-MCP-A), and the off-folder durability ceiling (CST-PWA-PRIVATE-SNAPSHOT) is honestly capability-reduced at the data layer (AC-1; the durability ceiling bounds Goal 4). One MCP bulk-confirmation question is left for human review.",
     "leading_concerns": []
   },
   "findings": [
@@ -27,7 +27,7 @@
       "ac_id": "AC-MCP-A",
       "ac_source": "universal",
       "status": "conformant",
-      "goals": [1, 3],
+      "goals": [2, 3],
       "citations": [
         { "path": "app/static/app.js", "note": "install-time consent gate (recordMcpbConsent) + a persistent 'not a PNA right now' banner" },
         { "path": "mcp_servers/private_data_ops.py", "note": "the data-ops servers open both DBs mode=ro" }
@@ -41,7 +41,7 @@
       "ac_id": "AC-1",
       "ac_source": "universal",
       "status": "conformant",
-      "goals": [1, 4],
+      "goals": [1, 3],
       "citations": [
         { "path": "app/static/vendor/sqlite-worker.js", "note": "_refuseDurablePrivateWriteOffFolder guards every mutation at the worker/data layer (not UI-only)" }
       ],

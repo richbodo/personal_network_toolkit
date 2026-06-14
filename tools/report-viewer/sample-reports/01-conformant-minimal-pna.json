@@ -21,7 +21,7 @@
       "ac_id": "AC-1",
       "ac_source": "universal",
       "status": "conformant",
-      "goals": [1],
+      "goals": [1, 3],
       "citations": [
         { "path": "vault/store.py", "lines": "40-72", "note": "two separate SQLite files; the shared DB is opened read-only via ATTACH ?mode=ro" }
       ],
@@ -72,7 +72,7 @@
       "ac_id": "AC-MCP-A",
       "ac_source": "universal",
       "status": "not-applicable",
-      "goals": [1, 3],
+      "goals": [2, 3],
       "rationale": "mcp-exposure pick is none; there is no MCP surface to gate cloud clients against."
     }
   ]
