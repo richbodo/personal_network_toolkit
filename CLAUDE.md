@@ -63,7 +63,31 @@ glossed in § Vocabulary, which therefore stays above § Goals.)
   language about axis counts ("the axes", never "the six axes").
 - Run `just ci` after changes; put manual test/QA steps in the **PR description**.
 
+## Sibling repositories (cross-repo work)
+
+The two reference designs are separate Git repos checked out as **siblings of this one**,
+one directory above the repo root:
+
+- `../fellows_local_db` — first reference design (Directory Archive).
+- `../prm` — second reference design (PRM). Note `prm` ≠ `../prt`, the graveyard
+  predecessor project.
+
+Spec/contract changes here can have cross-repo implications for both; when in doubt, read
+their `docs/Architecture.md`. This sibling layout is a stable convention of the working
+environment (it could change, but holds for now). It lives here in CLAUDE.md — not in agent
+memory — because memory is keyed to the working directory, so a worktree at a different path
+starts with a fresh memory dir; a committed file is the only channel that reaches every
+worktree and every concurrent agent.
+
 ## Worktrees (multiple agents on one host)
+
+**Default posture: orient without moving; branch only to work.** Reading and priming never
+need a branch change — don't `git checkout main` / `git pull` just to get oriented (in a
+multi-worktree setup `main` is often checked out elsewhere, so the checkout fails or strands
+uncommitted work). Create a worktree when you start *actual work*, not before. Before you do,
+run `git worktree list` and note any sibling worktree whose branch name suggests it's on a
+related feature or bug — surface the possible overlap, since two or three agents often run
+here at once on different problems.
 
 Worktrees are **cheap and nearly isolated** here — this is a stdlib-only `python3` spec/lint/docs
 repo where `just ci` runs against a tempdir copy, so concurrent `just ci` across worktrees can't
