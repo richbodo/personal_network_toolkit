@@ -1,6 +1,6 @@
 {
   "report_schema_version": "0.1",
-  "generated_by": "pna-build-eval-contrib skill (illustrative sample — fictional candidate, not a real app)",
+  "generated_by": "pna-toolkit skill (illustrative sample — fictional candidate, not a real app)",
   "candidate": {
     "name": "contacts-sync-pro (illustrative candidate)",
     "pna_spec_version": "0.1",

@@ -1,6 +1,6 @@
 {
   "report_schema_version": "0.1",
-  "generated_by": "pna-build-eval-contrib skill (illustrative sample — not a real evaluation)",
+  "generated_by": "pna-toolkit skill (illustrative sample — not a real evaluation)",
   "candidate": {
     "name": "vault-cli (illustrative Minimum-Viable-PNA)",
     "pna_spec_version": "0.1",

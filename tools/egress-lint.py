@@ -9,7 +9,7 @@ Any remote origin that is not on the design's allow-list is a violation.
 This is intentionally narrow. It is NOT a general test runner — it guards the one
 violation that most destroys trust (private data leaving the device) and that an
 LLM scanning a large tree might miss. It is a *complement* to the LLM
-architectural review described in pna-build-eval-contrib/SKILL.md, not a
+architectural review described in pna-toolkit/SKILL.md, not a
 replacement; it is heuristic (regex over source) and can have false positives,
 which the allow-list and per-line output let a human triage quickly.
 

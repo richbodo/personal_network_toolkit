@@ -98,7 +98,7 @@ These are settled here so subsequent work doesn't relitigate.
 
 **Architecture document = Security Target in role.** The Common Criteria Protection Profile / Security Target model maps cleanly: the PNA Spec acts as the Protection Profile (class-level requirements); each design's Architecture document acts as the Security Target (this design's declared conformance, with implementation details and test pointers). The toolkit keeps its own terminology — no rename — but the model is what we're building.
 
-**Skill packages the spec for AI agents — three flows in one skill.** The skill (`pna-build-eval-contrib/SKILL.md`) is one consumption view — it points into `spec/`, `contracts/`, and `reference_designs/`. It covers three flows: building a new PNA, evaluating an existing PNA, and authoring a contribution PR back to the toolkit. If any flow grows large enough to need its own SKILL.md, split later.
+**Skill packages the spec for AI agents — three flows in one skill.** The skill (`pna-toolkit/SKILL.md`) is one consumption view — it points into `spec/`, `contracts/`, and `reference_designs/`. It covers three flows: building a new PNA, evaluating an existing PNA, and authoring a contribution PR back to the toolkit. If any flow grows large enough to need its own SKILL.md, split later.
 
 **Single evaluation flow, not two named modes.** Mechanics, inputs, and output shape of an LLM evaluating a PNA are the same whether the consumer is a user auditing someone else's app or a builder checking their own in-progress code. The flow takes a source tree (or description), walks the AC list, and produces an AC-ID-keyed report (conformant / non-conformant / not-applicable / unable-to-determine, with citations). Callers can ask the evaluator to emphasize specific Goals at runtime (e.g., "focus on Goal 1 — private data sovereignty") if they have a particular concern; that's a runtime variation, not a structural split.
 
@@ -138,7 +138,7 @@ personal_network_toolkit/
 │   └── <design-name>/
 │       ├── README.md                            # Design record + architectural learnings notes
 │       └── Architecture.md                      # The design's Architecture, copied at acceptance
-├── pna-build-eval-contrib/
+├── pna-toolkit/
 │   └── SKILL.md                                 # Agent-consumption view — build, evaluate, contribute
 ├── tools/
 │   ├── swh-save.sh                              # Trigger Save Code Now; capture SWHID
@@ -263,7 +263,7 @@ A row missing the verification field is a rejected PR. This is the mechanical ch
 
 ```markdown
 ---
-name: pna-build-eval-contrib
+name: pna-toolkit
 description: Use when building, extending, or evaluating a Personal Network Application (PNA) — local-first, private-by-default applications operating on personal contact and relationship data with no remote authority. Also triggers when proposing changes to the PNA Toolkit spec back to its canonical repo. Three flows: build a conformant PNA from the spec, evaluate whether an existing application conforms (e.g. "is this app safe to install?"), and author a contribution PR back to the toolkit when a spec gap is found.
 ---
 
@@ -345,7 +345,7 @@ Phases are sized for Claude Code sessions. Each ends in a committable, working s
 
 ### Phase 1 — Repo restructure
 
-- [x] Create new directory layout: `spec/`, `contracts/`, `reference_designs/`, `reference_designs/templates/`, `pna-build-eval-contrib/`, `tools/`, `docs/`, `archive/`.
+- [x] Create new directory layout: `spec/`, `contracts/`, `reference_designs/`, `reference_designs/templates/`, `pna-toolkit/`, `tools/`, `docs/`, `archive/`.
 - [x] Move existing spec documents into `spec/`.
 - [x] Move existing typed contracts from `spec/contracts/` into top-level `contracts/`.
 - [x] Relocate `research/prior_art_survey.md` to `docs/prior_art.md` (later split into `docs/PriorArt.md` (prose survey) + `docs/PriorArtReferences.md` (annotated source list)).
@@ -370,14 +370,14 @@ Phases are sized for Claude Code sessions. Each ends in a committable, working s
 
 ### Phase 4 — Skill packaging
 
-- [x] Write `pna-build-eval-contrib/SKILL.md` per the sketch above — build, evaluate, contribute flows in one skill.
+- [x] Write `pna-toolkit/SKILL.md` per the sketch above — build, evaluate, contribute flows in one skill.
 - [x] Verify the skill description triggers correctly on representative test prompts for each flow.
 - [x] If a single skill shows friction, split — but only then.
 
 ### Phase 4.5 — User's Guide and contribute-flow preflight
 
 - [x] Write `docs/users-guide.md` — concise step-by-step instructions organized around the six success criteria in `README.md § Status`. The reference-design submission workflow gets the most space (since `fellows_local_db` is the first user of it in Phase 5).
-- [x] Enhance `pna-build-eval-contrib/SKILL.md`'s contribute flow with an explicit **preflight validation** step (does the design have all required files? is the Architecture document complete and accurate against the code?), the **"what's interesting architecturally?"** prompt — with three valid patterns documented (new AC, existing pattern on a new platform, ecosystem-value-add) — and explicit **interactive** guidance for creating the Architecture document when it doesn't yet exist.
+- [x] Enhance `pna-toolkit/SKILL.md`'s contribute flow with an explicit **preflight validation** step (does the design have all required files? is the Architecture document complete and accurate against the code?), the **"what's interesting architecturally?"** prompt — with three valid patterns documented (new AC, existing pattern on a new platform, ecosystem-value-add) — and explicit **interactive** guidance for creating the Architecture document when it doesn't yet exist.
 - [x] Link `docs/users-guide.md` from `README.md`.
 
 Phase 4.5 lands in the same PR as Phases 1–4 so the User's Guide is exercisable against `fellows_local_db` immediately in Phase 5.

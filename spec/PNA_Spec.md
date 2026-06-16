@@ -227,7 +227,7 @@ The agent's job when **building**, per this spec, is to:
 3. Generate or adapt code that fills each **slot** (see [§ Slots, Interfaces, and Sub-contracts](#slots-interfaces-and-sub-contracts)) according to its contract, consistent with the axis picks.
 4. Verify the result against the **universal architectural commitments** (see [§ Universal architectural commitments](#universal-architectural-commitments)) and any conditional commitments the picks add (catalogued in [`axes.md`](axes.md)).
 
-Building is one of **four flows** the skill packages — *validate* (audit a candidate against the spec), *build* (the steps above), *contribute* (feed a finding back into the spec), and *harden* (advise on securing the operating environment a PNA runs in — the advisory flow defined in [`exceptions.md` § Environmental threats and the Harden flow](exceptions.md)). The first three secure what the built PNA does; harden secures the environment around it. See [`pna-build-eval-contrib/SKILL.md`](../pna-build-eval-contrib/SKILL.md) and [`docs/users-guide.md`](../docs/users-guide.md).
+Building is one of **four flows** the skill packages — *validate* (audit a candidate against the spec), *build* (the steps above), *contribute* (feed a finding back into the spec), and *harden* (advise on securing the operating environment a PNA runs in — the advisory flow defined in [`exceptions.md` § Environmental threats and the Harden flow](exceptions.md)). The first three secure what the built PNA does; harden secures the environment around it. See [`pna-toolkit/SKILL.md`](../pna-toolkit/SKILL.md) and [`docs/users-guide.md`](../docs/users-guide.md).
 
 ### Common axis clusters
 

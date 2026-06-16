@@ -51,7 +51,7 @@ acknowledging the ceiling.
 
 The PNA Toolkit **validates behaviors against the Goals; it does not certify** (see `CONTRIBUTING.md` and the
 skill's § Principles, "Conformance is checked, not awarded"). For Constraints, the
-[evaluate flow](../pna-build-eval-contrib/SKILL.md) detects each inherited ceiling and verifies that
+[evaluate flow](../pna-toolkit/SKILL.md) detects each inherited ceiling and verifies that
 the candidate *handles it honestly* — capability reduced to match the platform, frontier declared
 truthfully — reporting by `CST-*` ID. "This design inherits `CST-PWA-PRIVATE-SNAPSHOT` and handles it
 by dropping durable private writes off-Chromium (frontier: Open)" is a finding, not a grade.

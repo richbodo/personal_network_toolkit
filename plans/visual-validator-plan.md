@@ -21,7 +21,7 @@ how-to-be-safer), shown alone or **side by side**. The side-by-side pairing is w
 the report into a teaching tool: the plain-language verdict next to the technical evidence
 for the *same* finding is how a non-expert learns what a privacy guarantee means in code.
 It is **viewer-first**: report *generation* stays with the agent-driven
-evaluate flow in [`pna-build-eval-contrib/SKILL.md`](../pna-build-eval-contrib/SKILL.md); a
+evaluate flow in [`pna-toolkit/SKILL.md`](../pna-toolkit/SKILL.md); a
 static page can't run an LLM. The plan builds up to the thing the average person actually
 wants — point it at a **directory of reports** and **flip through them with ← / →**, one
 report per app you dropped in.

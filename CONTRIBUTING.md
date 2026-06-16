@@ -45,7 +45,7 @@ See [`reference_designs/templates/ARCHITECTURE_TEMPLATE.md`](reference_designs/t
 
 ## PR contents required
 
-The skill's contribute flow (driven by [`docs/users-guide.md` § Goal 3](docs/users-guide.md#goal-3-submit-your-design-as-a-reference-design), backed by [`pna-build-eval-contrib/SKILL.md`](pna-build-eval-contrib/SKILL.md)) assembles all of these for you end-to-end. Manually-authored PRs are also fine — the artifacts a PR must contain:
+The skill's contribute flow (driven by [`docs/users-guide.md` § Goal 3](docs/users-guide.md#goal-3-submit-your-design-as-a-reference-design), backed by [`pna-toolkit/SKILL.md`](pna-toolkit/SKILL.md)) assembles all of these for you end-to-end. Manually-authored PRs are also fine — the artifacts a PR must contain:
 
 - **Spec diff (if any)** — changes to `spec/PNA_Spec.md`, `spec/axes.md`, `spec/use_cases.md`, or `contracts/` files
 - **A design record** at `reference_designs/<design-name>/README.md` per [`reference_designs/templates/TEMPLATE.md`](reference_designs/templates/TEMPLATE.md)
