@@ -10,13 +10,13 @@ Three deliverables, in dependency order:
 
 1. **Foundational specs.** Universal vocabulary, goals, axes, architectural commitments, and typed contracts for a PNA. — **shipping in v0.1 (draft)**.
 2. **Production-ready reference applications.** Working PNAs you can install, study, and adapt. — the first two reference designs are a distributed directory archive ([richbodo/fellows_local_db](https://github.com/richbodo/fellows_local_db)) and a Personal Relationship Manager ([richbodo/prm](https://github.com/richbodo/prm)).
-3. **AI tooling — skill + MCP (Model Context Protocol) servers.** How AI agents work with the toolkit. The skill at [`pna-build-eval-contrib/SKILL.md`](pna-build-eval-contrib/SKILL.md) is what an agent reads to consume the spec at design time. The MCP servers (typed contracts in [`contracts/`](contracts/); three v1 stdio implementations in `fellows_local_db/mcp_servers/`) expose an already-built PNA's capabilities at runtime so AI clients (Claude Desktop, Cursor, local Ollama agents) can drive a PNA on the user's behalf.
+3. **AI tooling — skill + MCP (Model Context Protocol) servers.** How AI agents work with the toolkit. The skill at [`pna-toolkit/SKILL.md`](pna-toolkit/SKILL.md) is what an agent reads to consume the spec at design time. The MCP servers (typed contracts in [`contracts/`](contracts/); three v1 stdio implementations in `fellows_local_db/mcp_servers/`) expose an already-built PNA's capabilities at runtime so AI clients (Claude Desktop, Cursor, local Ollama agents) can drive a PNA on the user's behalf.
 
-The PNA Toolkit supports four modes of use, all packaged in the [skill](pna-build-eval-contrib/SKILL.md). **Install it once** so your agent auto-discovers it — symlink the skill into your skills directory (run from your toolkit working directory):
+The PNA Toolkit supports four modes of use, all packaged in the [skill](pna-toolkit/SKILL.md). **Install it once** so your agent auto-discovers it — symlink the skill into your skills directory (run from your toolkit working directory):
 
 ```bash
 mkdir -p ~/.claude/skills
-ln -s "$(pwd)/pna-build-eval-contrib" ~/.claude/skills/pna-build-eval-contrib
+ln -s "$(pwd)/pna-toolkit" ~/.claude/skills/pna-toolkit
 ```
 
 A `git pull` here then updates the skill everywhere it's used. See [`docs/users-guide.md` § Install the skill](docs/users-guide.md#install-the-skill) for copy-instead-of-symlink, project-scoped, and no-install alternatives. With the skill installed, drive any mode in natural language:
@@ -64,7 +64,7 @@ To contribute to the spec with a new reference design or architectural finding:
 
 To dig into the spec more deeply:
 
-- **[`pna-build-eval-contrib/SKILL.md`](pna-build-eval-contrib/SKILL.md)** — the skill packaging the four flows (build, evaluate, contribute, harden) for AI agents. The agent-consumption view of the toolkit.
+- **[`pna-toolkit/SKILL.md`](pna-toolkit/SKILL.md)** — the skill packaging the four flows (build, evaluate, contribute, harden) for AI agents. The agent-consumption view of the toolkit.
 - **[`spec/axes.md`](spec/axes.md)** — the Axes a PNA varies along, attested picks per Axis, and the flavor-derived ACs each pick triggers.
 - **[`spec/use_cases.md`](spec/use_cases.md)** — attested classes of PNA (Minimum Viable PNA; Directory Archive realized; Personal Relationship Manager realized; Multi-PNA ecosystem target).
 - **[`contracts/`](contracts/)** — typed contracts for the load-bearing interfaces: JSON Schema for the worker init handshake + RPC (Remote Procedure Call) protocol, OpenAPI for distribution auth, SQL DDL (Data Definition Language) for the two database schemas, TypeScript for the Communications transport interface, JSON Schema for the five canonical MCP server tool surfaces.

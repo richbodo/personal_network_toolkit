@@ -2,7 +2,7 @@
 
 The PNA (Personal Network Application) Spec is the canonical specification; this guide is the canonical **how-to**. It is task-ordered: each section is a numbered sequence of actions to accomplish one thing. Where a step needs a rule or definition, it links to the authoritative document rather than restating it.
 
-The PNA Toolkit is built to be consumed by AI coding agents, and its users are developers. Most of this guide assumes you have an agent (Claude Code, Cursor, an equivalent) you can ask things like *"use the toolkit skill to validate my design."* The skill at [`pna-build-eval-contrib/SKILL.md`](../pna-build-eval-contrib/SKILL.md) is the agent-consumption view of the build / audit / contribute flows below.
+The PNA Toolkit is built to be consumed by AI coding agents, and its users are developers. Most of this guide assumes you have an agent (Claude Code, Cursor, an equivalent) you can ask things like *"use the toolkit skill to validate my design."* The skill at [`pna-toolkit/SKILL.md`](../pna-toolkit/SKILL.md) is the agent-consumption view of the build / audit / contribute flows below.
 
 **The fastest way in is auditing.** If you just want to know whether a contact app is safe before you install it — without building or contributing anything — go straight to [Audit a candidate PNA](#audit-a-candidate-pna-before-installing-it). Point an agent at the app's source and get back an AC-keyed safety report.
 
@@ -19,25 +19,25 @@ The PNA Toolkit is built to be consumed by AI coding agents, and its users are d
 >
 > Plus a separate **`viewer-e2e`** CI job (the one non-stdlib job, path-filtered to viewer PRs): opt-in Playwright render tests for the Visual Validator viewer (`tools/report-viewer/tests/`). Reproduce locally with `just test-viewer` (one-time `just setup-test`) — **not** `just ci`.
 >
-> **Exercised end-to-end:** the **contribute** flow — `fellows_local_db`'s Exceptions, Constraints, and conformance-suite contributions were all authored through it. The **build** and **audit** flows are still being dogfooded against `fellows_local_db`; the agent prompts and output shapes below describe the intended behavior per [`pna-build-eval-contrib/SKILL.md`](../pna-build-eval-contrib/SKILL.md), and continue to be refined. The **harden** flow is the newest and is **advisory** — it recommends environmental countermeasures rather than checking ACs; its catalog lives in [`spec/exceptions.md`](../spec/exceptions.md).
+> **Exercised end-to-end:** the **contribute** flow — `fellows_local_db`'s Exceptions, Constraints, and conformance-suite contributions were all authored through it. The **build** and **audit** flows are still being dogfooded against `fellows_local_db`; the agent prompts and output shapes below describe the intended behavior per [`pna-toolkit/SKILL.md`](../pna-toolkit/SKILL.md), and continue to be refined. The **harden** flow is the newest and is **advisory** — it recommends environmental countermeasures rather than checking ACs; its catalog lives in [`spec/exceptions.md`](../spec/exceptions.md).
 
 ---
 
 ## Install the skill
 
-The flows below are driven by the toolkit skill at [`pna-build-eval-contrib/SKILL.md`](../pna-build-eval-contrib/SKILL.md). If you haven't used Claude Code skills before: they're modular agent capabilities that live in a `.claude/skills/<skill-name>/SKILL.md` layout. You install one once, then use it through natural language in any chat.
+The flows below are driven by the toolkit skill at [`pna-toolkit/SKILL.md`](../pna-toolkit/SKILL.md). If you haven't used Claude Code skills before: they're modular agent capabilities that live in a `.claude/skills/<skill-name>/SKILL.md` layout. You install one once, then use it through natural language in any chat.
 
 ### How Claude decides to use the skill
 
 At session start Claude Code loads every installed skill's **name and `description`** into context — not the full body, which loads only when the skill actually runs. Claude then **auto-discovers** the skill: when your prompt matches the triggers in its `description`, it invokes the skill on its own, without you naming it. The toolkit skill's description is written to fire on phrases like *"is this app safe to install?"*, *"does my app conform?"*, or "build a local-first contact app", so a request like *"audit this contact app before I install it"* trips it automatically.
 
-You don't have to rely on that, though. You can always invoke it explicitly — `/pna-build-eval-contrib`, or just *"Use the toolkit skill to…"*. Auto-discovery is a match against prose, so it's a strong default but not a guarantee; for a deliberate task like validating that a repo conforms, naming the skill (or the flow) is the most reliable path — and that's how the prompts in this guide are phrased.
+You don't have to rely on that, though. You can always invoke it explicitly — `/pna-toolkit`, or just *"Use the toolkit skill to…"*. Auto-discovery is a match against prose, so it's a strong default but not a guarantee; for a deliberate task like validating that a repo conforms, naming the skill (or the flow) is the most reliable path — and that's how the prompts in this guide are phrased.
 
 **Recommended — symlink globally** (run from your toolkit working directory):
 
 ```bash
 mkdir -p ~/.claude/skills
-ln -s "$(pwd)/pna-build-eval-contrib" ~/.claude/skills/pna-build-eval-contrib
+ln -s "$(pwd)/pna-toolkit" ~/.claude/skills/pna-toolkit
 ```
 
 Symlinking keeps the skill in sync with your toolkit clone — a `git pull` here updates the skill everywhere it's used.
@@ -49,16 +49,16 @@ Symlinking keeps the skill in sync with your toolkit clone — a `git pull` here
 
 ### Per-repo install (for a design that contributes to the PNA Toolkit)
 
-When a PNA repo actively contributes back (it's a reference design, or you drive the contribute flow from it), scope the skill to that repo at `<your-project>/.claude/skills/pna-build-eval-contrib` so collaborators on it pick the skill up. Two forms:
+When a PNA repo actively contributes back (it's a reference design, or you drive the contribute flow from it), scope the skill to that repo at `<your-project>/.claude/skills/pna-toolkit` so collaborators on it pick the skill up. Two forms:
 
 - **Symlink** (dev convenience, no drift):
   ```bash
-  ln -s <path-to-pnt>/pna-build-eval-contrib <your-project>/.claude/skills/pna-build-eval-contrib
+  ln -s <path-to-pnt>/pna-toolkit <your-project>/.claude/skills/pna-toolkit
   ```
   Stays in sync with your toolkit clone, but the absolute path is machine-specific — **don't commit a machine-specific symlink.**
 - **Vendored copy** (portable, committable):
   ```bash
-  cp -r <path-to-pnt>/pna-build-eval-contrib <your-project>/.claude/skills/pna-build-eval-contrib
+  cp -r <path-to-pnt>/pna-toolkit <your-project>/.claude/skills/pna-toolkit
   ```
   Commit it **with a provenance note pinning the toolkit commit** it was copied from (e.g. an `INSTALLED_FROM.md` beside `SKILL.md`). Collaborator-friendly and reproducible, but it **drifts** from upstream — re-sync before relying on it for a contribution.
 
@@ -96,7 +96,7 @@ You're starting (or extending) a personal network application.
 
 7. **Fill in the attestation table as you build.** For every applicable AC (universal in `PNA_Spec.md` + flavor-derived from your picks in `axes.md`), and every Exception/Constraint your design raises or inherits, record three fields in your Architecture document:
    - **Realization** — how your code realizes/handles it, with `file:line` references.
-   - **Verification** — the test, LLM rubric, or human-review note that verifies it for *your* design. A `conformant` row needs **executable evidence** (a resolvable test) or an explicitly declared review kind — a bare doc pointer is not evidence, and a negative invariant ("X must NOT happen") needs a *negative* test. See the [evaluate flow's attestation-evidence rules](../pna-build-eval-contrib/SKILL.md) for the full bar.
+   - **Verification** — the test, LLM rubric, or human-review note that verifies it for *your* design. A `conformant` row needs **executable evidence** (a resolvable test) or an explicitly declared review kind — a bare doc pointer is not evidence, and a negative invariant ("X must NOT happen") needs a *negative* test. See the [evaluate flow's attestation-evidence rules](../pna-toolkit/SKILL.md) for the full bar.
    - **Status** — `conformant` / `partial` (with the known gap) / `not-applicable` (with reason).
 
 8. **Self-check.** Run the [Audit](#audit-a-candidate-pna-before-installing-it) flow on your own in-progress code before declaring done, and **save its `evaluate-report.json`** (e.g. under `docs/conformance/`) — the contribution PR commits this artifact, so producing it now is part of building. For the AC-1 (private-data-sovereignty) row, add an `egress-allow.json` to your repo listing the remote origins your flavor legitimately uses, and run `just egress-lint <your-source-dir>` — it's the deterministic half of that check and makes a ready-made Verification entry. Wire it into your own CI so a future change can't silently introduce an off-device data path.
@@ -107,7 +107,7 @@ You have a PNA in front of you (someone else's, or your own in-progress one) and
 
 1. **Get the candidate's source.** Clone the repo. If you only have a bundle, ask for the source — you can't audit a black box.
 
-2. **Open Claude Code in the PNA Toolkit repo, with the candidate's source at a known path.** Run the audit from the toolkit, not the candidate: the skill ([`pna-build-eval-contrib/SKILL.md`](../pna-build-eval-contrib/SKILL.md)), the [`evaluate-report.schema.json`](../tools/evaluate-report.schema.json), and the deterministic `just` lints all live here, and the agent reads the skill when the prompt matches. (If you've installed the skill globally you can run from anywhere — but you still need a toolkit checkout reachable for the `just` lints.)
+2. **Open Claude Code in the PNA Toolkit repo, with the candidate's source at a known path.** Run the audit from the toolkit, not the candidate: the skill ([`pna-toolkit/SKILL.md`](../pna-toolkit/SKILL.md)), the [`evaluate-report.schema.json`](../tools/evaluate-report.schema.json), and the deterministic `just` lints all live here, and the agent reads the skill when the prompt matches. (If you've installed the skill globally you can run from anywhere — but you still need a toolkit checkout reachable for the `just` lints.)
 
 3. **Ask the agent to run the audit:**
 
@@ -246,7 +246,7 @@ Working on the toolkit itself: `just` for the command menu, `just ci` before pus
 - [`spec/constraints.md`](../spec/constraints.md) — Constraints (`CST-*`): platform/substrate ceilings inherited by axis picks
 - [`contracts/`](../contracts/) — typed contracts, each with a `Realizes:` header
 - [`reference_designs/`](../reference_designs/) — accepted designs + templates (record, Architecture, `design.toml`)
-- [`pna-build-eval-contrib/SKILL.md`](../pna-build-eval-contrib/SKILL.md) — the agent-consumption view of the flows above
+- [`pna-toolkit/SKILL.md`](../pna-toolkit/SKILL.md) — the agent-consumption view of the flows above
 - [`CONTRIBUTING.md`](../CONTRIBUTING.md) — full contribution rules and versioning policy
 - [`CLAUDE.md`](../CLAUDE.md) — repo conventions and the documentation map
 - [`justfile`](../justfile) — the command runner (`just` for the menu)

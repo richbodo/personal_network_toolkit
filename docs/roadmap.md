@@ -77,7 +77,7 @@ detailed specs for each item are in the brainstorm's `## OUTPUT WORK QUEUE`.
   **distribution-axis verifiability split** (`spec/axes.md`; demo PRM) · **AC-PRM-E/F safe-AI-write**
   review-required tier (demo PRM) · **user-mediation UM-1/2/3** as a mechanism (demo fellows egress +
   PRM mutation).
-- **C. Countermeasure-library + Harden reframe** — `spec/exceptions.md` + `pna-build-eval-contrib/SKILL.md`.
+- **C. Countermeasure-library + Harden reframe** — `spec/exceptions.md` + `pna-toolkit/SKILL.md`.
   Reframe EX-H6 "recommended solution" as a **countermeasure catalog** (each: hazard · strength-class
   [reuse EX-H8 vocab] · *PNA-intrinsic vs environmental* · demonstrator); add the **environmental-threats
   / Harden** sibling; seed the catalog from R3 (sandbox-agent/`denyRead` · MCP per-request grants ·

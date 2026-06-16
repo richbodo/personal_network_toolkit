@@ -1,5 +1,5 @@
 ---
-name: pna-build-eval-contrib
+name: pna-toolkit
 description: 'Use when building, extending, or evaluating a Personal Network Application (PNA) — local-first, private-by-default applications that mirror SaaS contact data into a user-owned workspace and operate on relationship data with no remote authority. Triggers on requests to build a local-first contact app, relationship manager, private CRM-like tool, or any app built around personal-network data; on requests to audit an existing application for PNA-spec conformance ("is this app safe to install?", "does my app conform?"); on requests to contribute back to the PNA Toolkit — either a reference design, or (the common case) a lighter toolkit fix to the spec/tooling/docs; and on requests to harden the operating environment a PNA runs in against runtime adversaries (an OS-level AI agent or another local process reaching the data out-of-band). Four flows: build a conformant PNA from the spec, evaluate whether an existing application conforms, contribute back to the toolkit (reference design or toolkit fix), and harden the environment a PNA runs in (advisory).'
 ---
 

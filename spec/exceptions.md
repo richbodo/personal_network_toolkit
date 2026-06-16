@@ -74,7 +74,7 @@ nor "secretly fine." The honest report names **both** predicates: *not a PNA whi
 active (`pna-active = false`), and exception-handling conformant.* The earlier shorthand — "a
 conformant PNA operating in a declared non-PNA mode" — fused the two and is **retired**: *PNA* is the
 guarantee, and the guarantee is suspended while an exception is active. The [evaluate
-flow](pna-build-eval-contrib/SKILL.md) reports both, by `EX-*` ID.
+flow](pna-toolkit/SKILL.md) reports both, by `EX-*` ID.
 
 **Discipline — confer the membership bit, report the rest.** *(Proposed, RFC — sharpens this change
 with the "detect, don't bless" rule.)* `pna-active` is the **only conferred conformance verdict** and

@@ -12,7 +12,7 @@ Sequencing logic: a cheap README win first; then formalize the evaluate *output*
 
 > **Status:** Done. README now leads the three modes with Evaluate ("audit any contact app for safety before you install it") and carries a concrete symlink install snippet pointing to `docs/users-guide.md § Install the skill`; `llms.txt` opens with a "Start with the skill" line routing a cold agent to `SKILL.md` as the entry point.
 
-- Add a concrete **install/activation** snippet: how an agent picks up the skill (copy `pna-build-eval-contrib/` into `.claude/skills/`, or the equivalent one-liner), so it auto-discovers rather than relying on a human pasting the path.
+- Add a concrete **install/activation** snippet: how an agent picks up the skill (copy `pna-toolkit/` into `.claude/skills/`, or the equivalent one-liner), so it auto-discovers rather than relying on a human pasting the path.
 - Reorder the "three modes" so **Evaluate leads** for the average reader — frame it as "audit any contact app for safety before you install it," with Build/Contribute following. Evaluate is the lowest-friction front door and the one a non-builder actually wants.
 - Make `llms.txt` route a cold agent to the SKILL.md as the build/eval entry point.
 

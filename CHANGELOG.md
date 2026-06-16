@@ -2,6 +2,19 @@
 
 ## v0.1 draft (in progress)
 
+### Skill renamed `pna-build-eval-contrib` → `pna-toolkit` (toolkit fix)
+
+- **`pna-toolkit/` (was `pna-build-eval-contrib/`)** — the skill directory and its frontmatter
+  `name:` are renamed to a stable domain label. The old name enumerated three flows
+  (`build · eval · contrib`) and silently omitted the fourth, **harden**; enumerating flows in the
+  name goes stale on every new flow. `pna-toolkit` follows Claude Code skill-naming convention — a
+  brief kebab-case domain label — and never needs to change as flows are added. Auto-discovery is
+  unaffected: it keys on the `description` field (unchanged), not the name.
+- **Swept all 55 references across 26 files** (spec, README, users-guide, CONTRIBUTING, roadmap,
+  plans, tool/contract comments, sample reports, `CLAUDE.md`, `.claude/commands/prime.md`) to the new
+  path so every cross-link stays live. `just ci` green (34/34).
+- No new obligation on any design — a rename of the agent-consumption artifact; no AC, contract, or
+  version change. `VERSION` stays `0.1`.
 ### Recorded the *conditional* at-rest-encryption variants we declined (toolkit fix / docs)
 
 - **`docs/PriorArt.md` § Design notes** — the at-rest scope-decision entry now records the three
@@ -35,7 +48,7 @@
 
 ### Harden flow added to the skill — the advisory 4th flow (toolkit fix)
 
-- **`pna-build-eval-contrib/SKILL.md`** — adds **Harden** as the fourth flow the skill packages
+- **`pna-toolkit/SKILL.md`** — adds **Harden** as the fourth flow the skill packages
   (`build · evaluate · contribute · harden`), writing the advisor procedure whose *concept* landed
   earlier with the Countermeasure library. Harden secures the *operating environment* a PNA runs in —
   runtime adversaries the app's own code can't reach (an OS-level AI agent or another local process) —
@@ -162,7 +175,7 @@
     states that a design's *other* conformance readouts are not this artifact, and recognizes **two
     equally-valid producers** — the skill's LLM evaluate flow *or* a design's deterministic
     `[verify].entrypoint` emitter (e.g. `just evaluate-report`).
-  - **`pna-build-eval-contrib/SKILL.md`** — evaluate-flow step 7 tells the agent to confirm which file
+  - **`pna-toolkit/SKILL.md`** — evaluate-flow step 7 tells the agent to confirm which file
     is a schema instance when a candidate ships several, and to prefer a cooperating design's
     deterministic emitter; PR-authoring step 6 now lists `evaluate-report.json` among the required PR
     artifacts (it was previously omitted there, though § PR contents already required it).
@@ -448,13 +461,13 @@
 ### Contribution types — toolkit fix vs reference design (process, additive)
 
 - **The toolkit-fix path is now first-class and discoverable.** A "Toolkit fix" PR type already existed in `.github/pull_request_template.md` and was acknowledged in passing under `CONTRIBUTING.md § Versioning`, but the **skill** (the LLM entry point) documented only the heavyweight reference-design flow, and the template shipped no toolkit-fix checklist — so an agent contributing a lint/docs/scope change had no path to follow and would wrongly force it through reference-design preflight. Since most PRs to the toolkit are toolkit fixes, the dominant case was the undocumented one.
-- **`pna-build-eval-contrib/SKILL.md`.** The Contribute flow now opens with a **routing heuristic** — *does the change impose a new contract a conformant design must satisfy?* — splitting into *Reference-design contribution* (the existing flow) and a new *Toolkit fix* sub-flow (normal PR; `tools/lint-spec-ids.py` + fixture self-tests; CHANGELOG entry; a `docs/PriorArt.md § Design notes` entry for decisions; check the Type box). [PR #19](https://github.com/richbodo/personal_network_toolkit/pull/19) (a scope decision that declined an AC) is cited as the canonical toolkit fix.
+- **`pna-toolkit/SKILL.md`.** The Contribute flow now opens with a **routing heuristic** — *does the change impose a new contract a conformant design must satisfy?* — splitting into *Reference-design contribution* (the existing flow) and a new *Toolkit fix* sub-flow (normal PR; `tools/lint-spec-ids.py` + fixture self-tests; CHANGELOG entry; a `docs/PriorArt.md § Design notes` entry for decisions; check the Type box). [PR #19](https://github.com/richbodo/personal_network_toolkit/pull/19) (a scope decision that declined an AC) is cited as the canonical toolkit fix.
 - **`CONTRIBUTING.md`.** New *Contribution types* section near the top with the same routing question; *What we don't accept* nuanced so a spec note that clarifies/declines a commitment is correctly a toolkit fix, not a forbidden undemonstrated spec change.
 - **`.github/pull_request_template.md`.** Adds a lightweight **Toolkit-fix checklist** (no new design obligation; CHANGELOG; Design-notes entry for decisions) alongside the reference-design one, with a routing comment in the Type section.
 
 ### Documentation — `CLAUDE.md`, task-ordered users-guide, doc-currency rule (process, additive)
 
-- **New `CLAUDE.md`.** Repo conventions plus a **documentation map** — one source of truth per fact (spec = normative, `pna-build-eval-contrib/SKILL.md` = agent procedure, `docs/users-guide.md` = task-ordered how-to, `CONTRIBUTING.md` = policy; docs link rather than restate) — the stdlib-only / RFC 2119 / versioned-as-a-unit conventions, and the lint-discipline rule (every check needs a fault-injection self-test in `tools/tests/lint_selftest.py`).
+- **New `CLAUDE.md`.** Repo conventions plus a **documentation map** — one source of truth per fact (spec = normative, `pna-toolkit/SKILL.md` = agent procedure, `docs/users-guide.md` = task-ordered how-to, `CONTRIBUTING.md` = policy; docs link rather than restate) — the stdlib-only / RFC 2119 / versioned-as-a-unit conventions, and the lint-discipline rule (every check needs a fault-injection self-test in `tools/tests/lint_selftest.py`).
 - **`docs/users-guide.md` re-architected** to be task-ordered: `Install the skill` + `Using the skill` (Build / Audit / Contribute) + `Working in this repo` (the `just` menu, one plain line per recipe) + `Contributing beyond reference designs`. The incoherent Goal 4 (archival) and Goal 5 (versioning) dissolved into the Contribute flow's tail (pointing to `CONTRIBUTING` for policy rather than restating it); the Goal 6 attestation steps folded into Build. Stale facts fixed (`swh-save` shipped; `just` commands replace bare `python3`; Constraints, Exceptions, and `design.toml` now documented).
 - **Doc-currency rule.** Any PR that changes a developer-visible behavior updates `docs/users-guide.md` in the **same PR** — stated in `CLAUDE.md` and enforced by a checkbox in the PR template's new **Every PR** section. The docs had drifted behind the code (justfile, self-tests, export lint, Constraints/Exceptions, manifests all undocumented); this stops the recurrence.
 
@@ -471,7 +484,7 @@
 - **`spec/constraints.md` (new).** Introduces **Constraints** — the dual of Exceptions: stable-ID'd (`CST-*`) platform/substrate-imposed ceilings, inherited automatically by axis picks, that bound a capability a PNA would otherwise offer. No one raises a Constraint (the platform imposes it); the PNA must *detect* it honestly and *handle* it by per-platform capability reduction. Handling a Constraint does **not** exit PNA mode — the failure mode is over-reach (false durability). Carries the `Triggered-by:`/`Bounds:`/`Frontier:`/`Detectability:` header conventions, two meta-principles (capability presence ≠ usefulness ≠ permanence; reduce at the data layer, not UI-only), and the seven-entry `CST-PWA-*` registry for the `web-bundle` × `opfs-sqlite-wasm` flavor.
 - **`tools/lint-spec-ids.py`.** Extended to collect `CST-*` IDs and validate constraint declarations: `Triggered-by:` tokens resolve to the pick set of the *named axis* (per-axis resolution, exact ID or pick-family prefix from `axes.md`); `Bounds:` tokens are valid `AC-*`/`Goal-N`/`PNA-DEFINITION`; `Frontier:` is well-formed (`Open`/`Mitigated`/`Solved-on-<platform>`/`Inherent`) with `Mitigated`/`Solved-*` requiring a `Workaround:`; `Detectability:` is one of `feature-detect`/`empirical-probe`/`ua-sniff`. The summary registry table is validated to the same rules as the detail blocks, and the two are cross-checked for consistency (same set of `CST-*` IDs; matching Triggered-by/Bounds/Frontier/Detectability per entry) so the human-facing table cannot silently drift from the authoritative blocks.
 - **`spec/PNA_Spec.md` + `spec/axes.md`.** A Constraints pointer near Goal 4 and in the "Validation, not certification" callout; the triggering picks (`storage:opfs-sqlite-wasm`, `web-bundle-*`) now cross-reference the constraints they inherit. The forced worker-owned single-connection architecture (formerly a separate `CST-PWA-DURABLE-SQL-ARCH` constraint that bounded no user-facing guarantee) is folded into AC-3's prose, where the same worker-owned realization already lives.
-- **`pna-build-eval-contrib/SKILL.md`.** Build flow gains "enumerate inherited Constraints" after axis selection; evaluate flow gains "detect and verify Constraints" after the exceptions pass (reporting by `CST-*` ID, with over-reach as the backstop).
+- **`pna-toolkit/SKILL.md`.** Build flow gains "enumerate inherited Constraints" after axis selection; evaluate flow gains "detect and verify Constraints" after the exceptions pass (reporting by `CST-*` ID, with over-reach as the backstop).
 - **Reference design.** `reference_designs/fellows_local_db/` adds the Constraints contribution note and a § Constraint attestation table demonstrating the handling (the private-data capability gate, folder mode, data-layer browse-only enforcement). Distilled from a real MCP-handoff fragility finding on that design.
 
 ### Private-DB portability (PR-6)
