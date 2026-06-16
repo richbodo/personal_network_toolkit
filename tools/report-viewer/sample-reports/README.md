@@ -1,7 +1,7 @@
 # Visual Validator — sample reports (render contract)
 
 Valid instances of [`../../evaluate-report.schema.json`](../../evaluate-report.schema.json) — the
-typed artifact the toolkit's **evaluate** flow emits ([`pna-build-eval-contrib/SKILL.md`](../../../pna-build-eval-contrib/SKILL.md)).
+typed artifact the toolkit's **evaluate** flow emits ([`pna-toolkit/SKILL.md`](../../../pna-toolkit/SKILL.md)).
 They serve two jobs (per [`plans/visual-validator-plan.md`](../../../plans/visual-validator-plan.md) Phase 1):
 
 1. **The Visual Validator's render fixtures** — the inputs `tools/report-viewer/index.html` renders

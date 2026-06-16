@@ -4,7 +4,7 @@
 builds the deterministic spine described below (clean → `unable-to-determine`, violation → `non-conformant`,
 never a self-conferred `conformant`); the **L** (LLM evaluate flow) and **F** (a design's `[verify]`
 entrypoint) tiers remain as described. Captures a 2026-06-09 brainstorm. Builds
-on the evaluate flow ([`../../pna-build-eval-contrib/SKILL.md`](../../pna-build-eval-contrib/SKILL.md)
+on the evaluate flow ([`../../pna-toolkit/SKILL.md`](../../pna-toolkit/SKILL.md)
 § Evaluate), the deterministic lints in [`../../tools/`](../../tools/), and the Visual Validator
 ([`../../tools/report-viewer/`](../../tools/report-viewer/)). Indexed in
 [`../PriorArt.md` § Design notes](../PriorArt.md).*

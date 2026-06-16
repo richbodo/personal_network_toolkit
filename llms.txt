@@ -2,11 +2,11 @@
 
 > Universal specification for personal network applications (PNAs). Defines vocabulary, goals, use cases, axes, composition (how PNAs get built), architectural commitments, and slot contracts. Targeted at AI agents and humans building PNAs together.
 
-**New here? Start with the skill.** If you are an AI agent that landed here cold, read [`pna-build-eval-contrib/SKILL.md`](pna-build-eval-contrib/SKILL.md) first. It is the entry point: it routes you into the spec, contracts, and reference designs for whichever flow you need — **evaluate** ("is this app safe to install?"), **build**, or **contribute**.
+**New here? Start with the skill.** If you are an AI agent that landed here cold, read [`pna-toolkit/SKILL.md`](pna-toolkit/SKILL.md) first. It is the entry point: it routes you into the spec, contracts, and reference designs for whichever flow you need — **evaluate** ("is this app safe to install?"), **build**, or **contribute**.
 
 ## Skill (agent entry point)
 
-- [pna-build-eval-contrib/SKILL.md](pna-build-eval-contrib/SKILL.md) — canonical PNA Toolkit skill for AI agents. Three flows: build a conformant PNA from the spec, evaluate a candidate PNA's conformance against the spec, contribute a design back to the toolkit
+- [pna-toolkit/SKILL.md](pna-toolkit/SKILL.md) — canonical PNA Toolkit skill for AI agents. Three flows: build a conformant PNA from the spec, evaluate a candidate PNA's conformance against the spec, contribute a design back to the toolkit
 - [docs/users-guide.md](docs/users-guide.md) — human-facing step-by-step instructions for each flow
 - [CONTRIBUTING.md](CONTRIBUTING.md) — how reference designs (and any spec changes they motivate) get accepted into the toolkit
 

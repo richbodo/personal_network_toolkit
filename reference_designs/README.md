@@ -13,7 +13,7 @@ See [`../CONTRIBUTING.md`](../CONTRIBUTING.md). Briefly:
 3. Author an Architecture document for the design per [`templates/ARCHITECTURE_TEMPLATE.md`](templates/ARCHITECTURE_TEMPLATE.md), including the AC attestation table with verification references.
 4. Open a PR with the spec diff, a design record, the Architecture document, and your repo's canonical URL + commit SHA.
 
-The skill at [`../pna-build-eval-contrib/SKILL.md`](../pna-build-eval-contrib/SKILL.md) walks an LLM agent through this end-to-end as its **contribute flow**.
+The skill at [`../pna-toolkit/SKILL.md`](../pna-toolkit/SKILL.md) walks an LLM agent through this end-to-end as its **contribute flow**.
 
 ## Templates
 

@@ -7,7 +7,7 @@ apps against the PNA Goals. This is a spec/lint/docs repo, **not** an applicatio
 
 **Read in this order:** [`README.md`](README.md) (overview + status) →
 [`spec/PNA_Spec.md`](spec/PNA_Spec.md) (the spec) →
-[`pna-build-eval-contrib/SKILL.md`](pna-build-eval-contrib/SKILL.md) (the agent flows) →
+[`pna-toolkit/SKILL.md`](pna-toolkit/SKILL.md) (the agent flows) →
 [`docs/users-guide.md`](docs/users-guide.md) (step-by-step how-to). Run `just` for the
 command menu and `just ci` before pushing.
 
@@ -28,7 +28,7 @@ the others *link* to it rather than re-explaining:
 
 - **`spec/*.md`** — normative content: Goals, ACs, axes, sub-contracts, Exceptions
   (`EX-*`), Constraints (`CST-*`). Owns *what conformance means*.
-- **`pna-build-eval-contrib/SKILL.md`** — how the agent executes the build / evaluate /
+- **`pna-toolkit/SKILL.md`** — how the agent executes the build / evaluate /
   contribute flows. Owns *agent procedure*.
 - **`docs/users-guide.md`** — task-ordered how-to for humans; mostly numbered action
   sequences. Owns *what a developer does, step by step*. Links to the spec / SKILL /

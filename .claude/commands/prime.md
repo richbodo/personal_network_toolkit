@@ -10,6 +10,6 @@ just
 ## Read
 README.md
 spec/PNA_Spec.md
-pna-build-eval-contrib/SKILL.md
+pna-toolkit/SKILL.md
 docs/users-guide.md
 CLAUDE.md

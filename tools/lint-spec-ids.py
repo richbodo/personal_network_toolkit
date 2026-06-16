@@ -43,7 +43,7 @@ Checks:
 
 The lint validates the *shape* of declarations (presence + ID/vocabulary/
 version resolution), not their behavioral correctness — that is the LLM
-evaluate flow's job (see pna-build-eval-contrib/SKILL.md § Evaluate flow).
+evaluate flow's job (see pna-toolkit/SKILL.md § Evaluate flow).
 
 Exits 0 if clean, 1 if any violation found. Designed to be CI-friendly.
 """
@@ -160,7 +160,7 @@ VERSION_PATH = REPO / "VERSION"
 VERSIONED_ARTIFACTS = [
     "spec/PNA_Spec.md", "spec/axes.md", "spec/use_cases.md", "spec/exceptions.md",
     "spec/constraints.md",
-    "pna-build-eval-contrib/SKILL.md", "CONTRIBUTING.md", "README.md",
+    "pna-toolkit/SKILL.md", "CONTRIBUTING.md", "README.md",
     "tools/lint-spec-ids.py", "tools/egress-lint.py", "tools/export-readable-lint.py",
     "tools/attestation-evidence-lint.py", "tools/validate.py",
     "tools/evaluate-report.schema.json", "tools/swh-save.sh",

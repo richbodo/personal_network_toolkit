@@ -1,7 +1,7 @@
 {
   "report_schema_version": "0.1",
   "generated_at": "2026-06-08T00:00:00Z",
-  "generated_by": "pna-build-eval-contrib skill (illustrative sample modeled on fellows_local_db — not its live attestation)",
+  "generated_by": "pna-toolkit skill (illustrative sample modeled on fellows_local_db — not its live attestation)",
   "candidate": {
     "name": "fellows_local_db (illustrative — see reference_designs/fellows_local_db for the real attestation)",
     "repo_url": "https://github.com/richbodo/fellows_local_db",

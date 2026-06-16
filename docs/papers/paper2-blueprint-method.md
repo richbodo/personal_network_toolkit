@@ -6,7 +6,7 @@
 >
 > **Companion:** Paper 1 ("Where the personal-network-application class sits" — the behavioral directed graph positioning PNAs among local-first / sovereignty / assurance / machine-followable-spec families). The two papers share one asset (the directed graph) and split the work: **Paper 1 places the *application class*; Paper 2 (this one) places the *method* used to specify it.**
 >
-> **Source provenance:** distilled from the toolkit's own artifacts (`spec/PNA_Spec.md`, `pna-build-eval-contrib/SKILL.md`, `docs/PriorArt.md`, `docs/PriorArtReferences.md`) and the R2/R4 research synthesis in `brainstorms/2026-06-14-pnt-direction-grill.md` (Q9 R4 findings; R2 SYNTHESIS Family IV + its conformance-model sub-axis). Citations below were web-verified June 2026.
+> **Source provenance:** distilled from the toolkit's own artifacts (`spec/PNA_Spec.md`, `pna-toolkit/SKILL.md`, `docs/PriorArt.md`, `docs/PriorArtReferences.md`) and the R2/R4 research synthesis in `brainstorms/2026-06-14-pnt-direction-grill.md` (Q9 R4 findings; R2 SYNTHESIS Family IV + its conformance-model sub-axis). Citations below were web-verified June 2026.
 
 ---
 
@@ -77,11 +77,11 @@ We position this method in a white space bounded by **four mature traditions**, 
 - **The layered object.** The spec is layered: **Goals** (human-readable outcomes) → **Constraints** (the human-readable layer that motivates the architectural layer) → **Architectural Commitments (ACs)** (stable-ID'd, RFC-2119, the unit of identity) → **typed contracts** (JSON Schema / OpenAPI / SQL DDL / TypeScript) that *realize* named ACs. Under ACs sit platform-ceiling constraints (`CST-*`) and user-relaxable **Exceptions** (`EX-*`).
 - **Variability.** A PNA *varies* along **axes** (e.g. distribution, storage substrate, ingestion shape, workspace shell, comms transport set, MCP-exposure); each **pick** (flavor) triggers flavor-derived ACs. Use "variable language" about axis counts (the set may evolve) — this itself is a feature-modeling instinct.
 - **Reference designs.** Working, deployed PNAs that demonstrate one valid combination of picks: `fellows_local_db` (Directory Archive) and `prm` (Personal Relationship Manager). Each is archived (Software Heritage SWHID) and carries an AC attestation table.
-- **Four flows, one skill.** **Build**, **evaluate**, **contribute** — the generative + evaluative + feedback loop — plus an advisory fourth, **harden** (secure the *operating environment* a PNA runs in; adds no AC, awards no pass/fail), are packaged as an Anthropic **Agent Skill** (`pna-build-eval-contrib/SKILL.md`) that an agent auto-discovers.
+- **Four flows, one skill.** **Build**, **evaluate**, **contribute** — the generative + evaluative + feedback loop — plus an advisory fourth, **harden** (secure the *operating environment* a PNA runs in; adds no AC, awards no pass/fail), are packaged as an Anthropic **Agent Skill** (`pna-toolkit/SKILL.md`) that an agent auto-discovers.
 - **The toolkit is versioned as a unit** (VERSION `0.1.0-draft`); every artifact carries a `Toolkit-Version:` stamp.
 
 **Citations**
-- Internal: `spec/PNA_Spec.md`, `spec/axes.md`, `pna-build-eval-contrib/SKILL.md`, `contracts/`, the two reference-design repos (richbodo/fellows_local_db, richbodo/prm).
+- Internal: `spec/PNA_Spec.md`, `spec/axes.md`, `pna-toolkit/SKILL.md`, `contracts/`, the two reference-design repos (richbodo/fellows_local_db, richbodo/prm).
 - Anthropic Agent Skills (for the packaging): https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview · engineering post "Equipping agents for the real world with Agent Skills": https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills · open-standard hub: https://agentskills.io
 - Software Heritage (durable archival of reference designs): https://www.softwareheritage.org
 
@@ -171,7 +171,7 @@ We position this method in a white space bounded by **four mature traditions**, 
 - **Why the recombination is more than the sum.** The same goal-anchored layering that lets an agent *build* (because the contracts are typed and the ACs are stable-ID'd) is exactly what lets an agent *evaluate* (cite the AC, trace the contract, attach evidence). Bidirectionality falls out of the layering; it is not a second mechanism bolted on.
 
 **Citations**
-- Internal: `pna-build-eval-contrib/SKILL.md` (the two flows over one artifact); `tools/evaluate-report.schema.json` (typed, diffable evaluate output); `docs/PriorArt.md` (the four-property "generative + class-scoped + multi-flavor + machine-checkable" working definition and its proximity matrix).
+- Internal: `pna-toolkit/SKILL.md` (the two flows over one artifact); `tools/evaluate-report.schema.json` (typed, diffable evaluate output); `docs/PriorArt.md` (the four-property "generative + class-scoped + multi-flavor + machine-checkable" working definition and its proximity matrix).
 - Cross-reference Paper 1 (the directed-graph positioning; Family IV conformance-model sub-axis) — shared asset.
 - Re-cite the four anchors from §3 as the four corners.
 
@@ -194,7 +194,7 @@ We position this method in a white space bounded by **four mature traditions**, 
 - **Packaging.** All four flows (the three conformance flows + the advisory **harden** flow) ship as one Anthropic Agent Skill; progressive disclosure (name+description always loaded; body on demand) is what makes a class blueprint *discoverable by an agent without context cost*.
 
 **Citations**
-- Internal: `pna-build-eval-contrib/SKILL.md`; `tools/lint-spec-ids.py`, `tools/egress-lint.py`, `tools/attestation-evidence-lint.py`, `tools/evaluate-report.schema.json`; `CONTRIBUTING.md`; `CLAUDE.md` (lint discipline + honest deferrals).
+- Internal: `pna-toolkit/SKILL.md`; `tools/lint-spec-ids.py`, `tools/egress-lint.py`, `tools/attestation-evidence-lint.py`, `tools/evaluate-report.schema.json`; `CONTRIBUTING.md`; `CLAUDE.md` (lint discipline + honest deferrals).
 - LLM-as-judge (the evaluative layer's grounding, incl. its known biases to disclose as a limitation): Zheng et al., *Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena*, NeurIPS 2023 Datasets & Benchmarks. https://arxiv.org/abs/2306.05685
 - Agent Skills progressive disclosure. https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview
 
