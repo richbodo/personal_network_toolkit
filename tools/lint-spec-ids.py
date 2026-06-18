@@ -162,7 +162,7 @@ VERSIONED_ARTIFACTS = [
     "spec/constraints.md",
     "pna-toolkit/SKILL.md", "CONTRIBUTING.md", "README.md",
     "tools/lint-spec-ids.py", "tools/egress-lint.py", "tools/export-readable-lint.py",
-    "tools/attestation-evidence-lint.py", "tools/validate.py",
+    "tools/attestation-evidence-lint.py", "tools/loopback-surface-lint.py", "tools/validate.py",
     "tools/evaluate-report.schema.json", "tools/swh-save.sh",
     "reference_designs/templates/TEMPLATE.md",
     "reference_designs/templates/ARCHITECTURE_TEMPLATE.md",

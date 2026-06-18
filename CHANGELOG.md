@@ -2,6 +2,10 @@
 
 ## v0.1 draft (in progress)
 
+### Loopback-surface lint: deterministic check for an app-opened transport (toolkit tool)
+
+- **`tools/loopback-surface-lint.py` (new)** — the static "checked, not asserted" companion for the one surface a PNA opens over its *own* data (an app-stood-up HTTP daemon; candidate `AC-PRM-H`, RFC). **L1** (a literal non-loopback bind) **gates**; **L2** (a handler module with no recognized auth guard) is **advisory** by default and gates only under `--strict` — so a heuristic can't rot into alarm-fatigued CI noise (the deliberate severity split). `--json` folds into an evaluate report (`source=deterministic`). Clean/dirty/noauth fixtures + `lint_selftest` cases; added to the versioned-artifact set and `just loopback-lint`. A standalone evaluator tool (like `egress-lint`); the `AC-PRM-H` *obligation* lands with its demonstrator (PRM) per CONTRIBUTING.
+
 ### Acceptance-process clarification: demonstrating commit vs. acceptance (toolkit fix)
 
 - **`CONTRIBUTING.md` § Acceptance process** — names the **demonstrating-commit vs. acceptance** distinction (two repos, two merges): the demonstrator is a *pushed, working, cited commit* — **not** a design-repo merge; the only gating merge is the toolkit PR ("the merge is the acceptance"); pin the demonstrator at a durable (merged / tagged) commit *before* acceptance, for SWHID / `Toolkit-Version` stability. No new obligation. (Split out of the loopback-surface RFC, [PR #78](https://github.com/richbodo/personal_network_toolkit/pull/78), to land first on its own.)
