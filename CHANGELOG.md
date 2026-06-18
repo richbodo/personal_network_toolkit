@@ -2,6 +2,31 @@
 
 ## v0.1 draft (in progress)
 
+### Realization index — a derived, cross-design map of *who realizes each AC, where* (toolkit tool)
+
+- **`tools/realization-index.py` (new) + `just realization-index` → [`docs/realization-index.md`](docs/realization-index.md)** — the
+  asset-dual of the field notes: a generated table mapping each AC to the accepted designs that realize it,
+  the harvested `path:symbol` code pointer, the verifying test, the status, and the design's **archived
+  commit / `swhid_dir`** (study the realization at the pin, not drifting `main`). Stdlib only; derived
+  entirely from the bundled `reference_designs/<name>/Architecture.md` attestation tables + `design.toml`
+  pins, so it can't drift from the evidence it summarizes. The build flow consults it to find proven code
+  *per AC* across all designs; the coverage summary names the ACs realized by more than one design (the
+  prime patterns to compare).
+- **Drift gate + self-test.** `just ci` runs `realization-index --check` (lockfile-style: a stale committed
+  index fails CI); a new `lint_selftest.py` case pins the extraction contract (no HTTP route, `*.md` doc
+  link, or unstitched `::name` continuation leaks into a pointer) and the drift gate. `just ci` green (43/43).
+- **Pointer-coverage as a tracked goal.** The index reports per-design *realization-pointer coverage*
+  (today fellows_local_db 13/23, prm 11/14); the standing goal is **100%**. To make attestations
+  deterministically harvestable, **`reference_designs/templates/ARCHITECTURE_TEMPLATE.md`** now asks for
+  `path:symbol` realizations and full `path/to/test.py::name` verifications (no bare `::name`). Raising the
+  two reference designs to full coverage is cross-repo follow-on work tracked in [`docs/roadmap.md`](docs/roadmap.md).
+- **Docs:** `docs/users-guide.md` gains the recipe + a *The realization index* section (and back-fills the
+  missing `just rearchive` row); the rationale lives in
+  [`docs/design-notes/2026-06-harvesting-reusable-code.md`](docs/design-notes/2026-06-harvesting-reusable-code.md)
+  (indexed in [`docs/PriorArt.md` § Design notes](docs/PriorArt.md)).
+- No spec/AC/contract change; no new obligation on any design (a toolkit fix). The template's
+  citation-form guidance is a recommendation that sharpens harvestability, not a new conformance bar.
+
 ### `just rearchive` — one-step reference-design re-archival (toolkit tool)
 
 - **`tools/rearchive.py` (new) + `just rearchive <name> <ref> <clone>`** — re-archiving an accepted design at

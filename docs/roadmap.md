@@ -129,6 +129,7 @@ health/vulnerability-adjacent, so it stress-tests G2/G3 harder than any prior de
 | Cross-device over commodity channels | fellows#257 | #42 | fellows (prototype pending) | **Tier 4** (vision-park) |
 | Data-floor / disclosure tiers (AC-MCP-C/PR-7/EX-H9) | design note | PR #34 | PRM v0.2 | **gated on PRM v0.2** |
 | Countermeasure library + Harden (environmental threats) | 2026-06-14 session + R3 | new | fellows/PRM (intrinsic) + toolkit-advised (external) | **Tier 0** (reframe) → **Tier 2** (Harden flow build-out) |
+| Cross-design code reuse: realization index + `path:symbol` attestation determinism | 2026-06-19 session | [design note](design-notes/2026-06-harvesting-reusable-code.md) | fellows/PRM (attestation tables) | **Tier 2** — tool adopted (`tools/realization-index.py`, drift-gated in `just ci`); **open goal: 100% realization-pointer coverage** in both designs (today fellows 13/23, PRM 11/14) — cross-repo `Architecture.md` edits + re-sync via `just rearchive` |
 
 ## Research outputs (2026-06-14)
 

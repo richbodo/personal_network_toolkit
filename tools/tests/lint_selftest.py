@@ -388,6 +388,39 @@ def case_rearchive_offline(results: list) -> None:
                 "" if not failed else f"unmet: {failed}\n--- rearchive output ---\n{out}")
 
 
+def case_realization_index(results: list) -> None:
+    """tools/realization-index.py (the `just realization-index` generator) must:
+    (a) emit a model with the designs + ACs and NO extraction warts — no HTTP route
+    (`/api/...`) or doc link (`*.md`) leaking into a realization pointer, and no bare
+    `::name` test continuation left unresolved in a verification ref; (b) report the
+    committed docs/realization-index.md as current (`--check` → 0); and (c) flag a STALE
+    index (`--check` → 1) — the lockfile-style drift gate `just ci` runs."""
+    j = _run(REPO, "tools/realization-index.py", "--json")
+    model = json.loads(j.stdout) if j.returncode == 0 else {}
+    _record(results, "realization-index: emits a model (>=2 designs)",
+            j.returncode == 0 and len(model.get("designs", [])) >= 2,
+            "" if j.returncode == 0 else j.stdout + j.stderr)
+    pts = [p for rs in model.get("acs", {}).values() for r in rs for p in r["realization"]]
+    vers = [v for rs in model.get("acs", {}).values() for r in rs for v in r["verification"]]
+    clean = (not any(p.startswith("/") for p in pts)
+             and not any(p.lower().endswith((".md", ".txt", ".rst")) for p in pts)
+             and not any(v.startswith("::") for v in vers))
+    _record(results, "realization-index: no route/doc/::-continuation extraction warts",
+            clean, "a route/doc pointer or an unstitched `::` continuation leaked through")
+    c = _run(REPO, "tools/realization-index.py", "--check")
+    _record(results, "realization-index: committed index is current (--check → 0)",
+            c.returncode == 0, "" if c.returncode == 0 else c.stdout + c.stderr)
+    with tempfile.TemporaryDirectory() as td:
+        dst = Path(td) / "repo"
+        shutil.copytree(REPO, dst, ignore=IGNORE)
+        idx = dst / "docs" / "realization-index.md"
+        idx.write_text(idx.read_text() + "\nstale drift\n", encoding="utf-8")
+        s = _run(dst, "tools/realization-index.py", "--check")
+        _record(results, "realization-index: stale index fails --check (drift gate)",
+                s.returncode != 0 and "stale" in (s.stdout + s.stderr).lower(),
+                "" if s.returncode != 0 else "a stale index was not flagged")
+
+
 def _record(results: list, name: str, ok: bool, detail: str) -> None:
     results.append((name, ok, detail))
     print(f"  {'PASS' if ok else 'FAIL'}  {name}")
@@ -423,6 +456,7 @@ def main() -> int:
     case_attestation_pytestmark(results)
     case_swh_save_annotated_tag(results)
     case_rearchive_offline(results)
+    case_realization_index(results)
 
     passed = sum(1 for _, ok, _ in results if ok)
     total = len(results)

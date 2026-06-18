@@ -164,6 +164,7 @@ VERSIONED_ARTIFACTS = [
     "tools/lint-spec-ids.py", "tools/egress-lint.py", "tools/export-readable-lint.py",
     "tools/attestation-evidence-lint.py", "tools/loopback-surface-lint.py", "tools/validate.py",
     "tools/evaluate-report.schema.json", "tools/swh-save.sh", "tools/rearchive.py",
+    "tools/realization-index.py",
     "reference_designs/templates/TEMPLATE.md",
     "reference_designs/templates/ARCHITECTURE_TEMPLATE.md",
 ]
