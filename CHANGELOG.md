@@ -2,6 +2,10 @@
 
 ## v0.1 draft (in progress)
 
+### Acceptance-process clarification: demonstrating commit vs. acceptance (toolkit fix)
+
+- **`CONTRIBUTING.md` § Acceptance process** — names the **demonstrating-commit vs. acceptance** distinction (two repos, two merges): the demonstrator is a *pushed, working, cited commit* — **not** a design-repo merge; the only gating merge is the toolkit PR ("the merge is the acceptance"); pin the demonstrator at a durable (merged / tagged) commit *before* acceptance, for SWHID / `Toolkit-Version` stability. No new obligation. (Split out of the loopback-surface RFC, [PR #78](https://github.com/richbodo/personal_network_toolkit/pull/78), to land first on its own.)
+
 ### Same-UID research folds into the Harden countermeasure rows (toolkit fix)
 
 - **`spec/exceptions.md` § Countermeasure library** — deep research into the desktop sandbox/encryption

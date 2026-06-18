@@ -73,6 +73,16 @@ On merge:
 
 > **Re-validation on a version bump.** A design is validated against a specific Toolkit-Version (recorded above). A later toolkit bump does not retroactively re-validate it; the design's `Toolkit-Version` declares what it was checked against, and re-validation is a fresh evaluate-flow run when the maintainer chooses to re-attest it.
 
+### The demonstrating commit vs. acceptance — what "with a demonstrating design" requires (and what it doesn't)
+
+Two repos means two merges, and only one is the gate — a recurring point of confusion worth stating outright.
+
+- **The demonstrating design is identified by a pushed, working, *cited commit*** — the canonical repo URL + commit SHA (and tag, if any) under *PR contents required* — that a maintainer can clone, inspect, and run. It is **not** required to be merged to its *own* repo's main branch; nothing in this policy requires that. A commit on an open PR branch is a real, runnable, citeable artifact.
+- **The only merge that gates acceptance is the *toolkit* PR merge** ("the merge is the acceptance," above). During review the design PR and the toolkit PR stay open and are reviewed **together** — *the two co-evolve*. Not-yet-accepted spec objects (a new AC, sub-contract, or handler clause) live as a **design-note stub + an RFC banner** (e.g. [`docs/design-notes/2026-06-data-floor-disclosure-tiers.md`](docs/design-notes/2026-06-data-floor-disclosure-tiers.md)), **never** in the live AC / contract / handler tables, so an un-accepted obligation can't make any design retroactively non-conformant.
+- **One convention, for archival stability:** pin the demonstrator at a **durable commit** — merged to its own main, or tagged — *before* the toolkit PR is accepted, because acceptance SWHID-archives that commit and stamps the `Toolkit-Version`, and a force-pushable PR-branch head is a weaker anchor than a merged or tagged commit.
+
+So the order at the finish line is **design-durable → toolkit-accept**, not "the design must be merged before the spec work may begin." Drafting the spec RFC against an open demonstrator PR is the expected co-evolution path, not a premature one.
+
 ## Versioning
 
 The PNA Spec uses linear SemVer:
