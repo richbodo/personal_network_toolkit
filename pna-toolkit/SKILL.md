@@ -25,7 +25,7 @@ Use when the user is starting or extending a PNA.
 3. **Enumerate inherited Constraints.** From the chosen axis picks, list every Constraint they inherit (`spec/constraints.md`, via each pick's `Triggered-by:` and the cross-references in `spec/axes.md`). For each, state the handling you will implement — per-platform capability reduction, "enough power to be useful, not enough to be dangerous" — and its frontier. A `web-bundle` × `opfs-sqlite-wasm` PNA inherits the full `CST-PWA-*` family; plan the folder-mode-vs-OPFS-only split and the honest non-Chromium messaging up front, not as an afterthought. A capability reduction MUST enforce at the data layer, not UI-only.
 4. **Author an Architecture document for the design.** Use the template at `reference_designs/templates/ARCHITECTURE_TEMPLATE.md`. It declares the Toolkit-Version, axis picks and their versions, and per-axis implementation choices.
 5. **Pull the typed contracts.** For each axis pick, the relevant contracts live in `contracts/`. Each contract opens with a `Realizes: AC-X, AC-Y` header naming the ACs it realizes. Treat the contracts as load-bearing — do not deviate without proposing a spec change (contribute flow).
-6. **Find a reference design that shares axis picks.** Each `reference_designs/<name>/` directory has a record with the design's flavor and a Software Heritage SWHID linking the archived source. Study the design that's closest to what the user wants.
+6. **Find a reference design that shares axis picks.** Each `reference_designs/<name>/` directory has a record with the design's flavor and a Software Heritage SWHID linking the archived source. Study the design that's closest to what the user wants. Also read any **field notes** for your applicable ACs (`docs/field-notes/<AC-ID>.md`) — pitfalls + negative-invariant checklists harvested from prior designs, so you build against known gotchas instead of re-deriving them.
 7. **Build against the contracts.**
 8. **Fill in the AC attestation table for the design.** For every applicable AC, name (a) how the design realizes it, with code references, and (b) the specific test, LLM evaluation rubric, or human-review note that verifies it for this design. A `conformant` row needs executable evidence (a resolvable test) or an explicitly declared review kind — a bare doc pointer is not evidence. Enumerate each row's **negative invariants** and pin each with a **negative test**. This is required for any future contribution PR.
 9. **Run the evaluate flow on the in-progress code as a self-check.**
@@ -37,6 +37,7 @@ Use when the user wants to audit an application for PNA conformance — either s
 Inputs: a candidate PNA's source tree (or a description sufficient to read its behavior), and either a declared set of axis picks (from an Architecture document, if present) or picks you can infer from the source.
 
 1. **For each AC in `spec/PNA_Spec.md` that applies to the candidate's flavor**, decide conformance:
+   - **Read the AC's field note first** (`docs/field-notes/<AC-ID>.md`, if one exists): the harvested pitfalls + negative-invariant checklist from prior designs tell you what to scrutinize and what a candidate is easy to pass *by accident*.
    - Read the relevant source files; trace the data flow or control flow the AC constrains.
    - Cite specific code locations supporting the decision.
    - If the candidate has an Architecture document with an AC attestation table, check that the declared verification mechanism actually runs and passes.
@@ -156,11 +157,23 @@ Background and catalog: [`spec/exceptions.md` § Environmental threats and the H
 4. **Report the Protect / Detect / Respond posture, honestly.** For the user's environment, state which countermeasures are **in place**, which **apply but aren't**, and what is **still exposed** — each with its strength class, so `best-effort` and `recoverable-only` are not read as "solved." The output is advisory: no grade, no AC status.
 5. **Advise, don't mandate.** The user mitigates in their own environment; the toolkit's value is telling them *which* countermeasures work and are appropriate (complex to know), not requiring one. Where a countermeasure could become a PNA-intrinsic AC, that is a *contribute*-flow proposal (demonstrator-gated per `CONTRIBUTING.md`), not a Harden output.
 
+## Capturing a conformance lesson (field notes)
+
+When you implement or harden a feature to satisfy an AC and its tests pass — especially after adversarial hardening — that is the moment a generalizable lesson is both *real* (a green test proves it load-bearing) and *fresh*. Capture it so the next builder/evaluator doesn't re-derive it:
+
+1. **Identify the AC(s)** the just-green work bears on (from the diff + the tests).
+2. **Split generalizable from design-specific.** The generalizable lesson → an AC-keyed **field note** at `docs/field-notes/<AC-ID>.md` (per its [`README`](../docs/field-notes/README.md) format); the design-specific "how we did it" stays in the design's own repo (its design note / Architecture).
+3. **Draft from the session + the diff + the negative tests**, linking each negative invariant to the test that pins it. The `/capture-lesson` command runs this procedure.
+4. **Honest decline.** If there is no generalizable lesson, say so in one line — never manufacture a note.
+
+**Standing rule (PR-checklist-enforced).** A PR that adds or changes a feature to satisfy an AC, with tests now passing, links the field-note entry it added/updated — or checks "no generalizable lesson" with a one-line why. The bounded trigger (AC-driven *and* test-backed) keeps it sustainable; the honest decline keeps it from manufacturing noise. Full rationale: [`docs/design-notes/2026-06-capturing-conformance-lessons.md`](../docs/design-notes/2026-06-capturing-conformance-lessons.md).
+
 ## Principles to honor in every flow
 
 - **Layering of verification.** Deterministic tools (lints in `tools/`) for the mechanical layer; LLMs (you) for the architectural-conformance layer; humans for judgment-and-review at PR time. Investment is ~80/20 toward description-and-process; the toolkit does not ship a Python conformance test runner beyond trivial lints.
 - **The AC is the unit of identity.** Every AC has a stable ID. Every contract names the AC(s) it realizes. Every Architecture document attests AC-by-AC. When citing non-conformance, cite by AC ID.
 - **Conformance is checked, not awarded.** There is no certifying body. A user trusts an app because they (or an LLM running this skill) checked it against the spec, not because the app carries a badge.
+- **Lessons are captured AC-keyed, not lost.** Hard-won, generalizable conformance knowledge from a reference design lands in `docs/field-notes/<AC-ID>.md` and is read by the build/evaluate flows above — see § Capturing a conformance lesson.
 - **Variable language about axis counts.** The spec says "the axes," not "the six axes." The set may evolve; don't hardcode numbers.
 
 ## Key resources
@@ -176,5 +189,6 @@ Background and catalog: [`spec/exceptions.md` § Environmental threats and the H
 - `tools/evaluate-report.schema.json` — typed artifact for the evaluate flow's AC-keyed report (the canonical, diffable output; the prose report is a view over it)
 - `tools/egress-lint.py` — deterministic private-data-sovereignty check (AC-1): static scan for unsanctioned off-device egress vectors; `--json` emits evidence that folds into the report schema above. Run it against a candidate and fold its evidence into the AC-1 (and AC-2, server-side) finding.
 - `tools/lint-spec-ids.py` — checks AC ↔ contract traceability invariants
+- `docs/field-notes/<AC-ID>.md` — AC-keyed lessons harvested from reference designs (pitfalls + negative-invariant checklists); read before judging/implementing that AC
 - `CONTRIBUTING.md` — full contribution rules
 - `docs/PriorArt.md` — survey of related work (annotated source list in `docs/PriorArtReferences.md`)

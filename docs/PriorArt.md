@@ -179,6 +179,12 @@ These references inform the toolkit's design without constraining it to any of t
 
 A running log of toolkit-shaping decisions and their rationale — most often a mapping of the toolkit against the prior art above driving a spec change (or a deliberate decision *not* to make one), but also discipline and tooling decisions distilled from a real finding in a reference design. This is where the *why* of a toolkit fix lives when it isn't itself a reference design. Newest first; each entry is dated and names what it changed.
 
+### 2026-06 — Capturing the lessons reference designs teach us (field notes)
+
+*Full note: [`design-notes/2026-06-capturing-conformance-lessons.md`](design-notes/2026-06-capturing-conformance-lessons.md). Adopted (ideas 1–3); first field note dogfooded on `AC-PRM-H`.*
+
+Hard-won, conformance-driven knowledge from building/hardening a reference design was evaporating into the collaborative chat, leaving validators and builders to re-derive it. The fix is an **AC-keyed field-notes store** ([`field-notes/`](field-notes/)) the build/evaluate flows read *before* implementing/judging an AC; a **`/capture-lesson`** procedure that drafts a note from the session + diff + green tests; and a **PR-checklist standing rule** — an AC-driven, test-backed change links a field note or honestly declines. Generalizable lesson → toolkit field note; design-specific "how we did it" → the design's own repo. The trigger is the moment an AC-driven feature's tests pass (the lesson is then both real and fresh). First worked instance: `AC-PRM-H` (the loopback-surface work).
+
 ### 2026-06 — `just validate <path>`: the deterministic-baseline spine landed
 
 The [`just validate` design note](design-notes/2026-06-validate-command-and-strength-tiers.md) sketched a
