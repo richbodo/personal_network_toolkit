@@ -56,6 +56,11 @@ egress-lint target *args:
 export-lint target *args:
     {{python}} tools/export-readable-lint.py {{target}} {{args}}
 
+# Scan a candidate for an unauthenticated app-opened loopback surface (candidate AC-PRM-H; L1 gates, L2 advisory; --strict gates L2; args pass through).
+[group('evaluate')]
+loopback-lint target *args:
+    {{python}} tools/loopback-surface-lint.py {{target}} {{args}}
+
 # Check a design's `conformant` attestation rows cite live, non-deferred evidence (args pass through).
 [group('evaluate')]
 attestation-lint target *args:

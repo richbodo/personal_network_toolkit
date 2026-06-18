@@ -14,6 +14,7 @@ The PNA Toolkit is built to be consumed by AI coding agents, and its users are d
 > - [`tools/egress-lint.py`](../tools/egress-lint.py) — the deterministic AC-1 off-device-egress check, with clean/dirty fixtures.
 > - [`tools/export-readable-lint.py`](../tools/export-readable-lint.py) — the deterministic PR-6 export-readability check, with clean/dirty fixtures.
 > - [`tools/attestation-evidence-lint.py`](../tools/attestation-evidence-lint.py) — the deterministic attestation-evidence check (a `conformant` row must cite a live, non-`xfail`/`skip` test or a declared review kind), with clean/dirty fixtures.
+> - [`tools/loopback-surface-lint.py`](../tools/loopback-surface-lint.py) — the deterministic loopback-surface check for an app-opened HTTP daemon (candidate `AC-PRM-H`, RFC): an L1 non-loopback bind gates; an L2 unauthenticated-handler is advisory (`--strict` gates it). Clean/dirty/noauth fixtures.
 > - [`tools/validate.py`](../tools/validate.py) — `just validate <candidate>`: runs the Tier-S deterministic lints and folds them into one `evaluate-report.json` (the deterministic baseline an agent's LLM pass then enriches); self-tested on the egress fixtures.
 > - [`tools/evaluate-report.schema.json`](../tools/evaluate-report.schema.json) — the audit-report schema.
 >
@@ -176,6 +177,7 @@ For developers working **on the toolkit itself** (the spec, lints, contracts, sk
 | `just egress-lint <dir> [args]` | Scan a candidate PNA's source for off-device egress vectors — the deterministic AC-1 check (args like `--json`, `--allow <origin>` pass through). |
 | `just export-lint <path> [args]` | Check a Private-DB human-readable export is readable with no PNA tooling — the deterministic PR-6 check. |
 | `just attestation-lint <dir> [args]` | Check a design's Architecture document — every `conformant` attestation row cites a live, non-deferred (`xfail`/`skip`-free) test or a declared review kind. The deterministic half of "exists **and** passes." |
+| `just loopback-lint <dir> [args]` | Scan a candidate for an unauthenticated app-opened **loopback surface** (candidate `AC-PRM-H`, RFC): an L1 literal non-loopback bind **gates**; an L2 unauthenticated handler is **advisory** (`--strict` promotes it to a gate). A bounded tripwire — the deterministic half, like `egress-lint`. |
 | `just report-lint <path>` | Validate `evaluate-report.json` instance(s) against the render contract the Visual Validator reads — a single file or a reports directory (e.g. a cron drop). |
 | `just swh-save <repo-url> [ref] [clone]` | Request Software Heritage archival of a design's repo and print the SWHID fields to paste into its `design.toml`. **Pass the `clone` path (3rd arg) when running from the toolkit** — otherwise it computes the toolkit's own SWHIDs from the cwd. See [Archive a reference design](#archive-a-reference-design-to-the-software-heritage-archive). |
 | `just test-design <name>` | *(Scaffold, inert)* the planned per-design conformance harness — see [`plans/conformance-suite-plan.md`](../plans/conformance-suite-plan.md) § Phase 4. |
@@ -256,6 +258,7 @@ Working on the toolkit itself: `just` for the command menu, `just ci` before pus
   - [`tools/egress-lint.py`](../tools/egress-lint.py) — deterministic AC-1 off-device-egress check
   - [`tools/export-readable-lint.py`](../tools/export-readable-lint.py) — deterministic PR-6 export-readability check
   - [`tools/attestation-evidence-lint.py`](../tools/attestation-evidence-lint.py) — deterministic attestation-evidence check (every `conformant` row cites a live, non-deferred test or a declared review kind)
+  - [`tools/loopback-surface-lint.py`](../tools/loopback-surface-lint.py) — deterministic loopback-surface check for an app-opened HTTP daemon (candidate `AC-PRM-H`, RFC; L1 bind gates, L2 no-auth advisory, `--strict` gates L2)
   - [`tools/validate.py`](../tools/validate.py) — `just validate <candidate>`: the one-command Tier-S deterministic baseline, emitting an `evaluate-report.json`
   - [`tools/evaluate-report.schema.json`](../tools/evaluate-report.schema.json) — typed schema for the audit report
   - [`tools/report-fixtures-lint.py`](../tools/report-fixtures-lint.py) — deterministic render-contract check for `evaluate-report.json` instances (the Visual Validator's input); samples at [`tools/report-viewer/sample-reports/`](../tools/report-viewer/sample-reports/)

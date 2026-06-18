@@ -311,6 +311,24 @@ def case_swh_save_annotated_tag(results: list) -> None:
                 f"expected swh:1:rev:{commit} (commit), not the tag object {tagobj}; got:\n{out}")
 
 
+def case_loopback_advisory(results: list) -> None:
+    """Pin the L1-gates / L2-advisory split (the soft-spot fix): the no-auth fixture
+    is an L2 advisory that does NOT gate by default (exit 0, but reported), and DOES
+    gate under --strict (exit 1). A heuristic must neither silently fail CI nor
+    silently vanish — so both halves are asserted, not just the L1 clean/dirty pair."""
+    base = "tools/loopback-surface-lint-fixtures/noauth"
+    d = _run(REPO, "tools/loopback-surface-lint.py", base)
+    out = d.stdout + d.stderr
+    ok = d.returncode == 0 and "[L2]" in out and "advisory" in out.lower()
+    _record(results, "loopback-surface-lint: L2 is advisory (no gate) by default", ok,
+            "" if ok else f"exit={d.returncode}, expected exit 0 + an [L2] advisory in:\n{out}")
+    s = _run(REPO, "tools/loopback-surface-lint.py", base, "--strict")
+    out2 = s.stdout + s.stderr
+    ok2 = s.returncode != 0 and "[L2]" in out2
+    _record(results, "loopback-surface-lint: --strict promotes L2 to a gating error", ok2,
+            "" if ok2 else f"exit={s.returncode}, expected exit 1 + [L2] in:\n{out2}")
+
+
 def _record(results: list, name: str, ok: bool, detail: str) -> None:
     results.append((name, ok, detail))
     print(f"  {'PASS' if ok else 'FAIL'}  {name}")
@@ -337,6 +355,10 @@ def main() -> int:
     case_fixture_lint(results, "tools/report-fixtures-lint.py",
                       "tools/report-viewer/sample-reports",
                       "tools/report-fixtures-lint-fixtures/dirty")
+    case_fixture_lint(results, "tools/loopback-surface-lint.py",
+                      "tools/loopback-surface-lint-fixtures/clean",
+                      "tools/loopback-surface-lint-fixtures/dirty")
+    case_loopback_advisory(results)
     case_validate(results)
     case_attestation_marker_message(results)
     case_attestation_pytestmark(results)
