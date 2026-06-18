@@ -16,6 +16,7 @@
 - [ ] **Docs current** — if this changes a developer-visible behavior (a `just` recipe, a lint check or its message, a skill flow, a contract/AC/manifest field, or a contribution step), [`docs/users-guide.md`](../docs/users-guide.md) is updated in this PR. *(See `CLAUDE.md` § Keep the docs current.)*
 - [ ] **Local gate green** — `just ci` passes (lint + self-tests); any new lint check has a fault-injection self-test.
 - [ ] **Manual test/QA steps** for the reviewer are in the PR description (when applicable).
+- [ ] **Conformance lesson captured** — if this PR adds/changes a feature to satisfy an AC with tests now passing, it links the AC-keyed field note (`docs/field-notes/<AC-ID>.md`) it added/updated, *or* checks here that there's no generalizable lesson (one-line why). *(See `pna-toolkit/SKILL.md` § Capturing a conformance lesson.)*
 
 ## Toolkit-fix checklist
 

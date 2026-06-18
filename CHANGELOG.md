@@ -2,6 +2,12 @@
 
 ## v0.1 draft (in progress)
 
+### Capture-lessons practice: AC-keyed field notes (adopted; dogfooded on AC-PRM-H)
+
+- **`docs/field-notes/` (new)** — the consumable, AC-keyed store for generalizable lessons harvested from reference designs (pitfalls + negative-invariant checklists). First entry **`AC-PRM-H.md`**, dogfooded from the loopback-surface work (PRM #59).
+- **`pna-toolkit/SKILL.md`** — the build and evaluate flows now read an AC's field note *before* implementing/judging it; a new § *Capturing a conformance lesson* documents the procedure (and the `/capture-lesson` command), with the **PR-checklist standing rule** (AC-driven + test-backed change → link a field note or honestly decline).
+- **`.github/pull_request_template.md`** — the standing-rule checkbox. **`docs/design-notes/2026-06-capturing-conformance-lessons.md`** flipped proposal → **adopted** (ideas 1–3); indexed in [`docs/PriorArt.md` § Design notes](docs/PriorArt.md).
+
 ### Loopback-surface auth lands: `AC-PRM-H` + the "no ungoverned data tap" principle (with its demonstrator, PRM #59)
 
 - **`spec/axes.md` § Workspace shell — new flavor-derived `AC-PRM-H`** (replacing the prior RFC pointer): a same-host-reachable surface a PNA opens over its own data (a loopback HTTP daemon, a local socket) MUST be loopback-bound + authenticated to the user's own session. Triggered by a server-backed local shell × a non-`web-bundle` distribution. Authenticating the transport relaxes no guarantee, so it does **not** flip `pna-active`.

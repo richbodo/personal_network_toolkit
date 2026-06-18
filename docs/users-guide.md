@@ -265,4 +265,5 @@ Working on the toolkit itself: `just` for the command menu, `just ci` before pus
   - [`tools/report-viewer/`](../tools/report-viewer/) — the Visual Validator viewer (static HTML/JS): open `index.html` and load an `evaluate-report.json` (drag-drop / file picker / `?report=`)
   - [`tools/swh-save.sh`](../tools/swh-save.sh) — Software Heritage archival + SWHID computation
 - [`docs/conformance-scope-and-lifecycle.md`](conformance-scope-and-lifecycle.md) — what the conformance suite covers, the active/archival lifecycle, and the roadmap
+- [`docs/field-notes/`](../docs/field-notes/) — AC-keyed lessons harvested from reference designs (pitfalls + negative-invariant checklists), read before building or auditing that AC; the practice's rationale is [`docs/design-notes/2026-06-capturing-conformance-lessons.md`](design-notes/2026-06-capturing-conformance-lessons.md)
 - [`plans/`](../plans/) — live plans tracking the toolkit's own evolution
