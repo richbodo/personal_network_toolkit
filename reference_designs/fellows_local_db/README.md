@@ -9,11 +9,11 @@
 
 - **Accepted:** 2026-05-31, by the maintainer (Rich Bodo). As the design the toolkit was distilled from, `fellows_local_db` is accepted *by definition* for Toolkit-Version 0.1 (see [`CONTRIBUTING.md` § Acceptance process](../../CONTRIBUTING.md#acceptance-process)).
 - **Validated against:** Toolkit-Version 0.1. The AC + `EX-CLOUD-LLM` exception attestation is in [`Architecture.md`](Architecture.md); its Verification column cites real tests that are lint-green in CI.
-- **Archival commit:** `dc3e0cffbbca44547c6987602fbbb1003d6920e6` — fellows `main` at the post-#267 state (the deterministic `just evaluate-report` emitter; supersedes the `bbaf66e` / `046584c` / `v0.1.0` snapshots). The manifest is now `archival = "archived"`: the `[verify]` entrypoint (`just evaluate-report`) has landed and the SWHIDs are git-verified.
+- **Archival commit:** `98b283f10cfa0196006f66b9507179f25e821ef6` — fellows `main` after PR #289 (`path:symbol` realization pointers → 100% realization-pointer coverage), superseding the post-#267 `dc3e0cf` snapshot. The manifest stays `archival = "archived"`: the `[verify]` entrypoint (`just evaluate-report`) and the SWHIDs are git-verified.
 - **Software Heritage SWHID:**
-  - `swh:1:dir:d69ecdfbee779a45d8c5a129e6787b623f6bc4c4` (the archived source tree — canonical permanent identifier)
-  - `swh:1:rev:dc3e0cffbbca44547c6987602fbbb1003d6920e6` (the accepted revision)
-  - These are git-compatible (SH's `dir`/`rev` identifiers equal the git tree/commit hashes), computed at the archived commit. The Software Heritage *Save Code Now* request `2352911` was submitted 2026-06-09 for `https://github.com/richbodo/fellows_local_db`; the identifiers are content-addressed and resolve unchanged once ingest completes (asynchronous — minutes to hours). Re-run any time via [`tools/swh-save.sh`](../../tools/swh-save.sh).
+  - `swh:1:dir:1bb784328e99fe888addf2e04fc2bbdf66b5ec05` (the archived source tree — canonical permanent identifier)
+  - `swh:1:rev:98b283f10cfa0196006f66b9507179f25e821ef6` (the accepted revision)
+  - These are git-compatible (SH's `dir`/`rev` identifiers equal the git tree/commit hashes), computed at the archived commit. **Save Code Now submission for this commit is pending** — it was re-pinned offline (`just rearchive … --no-save`); the prior request `2352911` (2026-06-09) covered `dc3e0cf`. The identifiers are content-addressed and resolve unchanged once ingest completes. Submit `98b283f` via [`tools/swh-save.sh`](../../tools/swh-save.sh) (or `just rearchive` without `--no-save`).
 
 ## Summary
 

@@ -15,11 +15,11 @@ name = "fellows_local_db"
 repo = "https://github.com/richbodo/fellows_local_db"
 toolkit_version = "0.1"
 status = "active"
-archival = "archived"   # Tier-0 keystone complete: [verify] entrypoint landed (fellows #267); SWHIDs git-verified; SH ingest (req 2352911) async
+archival = "archived"   # re-pinned to fellows #289 (98b283f) for 100% realization-pointer coverage. SWHIDs are git-computed/content-addressed; Save Code Now for THIS commit is PENDING (offline --no-save re-pin) — the prior submit (req 2352911) was for dc3e0cf. Run `just rearchive` without --no-save (or `just swh-save`) to submit 98b283f.
 
-commit    = "dc3e0cffbbca44547c6987602fbbb1003d6920e6"
-swhid_rev = "swh:1:rev:dc3e0cffbbca44547c6987602fbbb1003d6920e6"
-swhid_dir = "swh:1:dir:d69ecdfbee779a45d8c5a129e6787b623f6bc4c4"
+commit    = "98b283f10cfa0196006f66b9507179f25e821ef6"
+swhid_rev = "swh:1:rev:98b283f10cfa0196006f66b9507179f25e821ef6"
+swhid_dir = "swh:1:dir:1bb784328e99fe888addf2e04fc2bbdf66b5ec05"
 
 [flavor]
 distribution = "web-bundle-with-magic-link"

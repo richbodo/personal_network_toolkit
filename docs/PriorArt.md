@@ -179,6 +179,12 @@ These references inform the toolkit's design without constraining it to any of t
 
 A running log of toolkit-shaping decisions and their rationale — most often a mapping of the toolkit against the prior art above driving a spec change (or a deliberate decision *not* to make one), but also discipline and tooling decisions distilled from a real finding in a reference design. This is where the *why* of a toolkit fix lives when it isn't itself a reference design. Newest first; each entry is dated and names what it changed.
 
+### 2026-06 — Harvesting reusable code from reference designs
+
+*Full note: [`design-notes/2026-06-harvesting-reusable-code.md`](design-notes/2026-06-harvesting-reusable-code.md). Tier-0 adopted: `tools/realization-index.py` → [`realization-index.md`](realization-index.md), drift-gated in `just ci`; open goal = 100% realization-pointer coverage.*
+
+The toolkit's `just rearchive` helper (PR #83) raised a general question: how should tested, portable code be **found and reused** across reference designs and by new builds? Two facts shape it — the source lives in separate SWHID-archived repos (so the lever is **discovery + provenance-stamped pointers**, not a vendored library), and the builder is an AI agent (so the surface must be agent-legible, keyed to stable IDs). The note splits reuse into **Type A** ecosystem tooling (re-archive, report emitters — the toolkit owns the toolkit-side half, `just rearchive`; the design-side emitter is per-design, e.g. PRM's `scripts/evaluate_report.py`) and **Type B** application patterns (the auto-backup ring, RPC dispatch, orphan-preview swap — can only be *pointed at*). The proposed fix is the **asset-dual of field notes**: a **realization index keyed by AC/sub-contract**, largely *derived* from the attestation tables the toolkit already keeps (every `conformant` row already cites `file:line` + a test), so it can't drift. Staged — Tier 0 a generated cross-design index, Tier 1 a `harvest`/portability mark, Tier 2 AC-keyed cookbook notes (rule-of-three gated). The honest counter: the bones largely exist; the one real gap is an aggregated, reuse-framed, queryable view.
+
 ### 2026-06 — Capturing the lessons reference designs teach us (field notes)
 
 *Full note: [`design-notes/2026-06-capturing-conformance-lessons.md`](design-notes/2026-06-capturing-conformance-lessons.md). Adopted (ideas 1–3); first field note dogfooded on `AC-PRM-H`.*

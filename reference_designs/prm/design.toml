@@ -12,11 +12,11 @@ name = "prm"
 repo = "https://github.com/richbodo/prm"
 toolkit_version = "0.1"
 status = "active"
-archival = "archived"  # SWHIDs recorded below; Save Code Now ingest re-requested at pnt-ref-0.1.1 / 1551896 (PR #59 merge to main)
+archival = "archived"  # re-pinned to pnt-ref-0.1.2 (7bd4a28) for 100% realization-pointer coverage. SWHIDs git-computed/content-addressed; Save Code Now for THIS commit is PENDING (offline --no-save re-pin) — prior submit was for 1551896. Run `just rearchive` without --no-save (or `just swh-save`) to submit 7bd4a28.
 
-commit    = "1551896025307ac4b08ba621c02f4e0d77eb9391"      # prm@pnt-ref-0.1.1 — PR #59 merge to main (loopback trust surface; upstream spec changes accepted)
-swhid_rev = "swh:1:rev:1551896025307ac4b08ba621c02f4e0d77eb9391"
-swhid_dir = "swh:1:dir:39637a1ff96f77e7df47e87ac53a7c6d8fc61b62"
+commit    = "7bd4a28106f2496e0fd7548e0b6be5e2bb593089"      # prm@pnt-ref-0.1.2 — PR #60 (path:symbol realization pointers; 100% coverage)
+swhid_rev = "swh:1:rev:7bd4a28106f2496e0fd7548e0b6be5e2bb593089"
+swhid_dir = "swh:1:dir:87d3d263759092a46f9459d95234cd2cedc6edfb"
 
 [flavor]
 distribution = "never-distributed-single-user"

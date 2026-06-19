@@ -17,11 +17,12 @@
   render contract — is **conformant** for the declared flavor: 12 conformant, 2 partial-conformance
   (flagged for human review: `AC-PRM-A`, `AC-MCP-A` — consent + signaling, because an MCP server cannot
   identify the consuming LLM), 4 not-applicable (`comms:none`) across 18 evaluated ACs.
-- **Archival:** `archival = "archived"` — source pinned at `prm@pnt-ref-0.1.1` (`1551896`, the PR [#59](https://github.com/richbodo/prm/pull/59)
-  merge to `main`, which lands the loopback-daemon trust-surface work after the upstream spec changes it rides were
-  accepted): `swh:1:rev:1551896025307ac4b08ba621c02f4e0d77eb9391`,
-  `swh:1:dir:39637a1ff96f77e7df47e87ac53a7c6d8fc61b62` (computed via `tools/swh-save.sh`; Save Code Now ingest
-  re-requested 2026-06-18). The `[verify].entrypoint` is `just conformance` in the canonical repo.
+- **Archival:** `archival = "archived"` — source pinned at `prm@pnt-ref-0.1.2` (`7bd4a28`, PR [#60](https://github.com/richbodo/prm/pull/60),
+  which adds `path:symbol` realization pointers → 100% realization-pointer coverage; supersedes the `pnt-ref-0.1.1` / `1551896`
+  snapshot): `swh:1:rev:7bd4a28106f2496e0fd7548e0b6be5e2bb593089`,
+  `swh:1:dir:87d3d263759092a46f9459d95234cd2cedc6edfb` (computed via `tools/swh-save.sh`). **Save Code Now submission for this
+  commit is pending** — it was re-pinned offline (`--no-save`); the prior request (2026-06-18) covered `1551896`. Submit `7bd4a28`
+  via `tools/swh-save.sh` (or `just rearchive` without `--no-save`). The `[verify].entrypoint` is `just conformance` in the canonical repo.
 
 ## Summary
 

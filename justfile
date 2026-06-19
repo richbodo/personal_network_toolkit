@@ -9,6 +9,7 @@
 #   just egress-lint ../candidate --json                 # AC-1 egress scan of a candidate PNA
 #   just export-lint ../candidate/export                 # PR-6 export-readability check
 #   just swh-save https://github.com/you/your-pna v1.0   # archive + print SWHID fields
+#   just rearchive prm pnt-ref-0.1.1 ~/src/prm           # re-archive a design + refresh its manifest pin
 
 set shell := ["bash", "-euo", "pipefail", "-c"]
 
@@ -27,6 +28,7 @@ default:
 # Lint + self-tests — the full CI gate (run before pushing).
 [group('check')]
 ci: lint lint-selftest
+    @{{python}} tools/realization-index.py --check
 
 # Spec / contract / version / constraint / manifest lint (tools/lint-spec-ids.py).
 [group('check')]
@@ -78,6 +80,16 @@ report-lint target:
 [group('design')]
 swh-save url ref="HEAD" clone="":
     tools/swh-save.sh {{url}} {{ref}} {{clone}}
+
+# Re-archive an accepted design at a ref: archive (swh-save) + rewrite its design.toml pin + refresh its bundled Architecture/report copies + lint. Args: <name> <ref> <clone> [--no-save …].
+[group('design')]
+rearchive name ref clone *args:
+    {{python}} tools/rearchive.py {{name}} {{ref}} {{clone}} {{args}}
+
+# Regenerate the derived cross-design realization index (docs/realization-index.md) from the bundled attestation tables. `just ci` fails if it is stale. Args: [--check | --json | --stdout].
+[group('design')]
+realization-index *args:
+    {{python}} tools/realization-index.py {{args}}
 
 # (Scaffold, Phase 4) fetch -> verify SWHID -> build -> run a design's [verify] entrypoint; inert for now.
 [group('design')]

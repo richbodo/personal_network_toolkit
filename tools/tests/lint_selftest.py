@@ -140,14 +140,14 @@ SPEC_ID_FAULTS = [
         # check, this fault empties the commit — an archived design MUST carry its commit pin.
         name="manifest: archived design without its SWHID pin (honest-deferral)",
         file="reference_designs/fellows_local_db/design.toml",
-        old='commit    = "dc3e0cffbbca44547c6987602fbbb1003d6920e6"',
+        old='commit    = "98b283f10cfa0196006f66b9507179f25e821ef6"',
         new='commit    = ""',
         expect="requires 'commit'",
     ),
     dict(
         name="manifest: malformed SWHID value",
         file="reference_designs/fellows_local_db/design.toml",
-        old='swhid_dir = "swh:1:dir:d69ecdfbee779a45d8c5a129e6787b623f6bc4c4"',
+        old='swhid_dir = "swh:1:dir:1bb784328e99fe888addf2e04fc2bbdf66b5ec05"',
         new='swhid_dir = "swh:1:dir:not-a-real-hash"',
         expect="malformed",
     ),
@@ -329,6 +329,98 @@ def case_loopback_advisory(results: list) -> None:
             "" if ok2 else f"exit={s.returncode}, expected exit 1 + [L2] in:\n{out2}")
 
 
+def case_rearchive_offline(results: list) -> None:
+    """tools/rearchive.py end-to-end, offline (--no-save): against a throwaway design
+    clone it must rewrite the named design's design.toml pin (commit / swhid_rev /
+    swhid_dir + archival=archived), refresh the bundled Architecture.md copy from the
+    clone at the ref, WARN when the report's candidate.commit lags the pinned commit,
+    and leave the manifest lint-clean. Runs from a copy of the repo so the real
+    reference_designs/ is never mutated; the Save Code Now POST is skipped (offline)."""
+    name = "rearchive.py: offline re-pin + copy refresh + stale-report warning"
+    git = shutil.which("git")
+    if git is None:
+        _record(results, name + " (SKIP: no git)", True, "")
+        return
+    env = {**os.environ,
+           "GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@e.x",
+           "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL": "t@e.x"}
+
+    def g(repo: Path, *a: str) -> subprocess.CompletedProcess:
+        return subprocess.run([git, "-C", str(repo), *a], capture_output=True, text=True, env=env)
+
+    with tempfile.TemporaryDirectory() as td:
+        # (a) a throwaway "design clone" carrying the canonical paths rearchive reads.
+        clone = Path(td) / "clone"
+        (clone / "docs" / "conformance").mkdir(parents=True)
+        (clone / "docs" / "Architecture.md").write_text("# Fixture Architecture\nMARKER-9173\n")
+        (clone / "docs" / "conformance" / "evaluate-report.json").write_text(
+            json.dumps({"candidate": {"commit": "0" * 40}, "findings": []}))  # stamp lags on purpose
+        g(clone, "init", "-q")
+        g(clone, "add", "-A")
+        g(clone, "commit", "-q", "-m", "fixture")
+        commit = g(clone, "rev-parse", "HEAD^{commit}").stdout.strip()
+        tree = g(clone, "rev-parse", "HEAD^{tree}").stdout.strip()
+        if not commit or not tree:
+            _record(results, name, False, "fixture clone produced no commit/tree")
+            return
+
+        # (b) run rearchive from a COPY of the toolkit repo, re-pinning the prm design.
+        root = Path(td) / "repo"
+        shutil.copytree(REPO, root, ignore=IGNORE)
+        cp = subprocess.run(
+            [PY, str(root / "tools/rearchive.py"), "prm", commit, str(clone), "--no-save"],
+            capture_output=True, text=True, cwd=str(root), env=env)
+        out = cp.stdout + cp.stderr
+        manifest = (root / "reference_designs/prm/design.toml").read_text()
+        arch = root / "reference_designs/prm/Architecture.md"
+        checks = {
+            "exit 0": cp.returncode == 0,
+            "commit pinned": f'"{commit}"' in manifest,
+            "swhid_rev pinned": f"swh:1:rev:{commit}" in manifest,
+            "swhid_dir pinned": f"swh:1:dir:{tree}" in manifest,
+            "archival=archived": 'archival = "archived"' in manifest,
+            "Architecture refreshed from clone": arch.exists() and "MARKER-9173" in arch.read_text(),
+            "stale-report warning emitted": "candidate.commit pins" in out,
+            "manifest stays lint-clean": "lint-spec-ids: OK" in out,
+        }
+        failed = [k for k, v in checks.items() if not v]
+        _record(results, name, not failed,
+                "" if not failed else f"unmet: {failed}\n--- rearchive output ---\n{out}")
+
+
+def case_realization_index(results: list) -> None:
+    """tools/realization-index.py (the `just realization-index` generator) must:
+    (a) emit a model with the designs + ACs and NO extraction warts — no HTTP route
+    (`/api/...`) or doc link (`*.md`) leaking into a realization pointer, and no bare
+    `::name` test continuation left unresolved in a verification ref; (b) report the
+    committed docs/realization-index.md as current (`--check` → 0); and (c) flag a STALE
+    index (`--check` → 1) — the lockfile-style drift gate `just ci` runs."""
+    j = _run(REPO, "tools/realization-index.py", "--json")
+    model = json.loads(j.stdout) if j.returncode == 0 else {}
+    _record(results, "realization-index: emits a model (>=2 designs)",
+            j.returncode == 0 and len(model.get("designs", [])) >= 2,
+            "" if j.returncode == 0 else j.stdout + j.stderr)
+    pts = [p for rs in model.get("acs", {}).values() for r in rs for p in r["realization"]]
+    vers = [v for rs in model.get("acs", {}).values() for r in rs for v in r["verification"]]
+    clean = (not any(p.startswith("/") for p in pts)
+             and not any(p.lower().endswith((".md", ".txt", ".rst")) for p in pts)
+             and not any(v.startswith("::") for v in vers))
+    _record(results, "realization-index: no route/doc/::-continuation extraction warts",
+            clean, "a route/doc pointer or an unstitched `::` continuation leaked through")
+    c = _run(REPO, "tools/realization-index.py", "--check")
+    _record(results, "realization-index: committed index is current (--check → 0)",
+            c.returncode == 0, "" if c.returncode == 0 else c.stdout + c.stderr)
+    with tempfile.TemporaryDirectory() as td:
+        dst = Path(td) / "repo"
+        shutil.copytree(REPO, dst, ignore=IGNORE)
+        idx = dst / "docs" / "realization-index.md"
+        idx.write_text(idx.read_text() + "\nstale drift\n", encoding="utf-8")
+        s = _run(dst, "tools/realization-index.py", "--check")
+        _record(results, "realization-index: stale index fails --check (drift gate)",
+                s.returncode != 0 and "stale" in (s.stdout + s.stderr).lower(),
+                "" if s.returncode != 0 else "a stale index was not flagged")
+
+
 def _record(results: list, name: str, ok: bool, detail: str) -> None:
     results.append((name, ok, detail))
     print(f"  {'PASS' if ok else 'FAIL'}  {name}")
@@ -363,6 +455,8 @@ def main() -> int:
     case_attestation_marker_message(results)
     case_attestation_pytestmark(results)
     case_swh_save_annotated_tag(results)
+    case_rearchive_offline(results)
+    case_realization_index(results)
 
     passed = sum(1 for _, ok, _ in results if ok)
     total = len(results)
