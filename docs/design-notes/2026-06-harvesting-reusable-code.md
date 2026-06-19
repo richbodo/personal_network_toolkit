@@ -194,10 +194,10 @@ so the metric correctly shows it uncovered (PRM 11/14, not 12/14).
 are now at **100%**: fellows_local_db 23/23 (PR [#289](https://github.com/richbodo/fellows_local_db/pull/289))
 and PRM 14/14 (PR [#60](https://github.com/richbodo/prm/pull/60)), each editing its `Architecture.md`
 to cite realizations as `path:symbol` and verifications as full `path::test`, then re-synced into
-the bundled copies via `just rearchive` with the index regenerated and drift-gate-clean. The one
-residual: the two coverage commits were re-pinned offline (`--no-save`), so their Software Heritage
-*Save Code Now* submission is still pending (the recorded SWHIDs are git-computed/content-addressed
-and resolve once submitted) — see the design.toml archival comments. Tiers 1–2 (harvest/portability
+the bundled copies via `just rearchive` with the index regenerated and drift-gate-clean. Both coverage
+commits were then **submitted to Software Heritage Save Code Now** (2026-06-19, origin-save requests
+2368289 / 2368290); the recorded SWHIDs are git-computed/content-addressed and resolve once ingest
+completes (async). Tiers 1–2 (harvest/portability
 mark, cookbook notes) still accrete only as N grows.
 
 *Endgame worth naming, not building (v0.3+):* record when design X *harvested* pattern Y.

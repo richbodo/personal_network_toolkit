@@ -12,7 +12,7 @@ name = "prm"
 repo = "https://github.com/richbodo/prm"
 toolkit_version = "0.1"
 status = "active"
-archival = "archived"  # re-pinned to pnt-ref-0.1.2 (7bd4a28) for 100% realization-pointer coverage. SWHIDs git-computed/content-addressed; Save Code Now for THIS commit is PENDING (offline --no-save re-pin) — prior submit was for 1551896. Run `just rearchive` without --no-save (or `just swh-save`) to submit 7bd4a28.
+archival = "archived"  # re-pinned to pnt-ref-0.1.2 (7bd4a28) for 100% realization-pointer coverage. SWHIDs git-computed/content-addressed; Save Code Now submitted 2026-06-19 (SH origin-save request 2368290) — ingest async.
 
 commit    = "7bd4a28106f2496e0fd7548e0b6be5e2bb593089"      # prm@pnt-ref-0.1.2 — PR #60 (path:symbol realization pointers; 100% coverage)
 swhid_rev = "swh:1:rev:7bd4a28106f2496e0fd7548e0b6be5e2bb593089"

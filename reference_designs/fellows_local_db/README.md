@@ -13,7 +13,7 @@
 - **Software Heritage SWHID:**
   - `swh:1:dir:1bb784328e99fe888addf2e04fc2bbdf66b5ec05` (the archived source tree — canonical permanent identifier)
   - `swh:1:rev:98b283f10cfa0196006f66b9507179f25e821ef6` (the accepted revision)
-  - These are git-compatible (SH's `dir`/`rev` identifiers equal the git tree/commit hashes), computed at the archived commit. **Save Code Now submission for this commit is pending** — it was re-pinned offline (`just rearchive … --no-save`); the prior request `2352911` (2026-06-09) covered `dc3e0cf`. The identifiers are content-addressed and resolve unchanged once ingest completes. Submit `98b283f` via [`tools/swh-save.sh`](../../tools/swh-save.sh) (or `just rearchive` without `--no-save`).
+  - These are git-compatible (SH's `dir`/`rev` identifiers equal the git tree/commit hashes), computed at the archived commit. The Software Heritage *Save Code Now* request for `98b283f` was **submitted 2026-06-19** (origin-save request `2368289`); the prior request `2352911` (2026-06-09) covered `dc3e0cf`. The identifiers are content-addressed and resolve unchanged once ingest completes (asynchronous — minutes to hours). Re-run any time via [`tools/swh-save.sh`](../../tools/swh-save.sh).
 
 ## Summary
 
