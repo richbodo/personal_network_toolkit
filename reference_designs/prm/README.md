@@ -17,10 +17,11 @@
   render contract — is **conformant** for the declared flavor: 12 conformant, 2 partial-conformance
   (flagged for human review: `AC-PRM-A`, `AC-MCP-A` — consent + signaling, because an MCP server cannot
   identify the consuming LLM), 4 not-applicable (`comms:none`) across 18 evaluated ACs.
-- **Archival:** `archival = "archived"` — source pinned at `prm@pnt-ref-0.1` (`a70d35b`, the PR [#35](https://github.com/richbodo/prm/pull/35)
-  squash-merge to `main`): `swh:1:rev:a70d35bcf5765001322b29d0acdc14b1ae14ae11`,
-  `swh:1:dir:9d73887ae6a3b277a9232a5267be359387edb00f` (computed via `tools/swh-save.sh`; Save Code Now ingest
-  requested). The `[verify].entrypoint` is `just conformance` in the canonical repo.
+- **Archival:** `archival = "archived"` — source pinned at `prm@pnt-ref-0.1.1` (`1551896`, the PR [#59](https://github.com/richbodo/prm/pull/59)
+  merge to `main`, which lands the loopback-daemon trust-surface work after the upstream spec changes it rides were
+  accepted): `swh:1:rev:1551896025307ac4b08ba621c02f4e0d77eb9391`,
+  `swh:1:dir:39637a1ff96f77e7df47e87ac53a7c6d8fc61b62` (computed via `tools/swh-save.sh`; Save Code Now ingest
+  re-requested 2026-06-18). The `[verify].entrypoint` is `just conformance` in the canonical repo.
 
 ## Summary
 
@@ -37,7 +38,7 @@ repo is https://github.com/richbodo/prm; its Architecture document lives at `doc
 
 ## Contributions to the spec
 
-This submission rides four spec changes, each demonstrated by working code in the canonical repo:
+This submission rides five spec changes, each demonstrated by working code in the canonical repo:
 
 - **`comms: none` pick** (`spec/axes.md`): a PNA whose loop stops at *recording* relationship data — no
   outreach surface. PRM is the demonstrator.
@@ -51,6 +52,12 @@ This submission rides four spec changes, each demonstrated by working code in th
   + `core/apply.py` (the workspace applier).
 - **User-mediation `UM-1/2/3` (mutation side)**: PRM's propose→review→apply loop is the **mutation-side**
   demonstration the egress-focused fellows MVD lacked (the proposer stages; the principal disposes).
+- **`AC-PRM-H` — "no ungoverned app-opened surface over private data"** (`spec/axes.md`, flavor-derived;
+  generalizes `AC-2`'s intent to the loopback daemon): a same-host surface a PNA stands up over its own data
+  (here the loopback HTTP daemon) MUST be loopback-bound and authenticated to the user's own session. PRM is the
+  **loopback-daemon demonstrator** — daemon session-auth (a per-process token + Host/Origin guard + loopback-pin)
+  in `daemon/server.py`, gated by a static "checked, not asserted" lint (`scripts/loopback_surface_lint.py`).
+  Full analysis: the design's `docs/design-notes/local-daemon-trust-surface.md`.
 
 ## Reproducibility notes
 
