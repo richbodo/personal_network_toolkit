@@ -41,11 +41,12 @@ Vocabulary: **conditional AC** (replaces "flavor-derived AC"), **realization** (
 - **Worm 2 — the AC audit (THIS PLAN, below).** Run every AC through the swap test; classify
   universal-L1 / conditional-L1 / realization-to-demote. **Awaiting maintainer confirmation on the
   borderline rows before worm 3.**
-- **Worm 3 — demote realizations + retag conditionals.** Move the realizations out of the `AC-*`
-  namespace into L2 realization form beside their axis pick in `axes.md`; tag conditional ACs with their
-  behavioral trigger; update `tools/lint-spec-ids.py` + `tools/tests/lint_selftest.py`, both
-  reference-design bundled attestations, and the realization index. Remove the transitional note.
-  *Merge worms 1–3 together.*
+- **Worm 3 — demote realizations, retag conditionals, promote AC-22, rename per N2 (scope DECIDED — see
+  § Worm 3 below).** Demote the 5 realizations to `RZ-*` beside their axis pick in `axes.md`; consolidate
+  *all* ACs (universal + conditional) into `PNA_Spec.md`; add universal **AC-22** (honest capability
+  assessment); rename **AC-PRM-A → AC-20**, **AC-PRM-D → AC-21** (+ redirects); update
+  `tools/lint-spec-ids.py` + `tools/tests/lint_selftest.py`, both reference-design bundled attestations,
+  and the realization index; remove the transitional note. *Merge worms 1–3 together.*
 - **Worm 4 — the verifiability AC (the B1 reframe).** Add the universal source-availability /
   verifiability commitment; demote the `distribution` axis to honest packaging (server / no-server,
   PWA / native / CLI, app-store / sideload). Demonstrators: PRM (build-from-source) + fellows
@@ -105,16 +106,116 @@ or depends on a specific stack → Layer 2 realization.
 triggers (AC-2, AC-5, AC-8, AC-PRM-B, AC-PRM-H); reword AC-9; flag naming (AC-PRM-A/D) and
 principle/realization fusion (AC-MCP-A/B) for follow-on.
 
-### Open questions for the maintainer (before worm 3)
+### Resolved (2026-06-22)
 
-1. **AC-5 / AC-8** are the borderline calls — keep them as conditional-L1 (principle in the AC, HTTP form
-   as a realization), or treat them as realizations outright? *Recommend conditional-L1.*
-2. **AC-12 → a new universal "honest capability detection" AC?** Or let its principle fold into Goal 2 /
-   the constraint-frontier discipline and demote AC-12 purely as a realization? *Recommend a small new
-   universal AC; capability honesty survives the swap.*
-3. **AC-MCP-A/B and AC-PRM-A/D naming/fusion** — split principle from realization, and/or rename the
-   PRM-prefixed universals? Bigger ripple (IDs are referenced widely). *Recommend: defer renames; note
-   the fusion now, reconcile AC-MCP-B with UM when UM lands.*
-4. **ID stability on demotion.** When AC-3/12/13/14/PRM-C lose `AC-*` IDs, external reports + the
-   realization index + both bundled attestations reference them. Plan: keep a redirect note mapping the
-   retired IDs to their realization home, so nothing dangles.
+1. **AC-5 / AC-8 → conditional-L1.** Confirmed. A pure-CLI PNA (e.g. the planned CLI backup/dedup/archive
+   reference design) never stands up an HTTP auth server, so neither can apply universally — the
+   definition of conditional. The HTTP specifics (401/403, per-IP limits) are noted as the realization.
+2. **AC-12 → a new universal AC.** Confirmed: promote the generic principle as **AC-22 — Honest
+   capability assessment** (serves Goal 2); AC-12 demotes to its OPFS realization (`RZ-2`). It completes
+   Goal 2's *self-legibility* family — facet 2 (capability legibility), beside facet 1 (source
+   legibility = the verifiability AC-23, worm 4) and facet 3 (build/behaviour = AC-15 / AC-6 / AC-7).
+   Demonstrated both ways already: fellows (worker-side OPFS detection, UA-never-gates) + PRM
+   (FTS5-compiled + advisory-lock checks via `just doctor`). Draft + placement below.
+3. **Naming → N2.** De-brand the two mis-provenanced universals: **AC-PRM-A → AC-20**,
+   **AC-PRM-D → AC-21**, with redirects (cheaper now than later). `AC-MCP-A/B` frozen this pass (the
+   principle/UM reconciliation is deferred — `AC-MCP-B` is User-Mediation in MCP terms; revisit when UM
+   lands). Going forward: new ACs are plain-numeric; **provenance lives in the realization index +
+   attestations + CHANGELOG, never in the ID.**
+4. **ID stability.** Only the 5 realizations change ID (→ `RZ-*`) and the 2 renamed universals
+   (→ AC-20/21); each carries a redirect note. Everything else frozen. Retired numbers (3/12/13/14) are
+   **not** reused.
+
+---
+
+## Worm 3 — resolved scope + drafts
+
+### ID disposition
+
+| Disposition | IDs |
+|---|---|
+| **Frozen** (unchanged) | AC-1, 2, 4, 5, 6, 7, 9, 10, 11, 15, 16, 17, 18, 19; AC-PRM-B, AC-PRM-H (conditional); AC-MCP-A, AC-MCP-B (universal) |
+| **Renamed** (N2, + redirect) | AC-PRM-A → **AC-20** · AC-PRM-D → **AC-21** |
+| **Recategorized → `RZ-*`** (+ redirect) | AC-3 → RZ-1 · AC-12 → RZ-2 · AC-13 → RZ-3 · AC-14 → RZ-4 · AC-PRM-C → RZ-5 |
+| **New** | **AC-22** (capability legibility, this pass) · *AC-23 (source legibility / verifiability, worm 4)* |
+
+### Presentation — all ACs in `PNA_Spec.md`
+
+- **§ Universal architectural commitments** (existing table) — gains **AC-22**; AC-PRM-A/D rows become AC-20/21.
+- **§ Conditional architectural commitments** *(NEW, immediately after the universal table)* — the 5
+  conditional ACs (AC-2, AC-5, AC-8, AC-PRM-B, AC-PRM-H), each with an **Applies when (behavioral
+  property)** column and a link to the axis pick(s) that entail it. Draft below.
+- **Realizations are NOT ACs** → they stay in `axes.md` (Layer 2) as the `RZ-*` set, beside the pick that
+  brings them, each linking *up* to the AC it realizes. `PNA_Spec.md`'s AC section carries one pointer
+  ("Layer-2 realizations live in `axes.md`").
+- `axes.md` becomes purely Layer 2: per pick → *conditional ACs entailed* (links up to the spec),
+  *realizations brought* (`RZ-*`), *constraints inherited* (`CST-*`, links to `constraints.md`). The
+  current "Extra commitments these picks add" tables split into those three.
+
+### Draft — AC-22 (new universal row, for the § Universal architectural commitments table)
+
+> | **Honest capability assessment.** A PNA MUST establish the runtime-substrate capabilities that bear on its commitments by *sound* means — probing the substrate, not trusting an unverified self-report (a feature-presence flag, a platform / UA string) — and MUST report the outcome truthfully, including an explicit *undetermined* where a capability cannot be established. It MUST NOT claim or rely on a capability it has not verified the substrate delivers. *(Substrate-specific probes are realizations — e.g. `RZ-2` worker-side OPFS detection; a CLI's "is FTS5 compiled into this `sqlite3`" check.)* | Goal 2 | `<a id="ac-22"></a>AC-22` |
+
+**Placement:** append to the universal table (after AC-MCP-B). Also add AC-22 to **Goal 2 § Constraints it
+requires**, in the code-validation / legibility cluster, paired with the build label (AC-15) and the
+diagnostic substrate (AC-6/AC-7). **Relationship to Constraints:** AC-22 is the *upstream* duty — *assess
+honestly*; the Constraint `Detectability:` class (`feature-detect`/`empirical-probe`/`ua-sniff`) is *how it
+is checked per inherited ceiling*; Constraint handling (*reduce capability + declare frontier*) is
+downstream. Cross-link the three in `constraints.md` without duplicating the rule.
+
+### Draft — § Conditional architectural commitments (new section in `PNA_Spec.md`)
+
+> | Commitment | Serves | Applies when (behavioral property) | ID |
+> |---|---|---|---|
+> | **No SaaS surface.** A server the PNA stands up MUST be a delivery channel, not a service: no per-user RW endpoints, no private-data persistence, no admin console, no cross-device sync. | Goal 3 | the PNA **operates a server** over its data | AC-2 |
+> | **Stale session never locks users out of cached data.** A rejected shared-side fetch MUST fall through to the local cache; fresh data MUST require an explicit user action. | Goal 1 | the PNA **gates data behind an authenticated refresh** | AC-5 |
+> | **Anti-enumeration + abuse-bounded analytics.** Auth endpoints MUST return neutral payloads and enforce per-IP rate limits; a sanitized error sink MAY double as the analytics pipe but MUST NOT widen the privacy boundary. | Goal 3 | the PNA **operates an auth server** (with a configured error sink) | AC-8 |
+> | **Multi-source dedup contract.** A stable `record_id` MUST survive merge across sources; the dedup flow MUST surface conflicts; per-source provenance MUST be recorded *per field*. | Goal 2 | the PNA **mirrors more than one source** | AC-PRM-B |
+> | **Authenticated same-host surface.** A same-host-reachable surface a PNA opens over its own data MUST be loopback-bound and authenticated to the user's own session; a non-loopback bind MUST require an explicit, documented opt-out. | Goal 3 | the PNA **exposes a same-host surface** over its data | AC-PRM-H |
+
+The HTTP/401-403 specifics of AC-5/AC-8 move to their realizations in `axes.md`; the AC keeps the
+behavioral promise. (Provenance — "introduced by PRM" for AC-PRM-B/H — moves to the realization index, not
+the ID, so these keep their frozen legacy IDs without the suffix meaning anything.)
+
+### Draft — the `RZ-*` realizations (in `axes.md`, beside the pick)
+
+> | Realization | Realizes | Substrate (axis pick) | ID |
+> |---|---|---|---|
+> | Single OPFS-owning worker; one writer; no main-thread OPFS. | AC-1, AC-11 | `storage:opfs-sqlite-wasm` | RZ-1 *(was AC-3)* |
+> | Capability detection runs inside the OPFS-owning worker (browsers lie about main-thread OPFS); UA strings MAY inform messages but MUST NOT gate. | AC-22 | `storage:opfs-sqlite-wasm` | RZ-2 *(was AC-12)* |
+> | COOP/COEP headers so `crossOriginIsolated` holds (dev + prod). | AC-1 | `opfs-sqlite-wasm` + web-served | RZ-3 *(was AC-13)* |
+> | Service worker is app-shell + update only; the Shared-store URL is bypassed in its fetch handler. | AC-1 | web-bundle PWA | RZ-4 *(was AC-14)* |
+> | Native single-instance file-lock; a second process refuses cleanly, naming the holder. | AC-11 | `storage:native-sqlite-via-filesystem` | RZ-5 *(was AC-PRM-C)* |
+
+**Redirects.** A small "Retired IDs" table (in `axes.md`, near the realizations) maps each old ID → its new
+home (`AC-3 → RZ-1`, …, `AC-PRM-A → AC-20`, `AC-PRM-D → AC-21`) so external reports and any stale link
+resolve. Both bundled attestations + the realization index get rewritten to the new IDs in the same worm.
+`tools/lint-spec-ids.py` learns the `RZ-*` family (collect IDs; a `Realizes:` on each must name a defined
+AC) **+ a fault-injection self-test** for the new check (CLAUDE.md rule).
+
+---
+
+## Worm 3 follow-on (toolkit-goal side) — the evaluate report's self-legibility section
+
+*Not part of the AC surgery; the **consumer** that motivates AC-22 + AC-23. Sketch only — sequence after
+the ACs land.* The neglected reporting: the evaluate report
+([`tools/evaluate-report.schema.json`](../tools/evaluate-report.schema.json)) answers per-AC findings,
+exceptions, and constraints — but has no first-class place to answer *do we have the source? what stack is
+this? what can it keep here? what's undetermined?* Add a `self_legibility` object that the legibility ACs
+populate:
+
+```jsonc
+"self_legibility": {
+  "source": { "status": "available-and-buildable | source-referenced | opaque", "note": "…" },   // AC-23
+  "substrate": { "storage": "native-sqlite-via-filesystem", "shell": "cli-subcommands",
+                 "runtime": "python3.12 / linux", "detected_by": "…" },                            // AC-22 + pick inference
+  "capabilities": [
+    { "name": "fts5", "status": "present|absent|undetermined", "detected_by": "probe" }           // AC-22
+  ],
+  "build_label": "2026-06-22-ab12cd3"                                                              // AC-15
+}
+```
+
+This makes the toolkit's diagnostic identity legible in its *output*, mirroring the legibility the ACs
+require of the *app* — the PNA-goal side (AC-22/23) and the toolkit-goal side (this report section) of the
+same idea.
