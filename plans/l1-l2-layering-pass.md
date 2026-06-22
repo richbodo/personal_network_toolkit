@@ -47,11 +47,13 @@ Vocabulary: **conditional AC** (replaces "flavor-derived AC"), **realization** (
   assessment); rename **AC-PRM-A → AC-20**, **AC-PRM-D → AC-21** (+ redirects); update
   `tools/lint-spec-ids.py` + `tools/tests/lint_selftest.py`, both reference-design bundled attestations,
   and the realization index; remove the transitional note. *Merge worms 1–3 together.*
-- **Worm 4 — the verifiability AC (the B1 reframe).** Add the universal source-availability /
-  verifiability commitment; demote the `distribution` axis to honest packaging (server / no-server,
-  PWA / native / CLI, app-store / sideload). Demonstrators: PRM (build-from-source) + fellows
-  (source-available bundle). Supersedes the old "split the distribution pick" framing of
-  [#39](https://github.com/richbodo/personal_network_toolkit/issues/39)/[#64](https://github.com/richbodo/personal_network_toolkit/issues/64) rider 1.
+- **Worm 4 — the verifiability AC (the B1 reframe) — DONE (this branch), `just ci` green.** Added universal
+  **AC-23 "Source available for verification"** (Goal 2) — facet-1 of the self-legibility family, paired with
+  AC-22 and threaded into Goal 2's constraints next to the build label (AC-15). The `distribution` axis stays
+  honest packaging — **no pick rename** (PRM's flavor untouched) — with a note relocating verifiability to
+  AC-23, orthogonal to the pick. Demonstrators: PRM (build-from-source) + fellows (source-available bundle);
+  their AC-23 attestation rows re-sync at the v0.2 cut. Supersedes the old "split the distribution pick"
+  framing of [#39](https://github.com/richbodo/personal_network_toolkit/issues/39)/[#64](https://github.com/richbodo/personal_network_toolkit/issues/64) rider 1. Lint now: **23 AC IDs**.
 - **Worm 5 — sub-contracts.** Relocate / clearly mark the `WS-*`/`ST-*`/… slot map as L2 realizations
   (largely fellows-derived; e.g. `WS-7` names a literal localStorage key).
 - **Then:** the riders land clean (UM is already pure L1 — [#40](https://github.com/richbodo/personal_network_toolkit/issues/40)/[#64](https://github.com/richbodo/personal_network_toolkit/issues/64) rider 3;
