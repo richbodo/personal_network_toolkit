@@ -28,13 +28,15 @@ A **[personal network](#vocab-personal-network)** is the egocentric graph of the
 
 <sub>¹ Social connection and isolation are strongly associated with mental-health outcomes and all-cause mortality (Holt-Lunstad et al., *PLoS Medicine*, 2010; U.S. Surgeon General, *Our Epidemic of Loneliness and Isolation*, 2023; WHO Commission on Social Connection, 2025). The association is robust; recent genetic evidence narrows the *causal* claim for physical disease, leaving the mental-health pathway as the part that holds — which is the pathway this work targets.</sub>
 
+**How this spec is organized — three layers.** This spec is built in three layers, and keeping them distinct is what lets a PNA be rebuilt on any technology without losing what it *is*: the **Goals** — the human-facing (increasingly agent-facing) outcomes a PNA delivers; the **architectural commitments** — the promises that make the Goals real, stated so they hold *regardless of programming language, operating system, database engine, or how the app is delivered*; and the **realizations and constraints** — how each commitment is met on a *specific* technology stack, and what that stack will and won't permit. The line between them is a single test: **an architectural commitment survives a total technology swap.** Rewrite the PNA in another language, on another OS, with another database, delivered another way, and a commitment still binds; anything that names or depends on a specific stack lives one layer down. [§ How the pieces fit together](#how-the-pieces-fit-together) makes this precise.
+
 ---
 
 ## Vocabulary
 
 Worked examples below cite `fellows_local_db` as the first reference design — its concrete choices live in [`fellows_local_db/docs/Architecture.md`](https://github.com/richbodo/fellows_local_db/blob/main/docs/Architecture.md).
 
-- <a id="vocab-ac"></a>**Architectural commitment (AC).** A specific, stable-ID'd architectural promise a PNA must keep, derived from the [Goals](#goals). The AC is the **unit of conformance**: each carries an ID (`AC-1`, `AC-MCP-A`, …), every typed contract names the AC(s) it realizes, and a design attests AC-by-AC. A *universal* AC applies to every PNA; a *flavor-derived* (conditional) AC applies only when the flavor includes a specific pick — see [Universal AC vs flavor-derived AC](#vocab-universal-ac).
+- <a id="vocab-ac"></a>**Architectural commitment (AC).** A specific, stable-ID'd architectural promise a PNA must keep, derived from the [Goals](#goals). The AC is the **unit of conformance**: each carries an ID (`AC-1`, `AC-MCP-A`, …), every typed contract names the AC(s) it realizes, and a design attests AC-by-AC. An AC is a **Layer 1** commitment — it survives a total technology swap (see [§ How the pieces fit together](#how-the-pieces-fit-together)). A *universal* AC applies to every PNA; a *conditional* AC applies only when the PNA has a specific **behavioral property** — see [Universal, conditional, and realized commitments](#vocab-universal-ac).
 
 - **Axes.** Axes are areas of functionality that need to be defined when building a PNA. Each Axis offers a pre-defined, limited number of choices to the builder — internally we call these the builder's "Axis picks", and they are the first set of decisions that need to be made before building.
 
@@ -104,7 +106,7 @@ Worked examples below cite `fellows_local_db` as the first reference design — 
 
 - <a id="vocab-subcontract"></a>**Sub-contract.** A named, stable-ID'd decomposition of a [slot](#vocab-slot)'s or interface's contract (prefixes `WS-`, `ST-`, `IN-`, `CO-`, `DI-`, `SH-`, `PR-`, `DB-`), so a builder can target each piece individually. Sub-contracts cite the ACs they realize; catalogued in [§ Slots, Interfaces, and Sub-contracts](#slot-map).
 
-- <a id="vocab-universal-ac"></a>**Universal AC vs flavor-derived AC.** A *universal* commitment applies to every PNA — it derives from the [Goals](#goals) alone. A *flavor-derived* commitment — also called a **conditional** commitment — applies only when the flavor includes a specific pick (e.g. `storage:opfs-sqlite-wasm`). [§ Universal architectural commitments](#universal-architectural-commitments) lists the universal set; the conditional ones live in [`axes.md`](axes.md), grouped under the pick that adds them.
+- <a id="vocab-universal-ac"></a>**Universal, conditional, and realized commitments.** A *universal* commitment applies to every PNA — it derives from the [Goals](#goals) alone. A *conditional* commitment applies only when the PNA has a particular **behavioral property** (it reaches out to contacts; it mirrors more than one source; it exposes a programmatic surface over private data). Both are **Layer 1** [architectural commitments](#vocab-ac): they survive a total technology swap and carry an `AC-*` ID. A <a id="vocab-realization"></a>**realization** is the **Layer 2** counterpart — *how* a commitment is met on a specific technology stack (a single OPFS-owning worker; a native file-lock). A realization names a technology, does **not** survive the swap, and carries **no** `AC-*` ID; it lives in [`axes.md`](axes.md) beside the axis pick that brings it. The three layers and the swap test are defined in [§ How the pieces fit together](#how-the-pieces-fit-together). [§ Universal architectural commitments](#universal-architectural-commitments) lists the universal set; the conditional ACs and the realizations live in [`axes.md`](axes.md).
 
 - <a id="vocab-use-case"></a>**Use case.** A user-facing class of PNA — "Directory Archive," "Personal Relationship Manager." A use case names what kind of app this is *from the user's perspective*. v0.1 attests three (Minimum Viable PNA, Directory Archive, Personal Relationship Manager); future versions will add more. Use case is *not* one of the Axes (above); it's the parent category that a flavor instantiates. A use case typically suggests default axis picks (Directory Archives gravitate toward web-bundle distribution; PRMs toward never-distributed-single-user) but the axes remain independent — a hypothetical Directory Archive shipped as a Tauri shell + native SQLite is conceivable. Full catalog in [`use_cases.md`](use_cases.md).
 
@@ -136,6 +138,8 @@ You can **verify** that a PNA does what it claims — that its protections are r
 
 *Constraints it requires:* an always-reachable diagnostic escape ([AC-6](#ac-6)) and a field-debug substrate ([AC-7](#ac-7)); a build label tied to the source revision so you can verify what is running ([AC-15](#ac-15)); honest capability detection that never claims more than the platform delivers ([AC-12](axes.md#ac-12)); and **provenance** — every shared record traces to a source the user approved ([AC-17](#ac-17)), with stable IDs and per-field provenance under multi-source merge ([AC-PRM-B](axes.md#ac-prm-b)).
 
+> **Why it matters (the diagnostic surface):** A privacy-sovereign user's threshold for what diagnostic data flows anywhere is the same as for the rest of their data. The diagnostic surface is part of the privacy surface, not an exception to it. Many eventual PNAs will be single-user installations with no maintainer at all; the debug substrate has to work in that mode without sending anything anywhere by default. When a sink *is* configured (fellows_local_db sends to a maintainer mailbox), it has to be sanitized and rate-limited so the user trusts using it.
+
 ### Goal 3 — Protect the root from egress
 
 Nothing about your personal network leaves your systems without you **choosing how, understanding the threat, and seeing exactly what is sent**. The private layer is **sealed by default**; every way out — reaching a contact, or handing data to an AI — is a governed exit you control, and you are never forced onto an insecure or content-reading channel.
@@ -158,22 +162,48 @@ Your data **survives** — you never lose your people. The private layer is dura
 
 *Constraints it requires:* no corruption across a version-skewed storage boundary ([AC-4](#ac-4)); auto-backup with a recovery ring ([AC-9](#ac-9)); concurrent-access detection ([AC-11](#ac-11)) — realized as a single OPFS owner/writer ([AC-3](axes.md#ac-3)) or a native file-lock ([AC-PRM-C](axes.md#ac-prm-c)); and non-destructive re-imports that preview any private references they would orphan ([AC-10](#ac-10), shared with Goal 1).
 
-### How the pieces fit together
+---
 
-The spec is a small graph of typed components; stating the cardinalities once keeps it navigable — for a human skimming and for an AI building or validating against it:
+## How the pieces fit together
+
+The spec is a small graph of typed components arranged in **three layers**. Naming the layers — and the line between them — is what keeps the spec navigable for a human and *applicable* for an AI building or evaluating against it on a technology stack the authors never saw.
+
+### The three layers
+
+- **Layer 0 — Goals.** The few human- and agent-facing outcomes a PNA delivers (see [§ Goals](#goals)). Stated at outcome altitude; they name no technology. The *why*.
+- **Layer 1 — Architectural commitments (ACs).** The checkable promises that make the Goals real (see [§ Universal architectural commitments](#universal-architectural-commitments)). An AC is the **unit of conformance**. Layer 1 has two kinds, both technology-independent:
+  - **Universal** — applies to every PNA, derived from the Goals alone.
+  - **Conditional** — applies only when the PNA has a particular *behavioral property* (it reaches out to contacts; it mirrors more than one source; it exposes a programmatic surface over private data). Still Layer 1: a conditional AC names a *behavior*, never a technology.
+- **Layer 2 — Realizations and constraints (the mechanical layer).** Everything that names or depends on a specific technology stack: the **Axes** ([`axes.md`](axes.md)) — the menu of technology choices a builder picks from; the **realizations** of each commitment on a chosen stack (a single OPFS-owning worker; a native file-lock); the **Constraints** (`CST-*`, [`constraints.md`](constraints.md)) a stack imposes; and the per-slot **[sub-contracts](#vocab-subcontract)** that decompose an implementation.
+
+### The dividing test
+
+> **A statement belongs to Layer 1 if and only if it survives a total technology swap.** Rewrite the PNA in another language, on another operating system, with another database, delivered another way — does the statement still make sense and still bind? If yes, it is an architectural commitment. If it names or depends on a specific stack (OPFS, SQLite, a service worker, an iOS sideload, a `mailto:` URL), it is a Layer-2 realization or constraint, not a commitment.
+
+The line this draws: *the source being available so you — or your tools — can verify the app before trusting it* survives the swap, so it is an architectural commitment. *Sideloaded on iOS* does not: sideloading could be forbidden tomorrow and the platform renamed the day after. The first is Layer 1; the second is Layer 2. Conflating them hides the commitment that matters behind a platform detail that does not.
+
+### Three rules that keep the layers clean
+
+1. **The `AC-*` namespace is Layer 1 only.** Every AC passes the swap test. A commitment that names a technology is mis-filed: its technology-independent core is the AC; its stack-specific form is a realization.
+2. **Conditional ACs are Layer 1, but tagged.** Each conditional AC is tagged with the *behavioral property* that triggers it, so "applies only to multi-source PNAs" reads differently from "applies to every PNA."
+3. **A realization is never an AC.** Realizations are Layer 2, carry no `AC-*` ID (not even a conditional one), and live with the axis pick that brings them. A conditional AC is triggered by a *behavioral property*; a technology pick may *entail* a property (picking multi-source ingestion entails "mirrors more than one source"), and that property triggers the AC — but the pick itself brings only realizations and constraints.
+
+*Transitional note: the spec is mid-factoring to these three rules. A few Layer-2 realizations still carry `AC-*` IDs in [`axes.md`](axes.md) (AC-3, AC-12, AC-13, AC-14, AC-PRM-C) and move to realization form as the [layering pass](../plans/l1-l2-layering-pass.md) completes.*
+
+### Cardinalities
+
+Within and across the layers, the typed components relate many-to-many; stating the cardinalities once keeps the graph navigable — for a human skimming and for an AI building or validating against it:
 
 | Relationship | Cardinality | |
 |---|---|---|
 | **Goal ↔ AC** (an AC *serves* a Goal) | many-to-many, rendered **primary-grouped** | Each AC's `Serves` (in the [universal-AC table](#universal-architectural-commitments)) lists every Goal it bears on; the per-Goal views above group each AC under one *primary* home. A secondary appears only where one mechanism genuinely serves two — e.g. [AC-1](#ac-1), the two-store split, serves both *Take ownership of the root* and *Protect the root from egress*. Cross-cuts are capped at two; most ACs serve exactly one. |
 | **Axis → pick → flavor** | one-to-many | An axis offers several picks; a *flavor* is one pick per axis. |
-| **Axis pick → AC** (a pick *triggers* a flavor-derived AC) | one-to-many | A pick may trigger zero or more ACs ([`axes.md`](axes.md)). |
+| **Behavioral property → conditional AC** (a property *triggers* an AC) | one-to-many | A property a PNA has (reaches out; multi-source; exposes a private-data surface) may trigger zero or more conditional ACs. A technology *pick* may **entail** a property — and separately brings its Layer-2 realizations and constraints ([`axes.md`](axes.md)). |
 | **Slot → sub-contract** | one-to-many | Each slot decomposes into named [sub-contracts](#vocab-subcontract) (`WS-`, `ST-`, …). |
 | **Contract / sub-contract → AC** (*realizes*) | many-to-many | A contract may realize several ACs; an AC may be realized by several. |
 | **Exception → AC** (*relaxes*), **Constraint → AC/Goal** (*bounds*) | many-to-many | An [`EX-*`](#vocab-exception) / [`CST-*`](#vocab-constraint) names every guarantee it relaxes or bounds. |
 
 The rule of thumb: **Goals are few and crisp; everything beneath them composes many-to-many — but the reading views (per-Goal AC lists, per-slot sub-contracts) stay clean trees by giving each item one primary home and linking the genuine cross-cuts.**
-
-> **Why it matters:** A privacy-sovereign user's threshold for what diagnostic data flows anywhere is the same as for the rest of their data. The diagnostic surface is part of the privacy surface, not an exception to it. Many eventual PNAs will be single-user installations with no maintainer at all; the debug substrate has to work in that mode without sending anything anywhere by default. When a sink *is* configured (fellows_local_db sends to a maintainer mailbox), it has to be sanitized and rate-limited so the user trusts using it.
 
 ---
 
@@ -192,7 +222,7 @@ Full catalog with attestation status, default axis picks, and reference-design l
 
 ## Axes
 
-v0.1 names the independent Axes a PNA picks along. A PNA's *flavor* is the full constellation of picks. Each pick may trigger flavor-derived ACs (the AC-trigger tags appear in [`axes.md`](axes.md), grouped by axis-pick).
+v0.1 names the independent Axes a PNA picks along. A PNA's *flavor* is the full constellation of picks. Each pick may trigger conditional ACs (via a behavioral property it entails) and brings its own Layer-2 realizations and constraints (the tags appear in [`axes.md`](axes.md), grouped by axis-pick).
 
 - **Distribution** — how the PNA reaches a user's device. Picks: `web-bundle-with-magic-link`, `never-distributed-single-user`, `web-bundle-open`, `app-store-native`, `sideloaded-native`.
 - **Storage substrate** — what backs the data layer. Picks: `opfs-sqlite-wasm`, `native-sqlite-via-filesystem`, `idb-only-browser`, `native-sqlcipher`.
@@ -272,13 +302,13 @@ An AI client (Claude Desktop, Cursor, a local-Ollama-backed agent, or any MCP-ca
 
 Universal ACs are the architectural commitments derived from the goals alone. They apply to every PNA regardless of flavor.
 
-Recall that a *flavor* is the full set of axis picks a builder makes when shaping a PNA (see [§ Vocabulary](#vocabulary)). **Flavor-derived ACs** are architectural commitments triggered by specific axis picks — they apply only when the flavor includes those picks. Because they depend on specific axis-picks, they're catalogued near them in [`axes.md`](axes.md), grouped under the triggering pick.
+Recall that an AC is a **Layer 1** commitment — it survives a total technology swap (see [§ How the pieces fit together](#how-the-pieces-fit-together)). **Conditional ACs** apply only when the PNA has a particular **behavioral property** (it reaches out to contacts; it mirrors more than one source; it exposes a programmatic surface over private data). Because the picks that *entail* those properties are catalogued in [`axes.md`](axes.md), the conditional ACs live there too, grouped near them.
 
-Universal ACs (in this file) and flavor-derived ACs (in `axes.md`) share a single stable numbering sequence, so cross-references work regardless of which file the AC ended up in. The gaps you'll see in the table below (no AC-2, AC-3, AC-5, AC-8, AC-12, AC-13, AC-14) are the flavor-derived ACs catalogued in `axes.md`.
+Universal ACs (in this file) and conditional ACs (in `axes.md`) share a single stable numbering sequence, so cross-references work regardless of which file the AC ended up in. The gaps you'll see in the table below (no AC-2, AC-3, AC-5, AC-8, AC-12, AC-13, AC-14) are the conditional ACs and **realizations** catalogued in `axes.md` — the latter being the Layer-2 *forms* of universal contracts (see the [transitional note](#how-the-pieces-fit-together) on factoring realizations out of the `AC-*` namespace).
 
-The wording in the universal table below is substrate-neutral; specific *forms* (URL parameter vs CLI flag, OPFS vs native filesystem) are flavor-derived realizations of universal contracts.
+The wording in the universal table below is substrate-neutral; specific *forms* (URL parameter vs CLI flag, OPFS vs native filesystem) are the Layer-2 **realizations** of these universal contracts.
 
-**Normative language.** Conformance-bearing statements in the AC table below (and in the sub-contract definitions that follow, and in the flavor-derived ACs in `axes.md`) use RFC 2119 / RFC 8174 keywords — MUST, MUST NOT, SHOULD, SHOULD NOT, MAY — when, and only when, capitalized. Surrounding prose is plain English (motivation, examples, why-it-matters notes).
+**Normative language.** Conformance-bearing statements in the AC table below (and in the sub-contract definitions that follow, and in the conditional ACs and realizations in `axes.md`) use RFC 2119 / RFC 8174 keywords — MUST, MUST NOT, SHOULD, SHOULD NOT, MAY — when, and only when, capitalized. Surrounding prose is plain English (motivation, examples, why-it-matters notes).
 
 <!-- machine-parsed table — see the EDITING NOTE at the top of this file before changing its columns, headers, or IDs. -->
 | Commitment | Serves | ID |
@@ -470,7 +500,7 @@ This spec is intentionally narrow. It addresses the user demand and runtime real
 Items deliberately deferred to future toolkit versions:
 
 - **Privacy reclassification migration mechanics.** The Preamble commits PNAs to honoring user-driven privacy reclassification of a record (shared → private). The *implementation pattern* — does the record stay in the Shared DB with a private-side override row that supersedes? Get copied into the Private DB and removed from the Shared DB on next re-mirror? — is not pinned in v0.1. The contract is declared; the migration is left for a future version when the first reference design needs it.
-- **Multi-source dedup implementation.** AC-PRM-B (a flavor-derived AC in [`axes.md`](axes.md)) captures the v0.1 commitment for `ingestion:multi-source-merge-with-dedup` flavors — stable `record_id` survives merge, dedup wizard surfaces conflicts, per-field provenance — now demonstrated by the [prm](https://github.com/richbodo/prm) reference design. The finer implementation choices (merge UI, conflict-resolution algorithms) remain per-design, not pinned by the spec.
+- **Multi-source dedup implementation.** AC-PRM-B (a conditional AC in [`axes.md`](axes.md), triggered when a PNA mirrors more than one source) captures the v0.1 commitment for `ingestion:multi-source-merge-with-dedup` flavors — stable `record_id` survives merge, dedup wizard surfaces conflicts, per-field provenance — now demonstrated by the [prm](https://github.com/richbodo/prm) reference design. The finer implementation choices (merge UI, conflict-resolution algorithms) remain per-design, not pinned by the spec.
 - **Per-database (or finer) transport requirements.** A future toolkit version may let each database — Shared, Private, or any custom database in a richer PNA — declare which transport properties it requires for outbound flow. v0.1 handles the data-transport matching implicitly: AC-18 filters out transports that read content; AC-19 ensures the user sees the full payload before launch; the user resolves the matching in the moment. Explicit per-DB rules (workspaces auto-suggesting or auto-filtering transports based on source DB sensitivity) land when a reference design has an auto-send feature that needs them.
 - **At-rest encryption against local device access.** v0.1's threat model is *network and platform exposure* — data leaving the device to SaaS, surveillance, or social-graph mining (Goal 3). Defending against an adversary with **local access to the device itself** (a lost, stolen, or seized machine; a shared computer) is deliberately out of scope at the application layer: OS full-disk encryption (FileVault / BitLocker / LUKS) is the right layer for it, and app-level at-rest encryption is largely redundant with FDE where it works and absent where it matters (a running, unlocked machine holds the key in memory regardless). The toolkit therefore does **not** make at-rest encryption a universal AC — a boolean "encrypted at rest" would invite false assurance and tension with Goal 4 (a lost key is lost data). At-rest encryption remains available as the `native-sqlcipher` storage flavor (see [`axes.md`](axes.md)); its key-storage and -rotation ACs are deferred until a SQLCipher reference design demonstrates them, and any such attestation discloses a per-dimension **strength profile** ([`exceptions.md`](exceptions.md) § Strength profiles) rather than a single graded claim. Full rationale: [`docs/PriorArt.md`](../docs/PriorArt.md) § Design notes.
 - **Cross-device sync.** Out of scope for v0.1. Future versions may declare a sync protocol; v0.1 explicitly does not.

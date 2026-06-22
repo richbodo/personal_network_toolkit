@@ -4,6 +4,8 @@
 
 The PNA Toolkit is a [generative application-class blueprint](docs/PriorArt.md) for building and validating **[personal network applications (PNAs)](spec/PNA_Spec.md#goals)** — local-only apps that take local ownership of your contact data and let you build **private relationship memory** over it behind a firewalled private data layer. PNAs run on the user's device, never as SaaS, and bridge SaaS-held contact data into a private workspace. The spec is organized around **four goals** — *take ownership of the root · protect its integrity by validation · protect it from egress · protect it from entropy & accidents*. **[Why do this?](spec/PNA_Spec.md#preamble)**
 
+The spec is built in **three layers**: the **Goals** (what a PNA delivers for a person), the **architectural commitments** (the technology-independent promises that make the Goals real — and the unit of conformance), and the **realizations and constraints** (how those promises are met on a specific stack — a given language, OS, database, or delivery mechanism — and what that stack permits). A commitment holds no matter how the app is built; the mechanical specifics live one layer down. See [§ How the pieces fit together](spec/PNA_Spec.md#how-the-pieces-fit-together).
+
 When building a PNA, specs are foundational because users will increasingly compose software by prompting AI agents, and success is measured by adherence to them.
 
 Three deliverables, in dependency order:
@@ -42,7 +44,7 @@ What we're working toward — success looks like:
 2. A new user can ask an LLM (via the skill) to audit a candidate PNA's source and get an actionable AC-keyed report. *— Skill flow documented; validation against a candidate pending.*
 3. A new contributor can submit a reference design end-to-end without maintainer hand-holding beyond review. *— Exercised: `prm` was authored through the contribute flow and accepted as the second reference design; awaits a first **external** (non-maintainer) contribution.*
 4. Every accepted design has a permanent Software Heritage identifier that survives upstream repo deletion. *— Met: `tools/swh-save.sh` ships, and both `fellows_local_db` and `prm` are archived with recorded SWHIDs.*
-5. The PNA Spec evolves at least one minor version based on a contributed reference design's findings. *— In progress: `prm` promoted `AC-PRM-B` / `AC-PRM-C` from draft to attested flavor-derived ACs; the v0.2 cut that formalizes the toolkit version is the next roadmap step (see [`docs/roadmap.md`](docs/roadmap.md)).*
+5. The PNA Spec evolves at least one minor version based on a contributed reference design's findings. *— In progress: `prm` promoted `AC-PRM-B` / `AC-PRM-C` from draft to attested commitments; the v0.2 cut that formalizes the toolkit version is the next roadmap step (see [`docs/roadmap.md`](docs/roadmap.md)).*
 6. Every AC in the spec carries a stable ID; every typed contract names the AC(s) it realizes; every Architecture document maps each applicable AC to a verification mechanism. *— First two CI-enforced via [`tools/lint-spec-ids.py`](tools/lint-spec-ids.py); both reference designs carry Architecture docs with AC attestation tables.*
 
 Step-by-step instructions for each of those goals live in [`docs/users-guide.md`](docs/users-guide.md).
@@ -56,7 +58,7 @@ Substantive changes from v0.1 bump the toolkit version per [`CHANGELOG.md`](CHAN
 Read in this first if you are new:
 
 - [`docs/users-guide.md`](docs/users-guide.md) — step-by-step instructions for each of the success criteria in § Status (building a PNA, auditing one, submitting a reference design).
-- [`spec/PNA_Spec.md`](spec/PNA_Spec.md) — universal PNA specification. Vocabulary, goals, use cases, axes, composition, universal architectural commitments, slot map with 57 sub-contracts, scope/versioning.
+- [`spec/PNA_Spec.md`](spec/PNA_Spec.md) — universal PNA specification. Vocabulary, goals, how the pieces fit together (the three layers), use cases, axes, composition, universal architectural commitments, slot map with 57 sub-contracts, scope/versioning.
 
 To contribute to the spec with a new reference design or architectural finding:
 
@@ -65,7 +67,7 @@ To contribute to the spec with a new reference design or architectural finding:
 To dig into the spec more deeply:
 
 - **[`pna-toolkit/SKILL.md`](pna-toolkit/SKILL.md)** — the skill packaging the four flows (build, evaluate, contribute, harden) for AI agents. The agent-consumption view of the toolkit.
-- **[`spec/axes.md`](spec/axes.md)** — the Axes a PNA varies along, attested picks per Axis, and the flavor-derived ACs each pick triggers.
+- **[`spec/axes.md`](spec/axes.md)** — the Axes a PNA varies along, attested picks per Axis, and the conditional ACs and realizations each pick brings.
 - **[`spec/use_cases.md`](spec/use_cases.md)** — attested classes of PNA (Minimum Viable PNA; Directory Archive realized; Personal Relationship Manager realized; Multi-PNA ecosystem target).
 - **[`contracts/`](contracts/)** — typed contracts for the load-bearing interfaces: JSON Schema for the worker init handshake + RPC (Remote Procedure Call) protocol, OpenAPI for distribution auth, SQL DDL (Data Definition Language) for the two database schemas, TypeScript for the Communications transport interface, JSON Schema for the five canonical MCP server tool surfaces.
 - **[`CHANGELOG.md`](CHANGELOG.md)** — toolkit version history.
