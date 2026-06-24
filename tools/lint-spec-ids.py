@@ -45,6 +45,10 @@ Checks:
      is a defined AC — the realization-layer analog of the contract 'Realizes:'
      check. A realization is Layer 2 and is never itself an AC (it carries no AC-*
      ID); it must point up at the Layer-1 commitment it realizes.
+  11. The user-mediation mechanism (spec/user_mediation.md — the third general
+     mechanism, alongside Exceptions and Constraints): every AC named in its
+     'Unifies:' header resolves to a defined AC (so a renamed/retired AC cannot
+     silently dangle the mechanism). UM-1/2/3 property IDs are counted for the summary.
 
 The lint validates the *shape* of declarations (presence + ID/vocabulary/
 version resolution), not their behavioral correctness — that is the LLM
@@ -69,6 +73,7 @@ ANCHOR_PREFIX = re.compile(r'<a id="[^"]*"></a>\s*')
 AC_ID_RE = re.compile(r"AC-[A-Z0-9-]+")
 EX_ID_RE = re.compile(r"EX-[A-Z0-9-]+")
 CST_ID_RE = re.compile(r"CST-[A-Z0-9-]+")
+UM_ID_RE = re.compile(r"UM-[0-9]+")
 REALIZES_RE = re.compile(r"Realizes:\s*((?:AC-[A-Z0-9-]+(?:\s*,\s*)?)+)", re.IGNORECASE)
 
 # ID-column headers per family (lowercased). The PNA_Spec AC table heads its ID
@@ -78,6 +83,10 @@ REALIZES_RE = re.compile(r"Realizes:\s*((?:AC-[A-Z0-9-]+(?:\s*,\s*)?)+)", re.IGN
 AC_ID_HEADERS = {"id", "ac"}
 EX_ID_HEADERS = {"ex"}
 CST_ID_HEADERS = {"cst"}
+# User-mediation property IDs (UM-1/2/3) live in the "UM" column of the contract
+# table in spec/user_mediation.md; the mechanism's `Unifies:` header (below) names
+# the ACs it is the named invariant beneath.
+UM_ID_HEADERS = {"um"}
 # Realizations (Layer 2) carry their own RZ-* family in axes.md, in tables headed
 # with an "RZ" ID column + a "Realizes" column. They are deliberately NOT collected
 # as ACs (RZ-* does not match AC_ID_RE), so the AC collector skips them; the RZ
@@ -90,6 +99,10 @@ RELAXES_RE = re.compile(
     r"Relaxes:\s*((?:(?:AC-[A-Z0-9-]+|EX-[A-Z0-9-]+|PNA-DEFINITION)(?:\s*,\s*)?)+)",
     re.IGNORECASE,
 )
+# The `Unifies:` header in spec/user_mediation.md names the AC-* commitments the
+# user-mediation mechanism is the named invariant beneath — the third-mechanism
+# analog of a contract's `Realizes:` / a constraint's `Bounds:`. AC tokens only.
+UNIFIES_RE = re.compile(r"Unifies:\**\s*((?:AC-[A-Z0-9-]+(?:\s*,\s*)?)+)", re.IGNORECASE)
 # `\**` tolerates the markdown-bold field form (`**Reversible:** yes`); without
 # it this matched nothing against the bold form actually used in exceptions.md,
 # leaving the well-formedness + coupling checks below dead. The backtick header-
@@ -162,6 +175,7 @@ TOOLKIT_VERSION_RE = re.compile(r"Toolkit-Version:\**\s*(\d+\.\d+)")
 
 EXCEPTIONS_PATH = REPO / "spec" / "exceptions.md"
 CONSTRAINTS_PATH = REPO / "spec" / "constraints.md"
+USER_MEDIATION_PATH = REPO / "spec" / "user_mediation.md"
 AXES_PATH = REPO / "spec" / "axes.md"
 VERSION_PATH = REPO / "VERSION"
 
@@ -170,7 +184,7 @@ VERSION_PATH = REPO / "VERSION"
 # lint stays usable on partial checkouts.
 VERSIONED_ARTIFACTS = [
     "spec/PNA_Spec.md", "spec/axes.md", "spec/use_cases.md", "spec/exceptions.md",
-    "spec/constraints.md",
+    "spec/constraints.md", "spec/user_mediation.md",
     "pna-toolkit/SKILL.md", "CONTRIBUTING.md", "README.md",
     "tools/lint-spec-ids.py", "tools/egress-lint.py", "tools/export-readable-lint.py",
     "tools/attestation-evidence-lint.py", "tools/loopback-surface-lint.py", "tools/validate.py",
@@ -508,6 +522,34 @@ def collect_constraint_violations(spec_ids: set[str]) -> list[str]:
     return violations
 
 
+def collect_user_mediation_violations(spec_ac_ids: set[str]) -> tuple[int, list[str]]:
+    """spec/user_mediation.md defines the user-mediation mechanism (the third general
+    mechanism, alongside Exceptions and Constraints): the always-on actuation invariant
+    UM-1/2/3 beneath the action / egress ACs. Shape checks (the lint validates shape,
+    not behavior):
+      - every AC named in a `Unifies:` header resolves to a defined AC — the
+        third-mechanism analog of the contract `Realizes:` / RZ realizes / CST `Bounds:`
+        cross-reference, so a renamed or retired AC cannot silently dangle the mechanism;
+      - at least one `Unifies:` header is present naming >=1 AC.
+    Returns (UM-* property count, violations). Absent file -> (0, []) so the lint stays
+    green on checkouts that haven't adopted the mechanism."""
+    if not USER_MEDIATION_PATH.exists():
+        return 0, []
+    text = USER_MEDIATION_PATH.read_text()
+    violations: list[str] = []
+    um_ids = _ids_by_header(text, UM_ID_HEADERS, UM_ID_RE)
+    unifies_acs: list[str] = []
+    for m in UNIFIES_RE.finditer(text):
+        unifies_acs.extend(AC_ID_RE.findall(m.group(1)))
+    if not unifies_acs:
+        violations.append("no 'Unifies:' header naming the AC(s) the mechanism is the "
+                          "named invariant beneath.")
+    for ac in unifies_acs:
+        if ac not in spec_ac_ids:
+            violations.append(f"Unifies names {ac}, which is not a defined AC.")
+    return len(um_ids), violations
+
+
 def _parse_design_manifest(text: str) -> dict:
     """Parse the deliberately-simple subset of TOML a design.toml uses: comments
     (`#`), `[section]` headers, and `key = "quoted string"` lines. Returns a dict
@@ -753,6 +795,10 @@ def main() -> int:
     constraint_ids = collect_constraint_ids()
     failures.extend(f"constraints.md: {v}" for v in collect_constraint_violations(spec_ids))
 
+    # --- User-mediation (spec/user_mediation.md) — the third general mechanism ---
+    n_um, um_failures = collect_user_mediation_violations(spec_ids)
+    failures.extend(f"user_mediation.md: {v}" for v in um_failures)
+
     # --- Goal references (the goal layer; guards the renumber) ---
     defined_goals = collect_defined_goals()
     failures.extend(collect_goal_ref_violations(defined_goals))
@@ -779,6 +825,7 @@ def main() -> int:
     print(f"  axes.md defines {n_realizations} realization (RZ-*) ID(s)")
     print(f"  exceptions.md defines {len(exception_ids)} exception ID(s)")
     print(f"  constraints.md defines {len(constraint_ids)} constraint ID(s)")
+    print(f"  user_mediation.md defines {n_um} user-mediation property ID(s)")
     print(f"  reference designs: {n_manifests} design.toml manifest(s)")
     return 0
 

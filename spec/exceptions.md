@@ -324,7 +324,7 @@ This completes a small taxonomy of **the four sources of pressure** on a PNA's g
 - **Constraints** (`CST-*`, [`constraints.md`](constraints.md)) — a *platform* ceiling the PNA inherits.
 - **Exceptions** (`EX-*`, this file) — a *user* relaxation, app-handled.
 - **Environmental threats** (this section) — an *adversary in the runtime*, detected → user-mitigated with toolkit advice.
-- **User-mediation** (proposed; `UM-1/2/3`) — the *actuation* boundary, a human approving before the app acts.
+- **[User-mediation](user_mediation.md)** (`UM-*`) — the *actuation* invariant: the proposer stages, the principal disposes. Now its own first-class mechanism (the **third**, with Constraints and Exceptions) — a standing invariant the architecture upholds, not a pressure to handle.
 
 Constraints and Exceptions are duals (a ceiling imposed vs. a guarantee relaxed); environmental threats
 are the third party at the table — neither imposed by the platform nor chosen by the user, but brought
