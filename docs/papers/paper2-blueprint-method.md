@@ -75,7 +75,7 @@ We position this method in a white space bounded by **four mature traditions**, 
 **Key claims**
 - **The application class.** A PNA is local-first, private-by-default, mirrors SaaS-held contact data into a user-owned store, operates on relationship data with no remote authority, and runs on the user's device (never SaaS). (Summarize from `spec/PNA_Spec.md`; do not restate the normative goals verbatim — link.)
 - **The layered object.** The spec is layered: **Goals** (human-readable outcomes) → **Constraints** (the human-readable layer that motivates the architectural layer) → **Architectural Commitments (ACs)** (stable-ID'd, RFC-2119, the unit of identity) → **typed contracts** (JSON Schema / OpenAPI / SQL DDL / TypeScript) that *realize* named ACs. Under ACs sit platform-ceiling constraints (`CST-*`) and user-relaxable **Exceptions** (`EX-*`).
-- **Variability.** A PNA *varies* along **axes** (e.g. distribution, storage substrate, ingestion shape, workspace shell, comms transport set, MCP-exposure); each **pick** (flavor) triggers flavor-derived ACs. Use "variable language" about axis counts (the set may evolve) — this itself is a feature-modeling instinct.
+- **Variability.** A PNA *varies* along **axes** (e.g. distribution, storage substrate, ingestion shape, workspace shell, comms transport set, MCP-exposure); each **pick** (flavor) triggers conditional ACs. Use "variable language" about axis counts (the set may evolve) — this itself is a feature-modeling instinct.
 - **Reference designs.** Working, deployed PNAs that demonstrate one valid combination of picks: `fellows_local_db` (Directory Archive) and `prm` (Personal Relationship Manager). Each is archived (Software Heritage SWHID) and carries an AC attestation table.
 - **Four flows, one skill.** **Build**, **evaluate**, **contribute** — the generative + evaluative + feedback loop — plus an advisory fourth, **harden** (secure the *operating environment* a PNA runs in; adds no AC, awards no pass/fail), are packaged as an Anthropic **Agent Skill** (`pna-toolkit/SKILL.md`) that an agent auto-discovers.
 - **The toolkit is versioned as a unit** (VERSION `0.1.0-draft`); every artifact carries a `Toolkit-Version:` stamp.
@@ -184,7 +184,7 @@ We position this method in a white space bounded by **four mature traditions**, 
 **Key claims**
 - **The object model (defer details to Appendix B).** Goals (outcome-altitude, human-readable) → Constraints (readable motivation layer) → ACs (RFC-2119, stable IDs, *the unit of identity*) → typed contracts that carry a `Realizes: AC-X` header → axes/picks (the variability/feature-model layer) → `CST-*` ceilings and `EX-*` relaxations beneath specific ACs.
 - **The generate flow.** Read spec end-to-end → choose axis picks with the user → enumerate inherited constraints and plan their handling at the *data layer* → author an Architecture document → pull the typed contracts for the picks → adapt the nearest reference design → build → fill the AC attestation table (each AC: realization + the test/rubric/review that verifies it, with *negative invariants pinned by negative tests*) → self-run the evaluate flow.
-- **The evaluate flow.** For each applicable AC (universal + flavor-derived) decide `conformant` / `non-conformant` / `not-applicable` / `unable-to-determine`, citing code; audit attestation evidence (a cited test must *exist and pass*; a doc pointer is not evidence; an `xfail` row is a finding); detect undeclared Exceptions and over-claimed Constraints; emit a typed `evaluate-report.json` and render prose as a *view* over it.
+- **The evaluate flow.** For each applicable AC (universal + conditional) decide `conformant` / `non-conformant` / `not-applicable` / `unable-to-determine`, citing code; audit attestation evidence (a cited test must *exist and pass*; a doc pointer is not evidence; an `xfail` row is a finding); detect undeclared Exceptions and over-claimed Constraints; emit a typed `evaluate-report.json` and render prose as a *view* over it.
 - **The three-layer conformance check (the engine of "checked, not awarded").**
   1. **Deterministic** — stdlib lints in `tools/` (e.g. `lint-spec-ids.py` for AC↔contract traceability; `egress-lint.py` for off-device egress) run in CI.
   2. **LLM-as-judge** — the agent performs the architectural-conformance reasoning the lints can't, emitting evidence tagged `source: llm`.
@@ -304,7 +304,7 @@ Diagram + prose: Goals → Constraints (readable) → ACs (RFC-2119, stable IDs,
 |---|---|
 | build-the-spec vs build-an-instance | domain engineering vs application engineering (FORM) |
 | axes + picks (flavors) | feature model / variation points + variants (FODA); orthogonal variability model (Pohl et al.) |
-| flavor-derived ACs | feature-dependent / selection-based requirements |
+| conditional ACs | feature-dependent / selection-based requirements |
 | the AI agent that builds an instance | application engineer / product instantiation (here: generator = LLM) |
 | reference design | concrete product / family member (also W3C "interoperable implementation") |
 | typed contract (`Realizes: AC-X`) | reusable core asset bound to a feature |

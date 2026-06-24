@@ -19,7 +19,8 @@ into `just ci` if this graduates from spike to adopted.
 WHAT IT DOES (deterministic, all inside this toolkit repo):
   1. For each reference_designs/<name>/ (skipping templates/): read design.toml for the
      repo / status / archival / SWHID pin / flavor, and read Architecture.md.
-  2. Parse the AC-bearing attestation tables (Universal ACs + flavor-derived ACs + the
+  2. Parse the commitment-bearing attestation tables (Universal + conditional ACs, the
+     RZ-* realizations a pick brings, and the
      not-applicable table), tolerating both cell conventions in the wild (PRM links its
      AC cells, fellows uses plain text; fellows has a separate `| AC | Reason |` table).
   3. Extract per row: AC id + title, status, triggered-by, best-effort realization code
@@ -54,7 +55,7 @@ REPO = Path(__file__).resolve().parent.parent
 DESIGNS_PATH = REPO / "reference_designs"
 OUT_PATH = REPO / "docs" / "realization-index.md"
 
-AC_ID_RE = re.compile(r"AC-[A-Z0-9]+(?:-[A-Z0-9]+)*")
+AC_ID_RE = re.compile(r"(?:AC|RZ)-[A-Z0-9]+(?:-[A-Z0-9]+)*")  # AC-* commitments + RZ-* realizations
 TITLE_RE = re.compile(r"\(([^)]+)\)")
 CODE_TOKEN_RE = re.compile(r"`([^`]+)`")
 # A backticked token that looks like a *code* pointer: a path (has a separator) ending
@@ -381,11 +382,13 @@ def render_markdown(model: dict) -> str:
     # Realization matrix
     L.append("## Realization matrix")
     L.append("")
-    L.append("One row per (AC, design). `Realization` and `Verification` are the "
-             "code/test pointers harvested from the attestation; `Pin` is the design's "
-             "archived commit (study the realization there, via `swhid_dir` above).")
+    L.append("One row per (commitment-or-realization, design) — `AC-*` architectural "
+             "commitments and the `RZ-*` realizations a pick brings. `Realization` and "
+             "`Verification` are the code/test pointers harvested from the attestation; "
+             "`Pin` is the design's archived commit (study the realization there, via "
+             "`swhid_dir` above).")
     L.append("")
-    L.append("| AC | Title | Design | Status | Realization | Verification | Pin |")
+    L.append("| AC / RZ | Title | Design | Status | Realization | Verification | Pin |")
     L.append("|---|---|---|---|---|---|---|")
     pin_by_design = {d["name"]: _short(d["commit"]) for d in designs}
     for ac in sorted(acs, key=ac_sort_key):

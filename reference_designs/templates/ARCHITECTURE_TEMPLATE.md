@@ -47,7 +47,7 @@ This design was built and validated against Toolkit-Version <X.Y> (the `/VERSION
 
 ## AC attestation table
 
-For every AC in `spec/PNA_Spec.md § Universal architectural commitments` and every flavor-derived AC in `spec/axes.md` triggered by this design's picks, a row stating Realization, Verification, and Status. ACs the design declares not applicable are listed with a brief reason.
+For every AC in `spec/PNA_Spec.md § Universal architectural commitments` and every conditional AC in `spec/axes.md` triggered by this design's picks, a row stating Realization, Verification, and Status. ACs the design declares not applicable are listed with a brief reason.
 
 The Verification field is load-bearing — a row missing this field is grounds for PR rejection. Three kinds of verification are acceptable:
 
@@ -87,14 +87,16 @@ Mind the asymmetry: `strict=True` trips the day the fix *lands* (it XPASSes, pro
 | AC-17 (sourced provenance) | | | |
 | AC-18 (transports cannot read message contents) | | | |
 | AC-19 (user-visible payload before send) | | | |
-| AC-PRM-A (LLM calls over user data are transports) | | | |
-| AC-PRM-D (re-ingestion is user-initiated) | | | |
+| AC-20 (LLM calls over user data are transports) | | | |
+| AC-21 (re-ingestion is user-initiated) | | | |
 | AC-MCP-A (cloud AI clients require per-call consent for Private DB) | | | |
 | AC-MCP-B (MCP Communications stages; workspace launches) | | | |
+| AC-22 (honest capability assessment) | | | |
+| AC-23 (source available for verification) | | | |
 
-### Flavor-derived architectural commitments
+### Conditional architectural commitments
 
-List the flavor-derived ACs triggered by this design's axis picks. Look these up in `spec/axes.md` based on the picks declared above. Add a row per triggered AC.
+List the conditional ACs triggered by this design's axis picks. Look these up in `spec/axes.md` based on the picks declared above. Add a row per triggered AC.
 
 | AC | Triggered by | Realization | Verification | Status |
 |---|---|---|---|---|

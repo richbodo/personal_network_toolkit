@@ -2,6 +2,43 @@
 
 ## v0.1 draft (in progress)
 
+### L1/L2 layering pass — three layers, AC-22 / AC-23, RZ-* realizations, conditional-AC consolidation
+
+The spec is now built in three explicitly-named layers, with a single dividing test — **an
+architectural commitment survives a total technology swap** (rewrite the PNA in another language, OS,
+database, delivery; if the statement still binds it is Layer 1, else it is a Layer-2 realization).
+
+- **Three layers, named.** **L0 Goals** (the four user-facing outcomes) · **L1 architectural
+  commitments** (the `AC-*` namespace — every AC passes the swap test; *universal* + *conditional*) ·
+  **L2 realizations and constraints** (the `RZ-*` realizations, `CST-*` constraints, and per-slot
+  sub-contracts — everything that names a stack). New top-level [§ How the pieces fit together](spec/PNA_Spec.md#how-the-pieces-fit-together)
+  states the model + the three rules that keep the layers clean.
+- **AC namespace.** **New:** `AC-22` (honest capability assessment) and `AC-23` (source available for
+  verification), completing Goal 2's self-legibility family. **De-branded (+ redirect anchors):**
+  `AC-PRM-A → AC-20`, `AC-PRM-D → AC-21`. **Demoted to realizations (+ redirects):** `AC-3 → RZ-1`,
+  `AC-12 → RZ-2`, `AC-13 → RZ-3`, `AC-14 → RZ-4`, `AC-PRM-C → RZ-5` — these named a technology, so they
+  are Layer-2 realizations, not ACs. Retired numbers are not reused.
+- **Conditional ACs consolidated.** The conditional ACs (`AC-2`, `AC-5`, `AC-8`, `AC-PRM-B`, `AC-PRM-H`)
+  moved into a new [§ Conditional architectural commitments](spec/PNA_Spec.md#conditional-architectural-commitments)
+  in `PNA_Spec.md`, each tagged with the *behavioral property* that triggers it. `axes.md` is now pure
+  Layer 2: per pick → the conditional ACs it entails (links up) + the `RZ-*` realizations it brings + the
+  constraints it inherits.
+- **Terminology.** The "flavor-derived AC" term is **retired** in favor of **conditional AC** (Layer 1)
+  and **realization** (Layer 2), swept across the spec and the active non-spec docs (users-guide, SKILL,
+  `llms.txt`, the Architecture template, paper 2, the reference-design Architecture/README copies). Stale
+  `axes.md` → `PNA_Spec.md` pointers for conditional ACs corrected. Historical CHANGELOG entries and dated
+  design-notes keep the original wording.
+- **Lints + tooling.** `tools/lint-spec-ids.py` learns the `RZ-*` family (each `RZ-*` must name a defined
+  AC it realizes) with a fault-injection self-test (**44/44**); `tools/realization-index.py` now indexes
+  `RZ-*` realizations alongside `AC-*` commitments.
+- **Reference designs re-synced.** Both bundled `Architecture.md` attestations + the derived
+  [realization index](docs/realization-index.md) re-synced to the new IDs (AC-20/21, RZ-1..5); `just ci`
+  green.
+- **Deferred to the v0.2 cut (honest):** adding `AC-22` / `AC-23` *attestation rows* to the two reference
+  designs (a re-evaluation, not a mechanical re-sync) and re-syncing their bundled `evaluate-report.json`
+  snapshots (+ the report schema's `ac_source` enum) — these travel with the design re-evaluation, not
+  ahead of it.
+
 ### Both reference designs re-archived at 100% realization-pointer coverage
 
 - **fellows_local_db re-pinned `dc3e0cf` → `98b283f`** (fellows [#289](https://github.com/richbodo/fellows_local_db/pull/289)) and **prm re-pinned `1551896` → `7bd4a28`** (`pnt-ref-0.1.2`, prm [#60](https://github.com/richbodo/prm/pull/60)) — each adds `path:symbol` realization pointers + full `path::test` verifications to its `Architecture.md`, taking the [realization index](docs/realization-index.md) to **23/23** and **14/14** (100%/100%). Re-synced into the bundled copies via `just rearchive`; index regenerated; `just ci` green (43/43, drift gate included).

@@ -8,14 +8,14 @@
 ## Acceptance & validation
 
 - **Accepted:** 2026-06-10 · accepted-by Rich Bodo (maintainer) · validated against Toolkit-Version 0.1. The merge of [PR #61](https://github.com/richbodo/personal_network_toolkit/pull/61) is the acceptance; this line is the durable record of what was validated.
-- **Validated against:** Toolkit-Version 0.1. The AC attestation — universal + flavor-derived, the
+- **Validated against:** Toolkit-Version 0.1. The AC attestation — universal + conditional, the
   `EX-CLOUD-LLM` exception, and the `UM-1/2/3` user-mediation rows — is in [`Architecture.md`](Architecture.md);
   every `conformant` row's Verification cites a real, passing test, and the design's own evidence lint
   (`tests/conformance/test_attestation_has_evidence.py`) gates it.
 - **Posture:** [`evaluate-report.json`](evaluate-report.json) — deterministically emitted from the attestation
   table by `scripts/evaluate_report.py` and satisfying the toolkit's [`report-fixtures-lint.py`](../../tools/report-fixtures-lint.py)
   render contract — is **conformant** for the declared flavor: 12 conformant, 2 partial-conformance
-  (flagged for human review: `AC-PRM-A`, `AC-MCP-A` — consent + signaling, because an MCP server cannot
+  (flagged for human review: `AC-20`, `AC-MCP-A` — consent + signaling, because an MCP server cannot
   identify the consuming LLM), 4 not-applicable (`comms:none`) across 18 evaluated ACs.
 - **Archival:** `archival = "archived"` — source pinned at `prm@pnt-ref-0.1.2` (`7bd4a28`, PR [#60](https://github.com/richbodo/prm/pull/60),
   which adds `path:symbol` realization pointers → 100% realization-pointer coverage; supersedes the `pnt-ref-0.1.1` / `1551896`
@@ -30,7 +30,7 @@
 person's contacts from everywhere they're scattered (Google, Apple, LinkedIn, Facebook, loose vCard/CSV) into
 one store they own, **deduplicates** them, and lets an AI *propose* merges the human applies. It is the first
 design to exercise the **multi-source dedup** contract (`AC-PRM-B`) and the **native-sqlite-via-filesystem**
-substrate (`AC-PRM-C`), and the first **build-from-verifiable-source** distribution demonstrator. The canonical
+substrate (`RZ-5`), and the first **build-from-verifiable-source** distribution demonstrator. The canonical
 repo is https://github.com/richbodo/prm; its Architecture document lives at `docs/Architecture.md` upstream.
 
 ## Axis picks at first acceptance
@@ -53,7 +53,7 @@ This submission rides five spec changes, each demonstrated by working code in th
   + `core/apply.py` (the workspace applier).
 - **User-mediation `UM-1/2/3` (mutation side)**: PRM's propose→review→apply loop is the **mutation-side**
   demonstration the egress-focused fellows MVD lacked (the proposer stages; the principal disposes).
-- **`AC-PRM-H` — "no ungoverned app-opened surface over private data"** (`spec/axes.md`, flavor-derived;
+- **`AC-PRM-H` — "no ungoverned app-opened surface over private data"** (`spec/axes.md`, conditional;
   generalizes `AC-2`'s intent to the loopback daemon): a same-host surface a PNA stands up over its own data
   (here the loopback HTTP daemon) MUST be loopback-bound and authenticated to the user's own session. PRM is the
   **loopback-daemon demonstrator** — daemon session-auth (a per-process token + Host/Origin guard + loopback-pin)

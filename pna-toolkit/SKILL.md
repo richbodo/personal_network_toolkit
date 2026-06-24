@@ -41,7 +41,7 @@ Inputs: a candidate PNA's source tree (or a description sufficient to read its b
    - Read the relevant source files; trace the data flow or control flow the AC constrains.
    - Cite specific code locations supporting the decision.
    - If the candidate has an Architecture document with an AC attestation table, check that the declared verification mechanism actually runs and passes.
-2. **For each flavor-derived AC in `spec/axes.md`** triggered by the candidate's axis picks, do the same.
+2. **For each conditional AC in `spec/PNA_Spec.md` § Conditional architectural commitments** triggered by the candidate's axis picks, do the same.
 3. **For each typed contract relevant to the candidate's axis picks**, check that the candidate implements the contract correctly. Contract headers (`Realizes: AC-X, AC-Y`) tell you which ACs the contract serves.
 4. **Attestation evidence audit — the Security Target is only as good as its executable evidence.** For each AC/CST the candidate attests `conformant`:
    - **Confirm the named test exists and passes.** A Verification that doesn't resolve to a real, passing test — or to an explicitly declared review kind (`human-review` / `LLM rubric` / `code inspection` / `by architecture` / `by bounding` / `by construction`) — is a finding, not evidence. A bare doc pointer is **not** evidence: a doc that *asserts* a property does not *prove* it.
@@ -95,7 +95,7 @@ Before authoring the PR, validate that the design is submission-ready. This step
      - Which Toolkit-Version does the design conform to?
      - For each axis in `spec/axes.md`, which pick does the design use, and at which axis version?
      - For each axis, how does the design realize the pick? (Read the code to help fill this in.)
-     - For each applicable AC (universal in `spec/PNA_Spec.md`, plus any flavor-derived AC in `spec/axes.md` triggered by the picks): how does the design realize it? What test/rubric/note verifies it?
+     - For each applicable AC (universal in `spec/PNA_Spec.md`, plus any conditional AC in `spec/PNA_Spec.md` triggered by the picks): how does the design realize it? What test/rubric/note verifies it?
 
 2. **Ask the user what's interesting architecturally about this design.** Three patterns are valuable enough to justify submission:
    - **New architectural commitment.** The design demonstrates a constraint the spec doesn't yet name. (Most valuable — the PR includes a spec diff.)
@@ -179,7 +179,7 @@ When you implement or harden a feature to satisfy an AC and its tests pass — e
 ## Key resources
 
 - `spec/PNA_Spec.md` — canonical spec (vocabulary, goals, ACs, slot map, sub-contracts)
-- `spec/axes.md` — axes, attested picks per axis, flavor-derived ACs, and the constraints each pick inherits
+- `spec/axes.md` — axes, attested picks per axis, and the `RZ-*` realizations + constraints each pick brings (it links up to the conditional ACs in `spec/PNA_Spec.md` they entail)
 - `spec/constraints.md` — platform/substrate ceilings (`CST-*`) inherited by axis picks; the dual of exceptions.md
 - `spec/use_cases.md` — attested classes of PNA (Minimum Viable PNA, Directory Archive, PRM [draft], Multi-PNA ecosystem [target])
 - `contracts/` — typed contracts (JSON Schema, OpenAPI, SQL DDL, TypeScript), each with a `Realizes: AC-X` header

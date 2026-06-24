@@ -85,7 +85,7 @@ You're starting (or extending) a personal network application.
 
    > "Use the toolkit skill to walk me through axis picks for a [Directory Archive | Personal Relationship Manager | …] PNA."
 
-   The agent walks each Axis (distribution, storage substrate, ingestion shape, workspace shell, comms transport set, MCP-exposure) and the attested picks per Axis. Your full set of picks is your *flavor*. Some picks trigger flavor-derived ACs — see [`spec/axes.md`](../spec/axes.md).
+   The agent walks each Axis (distribution, storage substrate, ingestion shape, workspace shell, comms transport set, MCP-exposure) and the attested picks per Axis. Your full set of picks is your *flavor*. Some picks entail a **conditional AC** (defined in [`spec/PNA_Spec.md` § Conditional architectural commitments](../spec/PNA_Spec.md#conditional-architectural-commitments)); each pick also brings its own `RZ-*` realizations and constraints — see [`spec/axes.md`](../spec/axes.md).
 
 3. **Enumerate the Constraints your picks inherit.** A [Constraint](../spec/constraints.md) (`CST-*`) is a platform/substrate ceiling that comes attached to an axis pick — e.g. a `web-bundle` × `opfs-sqlite-wasm` PNA inherits the `CST-PWA-*` family. The agent lists them and helps you plan the honest per-platform capability reduction up front (the cross-references in [`spec/axes.md`](../spec/axes.md) name which picks inherit which constraints). If your design will deliberately depart from a guarantee, plan the [Exception](../spec/exceptions.md) (`EX-*`) handling too.
 
@@ -95,7 +95,7 @@ You're starting (or extending) a personal network application.
 
 6. **Build against the typed contracts.** [`contracts/`](../contracts/) holds the load-bearing interfaces, each opening with `Realizes: AC-X, AC-Y` naming the ACs it serves. Your code conforms to these. If you need to deviate from a contract, propose a spec change (see [Contributing beyond reference designs](#contributing-beyond-reference-designs)) rather than diverging silently.
 
-7. **Fill in the attestation table as you build.** For every applicable AC (universal in `PNA_Spec.md` + flavor-derived from your picks in `axes.md`), and every Exception/Constraint your design raises or inherits, record three fields in your Architecture document:
+7. **Fill in the attestation table as you build.** For every applicable AC (universal **and** conditional in `PNA_Spec.md` — the picks that trigger each conditional AC are listed in `axes.md`), and every Exception/Constraint your design raises or inherits, record three fields in your Architecture document:
    - **Realization** — how your code realizes/handles it, with `file:line` references.
    - **Verification** — the test, LLM rubric, or human-review note that verifies it for *your* design. A `conformant` row needs **executable evidence** (a resolvable test) or an explicitly declared review kind — a bare doc pointer is not evidence, and a negative invariant ("X must NOT happen") needs a *negative* test. See the [evaluate flow's attestation-evidence rules](../pna-toolkit/SKILL.md) for the full bar.
    - **Status** — `conformant` / `partial` (with the known gap) / `not-applicable` (with reason).
