@@ -178,6 +178,17 @@ SPEC_ID_FAULTS = [
         new='| AC-999 | `storage:opfs-sqlite-wasm`. | <a id="rz-2"></a>',
         expect="not a defined AC",
     ),
+    dict(
+        # The user-mediation mechanism check (collect_user_mediation_violations, check 11):
+        # a `Unifies:` AC the spec doesn't define must fail loudly — the third-mechanism
+        # analog of the contract 'Realizes:' / RZ / CST-Bounds cross-reference checks.
+        # Mutates the (unique) tail of user_mediation.md's `Unifies:` header.
+        name="user-mediation: Unifies names an AC the spec doesn't define",
+        file="spec/user_mediation.md",
+        old="AC-21, AC-MCP-B",
+        new="AC-21, AC-999",
+        expect="not a defined AC",
+    ),
 ]
 
 

@@ -2,6 +2,28 @@
 
 ## v0.1 draft (in progress)
 
+### User-mediation — the third general mechanism (`UM-1/2/3`)
+
+- **`spec/user_mediation.md` (new)** — promotes user-mediation from a proposal (the `(proposed; UM-1/2/3)`
+  line in `exceptions.md`) to a first-class mechanism, a sibling of `exceptions.md` and `constraints.md`:
+  the standing invariant that *the proposer stages, the principal disposes*, with **UM-1** (no bypass,
+  enforced at the data layer) · **UM-2** (separation) · **UM-3** (legibility) — bounded to
+  separation/legibility/attribution, **not** comprehension (the same honest limit as EX-H7). Names the
+  invariant beneath the action/egress ACs (its `Unifies:` header — AC-10/16/19/20/21/MCP-B) and defines
+  the per-design **mediated-boundary registry**.
+- **Demonstrator-gated, demonstrators in place:** both reference designs already attest UM-1/2/3
+  `conformant` — `fellows_local_db` (egress side: data-layer refusal + mediated-boundary registry) and
+  `prm` (mutation side: propose→review→apply). New normative content carried by working demonstrators,
+  per `CONTRIBUTING.md`.
+- **Lint + self-test:** `tools/lint-spec-ids.py` gains check 11 — every AC named in the `Unifies:`
+  header must resolve to a defined AC (the third-mechanism analog of the contract `Realizes:` / RZ /
+  CST-`Bounds:` cross-reference), plus the Toolkit-Version stamp; a fault-injection case in
+  `tools/tests/lint_selftest.py` (a `Unifies:` naming an undefined AC) pins it (**45/45**).
+- **Cross-refs:** `PNA_Spec.md` § Vocabulary gains a `user-mediation` entry; `exceptions.md` retires the
+  `(proposed)` line; `docs/users-guide.md` + `pna-toolkit/SKILL.md` (evaluate flow) gain the mechanism.
+  No reference-design re-attestation or `evaluate-report.json` schema field in this PR — the designs'
+  bundled-copy sync + any report-schema `um_id` ride the v0.2 cut (honest deferral). `just ci` green.
+
 ### L1/L2 layering pass — three layers, AC-22 / AC-23, RZ-* realizations, conditional-AC consolidation
 
 The spec is now built in three explicitly-named layers, with a single dividing test — **an
