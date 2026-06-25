@@ -81,7 +81,7 @@ report-lint target:
 swh-save url ref="HEAD" clone="":
     tools/swh-save.sh {{url}} {{ref}} {{clone}}
 
-# Re-archive an accepted design at a ref: archive (swh-save) + rewrite its design.toml pin + refresh its bundled Architecture/report copies + lint. Args: <name> <ref> <clone> [--no-save …].
+# Re-archive an accepted design. ex: just rearchive prm pnt-ref-0.2 ~/src/prm
 [group('design')]
 rearchive name ref clone *args:
     {{python}} tools/rearchive.py {{name}} {{ref}} {{clone}} {{args}}

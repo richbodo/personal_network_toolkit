@@ -53,7 +53,21 @@ elif git rev-parse --git-dir >/dev/null 2>&1; then
   GITDIR="."
 fi
 
-if [ -n "$GITDIR" ] && git -C "$GITDIR" rev-parse "${REF}^{commit}" >/dev/null 2>&1; then
+if [ -z "$GITDIR" ]; then
+  # No clone at all (none passed, cwd isn't a git repo).
+  echo "No local clone provided — re-run with a clone path to compute the SWHID locally:"
+  echo "    tools/swh-save.sh ${URL} ${REF} <clone-path>"
+  echo "or read swh:1:dir from the SH archive UI once ingest completes."
+elif ! git -C "$GITDIR" rev-parse "${REF}^{commit}" >/dev/null 2>&1; then
+  # The clone IS here, but the ref doesn't resolve in it — the common typo/un-fetched
+  # case (e.g. asking for 'pnt-ref-0.2.0' when the tag is 'pnt-ref-0.2'). Say so
+  # specifically rather than the misleading "No local clone provided".
+  echo "Clone ${GITDIR} has no ref '${REF}' — the clone is there, but that ref isn't."
+  echo "Check the exact name (e.g. 'pnt-ref-0.2', not 'pnt-ref-0.2.0'), then re-run:"
+  echo "    git -C ${GITDIR} tag -l                  # list local tags to confirm the name"
+  echo "    git -C ${GITDIR} fetch --tags origin     # if the ref is only on the remote"
+  echo "or read swh:1:dir from the SH archive UI once ingest completes."
+else
   fmt=$(git -C "$GITDIR" rev-parse --show-object-format 2>/dev/null || echo sha1)
   # Peel to the commit: `git rev-parse <annotated-tag>` yields the tag *object*
   # hash, but a swh:1:rev names a revision (a git commit). `^{commit}` is a no-op
@@ -73,8 +87,4 @@ if [ -n "$GITDIR" ] && git -C "$GITDIR" rev-parse "${REF}^{commit}" >/dev/null 2
   echo "  commit    = \"${commit}\""
   echo "  swhid_rev = \"swh:1:rev:${commit}\""
   echo "  swhid_dir = \"swh:1:dir:${tree}\""
-else
-  echo "No local clone provided — re-run with a clone path to compute the SWHID locally:"
-  echo "    tools/swh-save.sh ${URL} ${REF} <clone-path>"
-  echo "or read swh:1:dir from the SH archive UI once ingest completes."
 fi

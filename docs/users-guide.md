@@ -180,7 +180,7 @@ For developers working **on the toolkit itself** (the spec, lints, contracts, sk
 | `just loopback-lint <dir> [args]` | Scan a candidate for an unauthenticated app-opened **loopback surface** (candidate `AC-PRM-H`, RFC): an L1 literal non-loopback bind **gates**; an L2 unauthenticated handler is **advisory** (`--strict` promotes it to a gate). A bounded tripwire — the deterministic half, like `egress-lint`. |
 | `just report-lint <path>` | Validate `evaluate-report.json` instance(s) against the render contract the Visual Validator reads — a single file or a reports directory (e.g. a cron drop). |
 | `just swh-save <repo-url> [ref] [clone]` | Request Software Heritage archival of a design's repo and print the SWHID fields to paste into its `design.toml`. **Pass the `clone` path (3rd arg) when running from the toolkit** — otherwise it computes the toolkit's own SWHIDs from the cwd. See [Archive a reference design](#archive-a-reference-design-to-the-software-heritage-archive). |
-| `just rearchive <name> <ref> <clone> [args]` | Re-archive an accepted design at a ref in one step: `swh-save` + rewrite its `design.toml` pin + refresh its bundled `Architecture.md`/`evaluate-report.json` copies + lint. `--no-save` skips the Save Code Now POST (offline re-pin). After it refreshes the bundled Architecture copy, regenerate the realization index (`just realization-index`) so `just ci` stays green. |
+| `just rearchive <name> <ref> <clone> [args]` | Re-archive an accepted design at a ref in one step: `swh-save` + rewrite its `design.toml` pin + refresh its bundled `Architecture.md`/`evaluate-report.json` copies + lint. `--no-save` skips the Save Code Now POST (offline re-pin). After it refreshes the bundled Architecture copy, regenerate the realization index (`just realization-index`) so `just ci` stays green. See [Re-archive a design](#re-archive-a-design-just-rearchive). |
 | `just realization-index [args]` | Regenerate the derived cross-design [realization index](realization-index.md) (`docs/realization-index.md`) from the bundled designs' attestation tables — which design realizes each AC, where, at which archived commit. `--check` (run by `just ci`) fails if the committed index is stale; `--json` prints the machine model. See [The realization index](#the-realization-index). |
 | `just test-design <name>` | *(Scaffold, inert)* the planned per-design conformance harness — see [`plans/conformance-suite-plan.md`](../plans/conformance-suite-plan.md) § Phase 4. |
 | `just setup-test` | **(Opt-in, one-time)** Create `.venv` and install the browser-test deps (`pytest` + Playwright + Chromium) from `requirements-dev.txt`. Needed only for `just test-viewer`. |
@@ -207,6 +207,31 @@ just swh-save https://github.com/richbodo/fellows_local_db HEAD ~/src/fellows_lo
 - **The 3rd arg (clone path) is required** here: the SWHIDs are computed from that local clone, and without it the script falls back to the toolkit's own repo and prints the *wrong* IDs. *(Shortcut: run the script from inside the design's repo and you can drop it — `~/src/personal_network_toolkit/tools/swh-save.sh <url> <ref>`.)*
 - **`<git-ref>`** is the commit/tag whose attestation you're archiving; it must already be **pushed** so Save Code Now can ingest it. Tag first for a stable ref: `git tag v0.1.1 && git push origin v0.1.1`. Either an **annotated** (`git tag -a`) or lightweight tag works — `swh-save` peels the ref to its commit, so `swhid_rev` always names the commit (not the annotated-tag object).
 - The command POSTs the Save-Code-Now request (ingest is async — minutes to hours) and prints paste-ready `commit` / `swhid_rev` / `swhid_dir` lines. Put them in the design's `reference_designs/<name>/design.toml` (and its README), then set `archival = "archived"`.
+
+### Re-archive a design (`just rearchive`)
+
+`just rearchive` is the **one-step** version of the archival above: it runs `swh-save`, then does the toolkit-side bookkeeping `swh-save` leaves to you — refreshing the bundled copies, rewriting the manifest pin, and linting. Use it whenever an accepted design moves to a new commit (a new release, or a re-pin after upstream spec changes land). Like `swh-save` it's a maintainer step run **from the toolkit repo**, and the prerequisites from [Archive a reference design](#archive-a-reference-design-to-the-software-heritage-archive) apply — the ref must be **pushed** for Save Code Now to ingest it; tag first for a stable ref.
+
+```bash
+cd ~/src/personal_network_toolkit                     # ← run from HERE (the toolkit)
+just rearchive <name> <ref> <clone> [--no-save]
+# Real example — re-pin prm at its v0.2 attestation tag:
+just rearchive prm pnt-ref-0.2 ~/src/prm
+```
+
+| Argument | What it is |
+|---|---|
+| `<name>` | The reference-design **directory** name under `reference_designs/<name>/` (e.g. `prm`) — *not* a path or URL. It's how the recipe finds `design.toml` and reads the canonical `repo` URL from it. |
+| `<ref>` | A git ref **in the design's own repo** — a tag, branch, `HEAD`, or SHA. It's peeled to a commit, and the bundled `Architecture.md` / `evaluate-report.json` copies are pulled from it via `git show` (no checkout). This repo's tag convention is `pnt-ref-<version>`. |
+| `<clone>` | Path to a local clone of the design's repo (e.g. `~/src/prm`). The SWHIDs and the refreshed copies are read from here, so it must be a real directory containing `<ref>`. |
+
+Pass-through flags: **`--no-save`** skips the Save Code Now POST (offline re-pin — the SWHIDs are content-addressed, so they're still correct); **`--arch-src REL`** / **`--report-src REL`** override the in-clone source paths (defaults `docs/Architecture.md` and `docs/conformance/<emits_report>`).
+
+**What it does**, all inside the toolkit repo: (1) reads `repo` from `reference_designs/<name>/design.toml`; (2) delegates to `swh-save` to POST Save Code Now and compute the git-compatible SWHIDs from the clone at `<ref>`; (3) refreshes the bundled `Architecture.md` + `evaluate-report.json` at that ref; (4) rewrites `commit` / `swhid_rev` / `swhid_dir` and flips `archival = "archived"`, preserving comments and alignment; (5) runs `tools/lint-spec-ids.py` (exits non-zero on a violation).
+
+**What it leaves to you** — it prints paste-ready stubs for each: tagging the design's repo and opening the toolkit PR; the README / CHANGELOG / index *prose*; and regenerating a commit-stamped `evaluate-report.json` if the bundled one's `candidate.commit` lags the pinned commit (it prints the exact `git worktree` recipe).
+
+> **Don't forget the index.** `rearchive` refreshes the bundled `Architecture.md` but does **not** regenerate the derived [realization index](#the-realization-index) — run `just realization-index` after, then `just ci`, or CI fails on a stale index.
 
 **Conventions** (full list in [`CLAUDE.md`](../CLAUDE.md)):
 

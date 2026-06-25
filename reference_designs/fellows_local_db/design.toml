@@ -2,24 +2,22 @@
 # reference_designs/templates/design.toml for the field reference.
 #
 # This design is "accepted by definition" (the toolkit was distilled from it).
-# Archived at the post-#267 commit below (fellows main @ dc3e0cf). The Tier-0
-# keystone is complete: the [verify] entrypoint `just evaluate-report` now lands
-# (fellows PR #267 — a deterministic, stdlib evaluate-report.json emitter that is
-# schema-valid and byte-stable). The git-compatible SWHIDs were computed by
-# tools/swh-save.sh and are content-addressed (valid independent of ingest timing);
-# the Software Heritage Save Code Now request 2352911 was submitted 2026-06-09 and
-# ingest is async (minutes to hours). swhid_rev == swh:1:rev:<commit>, cross-checked
-# by tools/lint-spec-ids.py. (docs/roadmap.md Tier 0.)
+# The [verify] entrypoint `just evaluate-report` (fellows PR #267) emits a
+# deterministic, stdlib, schema-valid evaluate-report.json. The git-compatible
+# SWHIDs below are computed by tools/swh-save.sh and are content-addressed (valid
+# independent of Save Code Now ingest timing); swhid_rev == swh:1:rev:<commit>,
+# cross-checked by tools/lint-spec-ids.py. The `archival` line records the current
+# pin + ingest request. (docs/roadmap.md Tier 0.)
 
 name = "fellows_local_db"
 repo = "https://github.com/richbodo/fellows_local_db"
 toolkit_version = "0.1"
 status = "active"
-archival = "archived"   # re-pinned to fellows #289 (98b283f) for 100% realization-pointer coverage. SWHIDs git-computed/content-addressed; Save Code Now submitted 2026-06-19 (SH origin-save request 2368289) — ingest async (minutes-hours); the SWHIDs resolve unchanged once done.
+archival = "archived"   # re-pinned to pnt-ref-0.2 (15be80d) for the v0.2 re-attestation (AC-22 / AC-23 + UM + RZ-* note) + GPL-3.0 LICENSE. SWHIDs git-computed/content-addressed; Save Code Now submitted 2026-06-25 — ingest async.
 
-commit    = "98b283f10cfa0196006f66b9507179f25e821ef6"
-swhid_rev = "swh:1:rev:98b283f10cfa0196006f66b9507179f25e821ef6"
-swhid_dir = "swh:1:dir:1bb784328e99fe888addf2e04fc2bbdf66b5ec05"
+commit    = "15be80dedb22973d11651e8eb89b0611937ac5be"   # fellows@pnt-ref-0.2 — v0.2 re-attestation (AC-22/23 + GPL-3.0 LICENSE)
+swhid_rev = "swh:1:rev:15be80dedb22973d11651e8eb89b0611937ac5be"
+swhid_dir = "swh:1:dir:f139d27207eb6d814eaf031d374f9cfb795aba17"
 
 [flavor]
 distribution = "web-bundle-with-magic-link"

@@ -140,14 +140,14 @@ SPEC_ID_FAULTS = [
         # check, this fault empties the commit — an archived design MUST carry its commit pin.
         name="manifest: archived design without its SWHID pin (honest-deferral)",
         file="reference_designs/fellows_local_db/design.toml",
-        old='commit    = "98b283f10cfa0196006f66b9507179f25e821ef6"',
+        old='commit    = "15be80dedb22973d11651e8eb89b0611937ac5be"',
         new='commit    = ""',
         expect="requires 'commit'",
     ),
     dict(
         name="manifest: malformed SWHID value",
         file="reference_designs/fellows_local_db/design.toml",
-        old='swhid_dir = "swh:1:dir:1bb784328e99fe888addf2e04fc2bbdf66b5ec05"',
+        old='swhid_dir = "swh:1:dir:f139d27207eb6d814eaf031d374f9cfb795aba17"',
         new='swhid_dir = "swh:1:dir:not-a-real-hash"',
         expect="malformed",
     ),
@@ -342,6 +342,46 @@ def case_swh_save_annotated_tag(results: list) -> None:
                 f"expected swh:1:rev:{commit} (commit), not the tag object {tagobj}; got:\n{out}")
 
 
+def case_swh_save_ref_not_found(results: list) -> None:
+    """swh-save.sh must distinguish "no clone given" from "clone given but the ref
+    doesn't resolve in it". The old code printed "No local clone provided" for BOTH,
+    sending a maintainer hunting for a clone they had already passed — when the real
+    cause was a tag-name typo ('pnt-ref-0.2.0' vs the actual 'pnt-ref-0.2'). Pin the
+    ref-not-found branch: a real clone + a bogus ref names the missing ref and does
+    NOT print the no-clone message. Offline via SWH_SAVE_NO_REQUEST."""
+    name = "swh-save.sh: clone present but ref absent → names the ref, not 'no clone'"
+    git = shutil.which("git")
+    if git is None:
+        _record(results, name + " (SKIP: no git)", True, "")
+        return
+    env = {**os.environ,
+           "GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@e.x",
+           "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL": "t@e.x"}
+
+    def g(repo: Path, *a: str) -> subprocess.CompletedProcess:
+        return subprocess.run([git, "-C", str(repo), *a],
+                              capture_output=True, text=True, env=env)
+
+    with tempfile.TemporaryDirectory() as td:
+        repo = Path(td) / "fixture"
+        repo.mkdir()
+        g(repo, "init", "-q")
+        (repo / "f.txt").write_text("x\n")
+        g(repo, "add", "f.txt")
+        g(repo, "commit", "-q", "-m", "c")
+        cp = subprocess.run(
+            ["bash", str(REPO / "tools/swh-save.sh"),
+             "https://example.com/x", "pnt-ref-0.2.0", str(repo)],  # a ref that does NOT exist
+            capture_output=True, text=True,
+            env={**env, "SWH_SAVE_NO_REQUEST": "1"},
+        )
+        out = cp.stdout + cp.stderr
+        ok = ("has no ref" in out) and ("No local clone provided" not in out)
+        _record(results, name, ok, "" if ok else
+                "expected a 'has no ref' message and NOT 'No local clone provided'; "
+                f"got:\n{out}")
+
+
 def case_loopback_advisory(results: list) -> None:
     """Pin the L1-gates / L2-advisory split (the soft-spot fix): the no-auth fixture
     is an L2 advisory that does NOT gate by default (exit 0, but reported), and DOES
@@ -486,6 +526,7 @@ def main() -> int:
     case_attestation_marker_message(results)
     case_attestation_pytestmark(results)
     case_swh_save_annotated_tag(results)
+    case_swh_save_ref_not_found(results)
     case_rearchive_offline(results)
     case_realization_index(results)
 
