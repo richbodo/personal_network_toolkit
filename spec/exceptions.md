@@ -8,25 +8,24 @@
 > departs from a baseline guarantee — a named AC, or the core PNA definition ("runs local-only,
 > never as SaaS"; see [`PNA_Spec.md` § Vocabulary](PNA_Spec.md), `vocab-pna`).
 
-> **⚠ Proposed amendments (RFC — not yet accepted).** This file carries **two** still-proposed changes,
+> **⚠ Proposed amendment (RFC — not yet accepted).** This file carries **one** still-proposed change,
 > opened for maintainer consideration (rationale in the companion design note
-> `docs/design-notes/2026-06-exceptions-existential-review.md`): **(1)** split the overloaded
-> "conformant" predicate into **`pna-active`** (the mode bit a relying party keys on) and
-> **`exception-handling`** conformance — a reporting *clarification* (§ Concept); **(2)** harden
-> **EX-H7** from best-effort to *fail-closed* when human consent cannot be confirmed at a
-> PNA-controlled surface (§ Handler contract). Change (2) imposes a **new obligation** on designs, so
-> per [`CONTRIBUTING.md`](../CONTRIBUTING.md) § Contribution types it requires a **demonstrating
-> reference design** before acceptance — the **PRM v0.2** *hardened model* (consent enforced at the
-> PNA's own surface); `fellows_local_db` ships only best-effort today, so it does not yet demonstrate
-> fail-closed. The separately-tracked *architectural data-floor* (`AC-MCP-C` / `PR-7`) — which bounds
-> *what* an exception may disclose, not just the act — rides the same **PRM v0.2** demonstrator
-> ([data-floor note](../docs/design-notes/2026-06-data-floor-disclosure-tiers.md)) and **complements**
-> these. The two remaining proposals are inline-tagged *(Proposed, RFC)*.
+> `docs/design-notes/2026-06-exceptions-existential-review.md`): harden **EX-H7** from best-effort to
+> *fail-closed* when human consent cannot be confirmed at a PNA-controlled surface (§ Handler contract).
+> It imposes a **new obligation** on designs, so per [`CONTRIBUTING.md`](../CONTRIBUTING.md) § Contribution
+> types it requires a **demonstrating reference design** before acceptance — the **PRM v0.2** *hardened
+> model* (consent enforced at the PNA's own surface); `fellows_local_db` ships only best-effort today, so
+> it does not yet demonstrate fail-closed. The separately-tracked *architectural data-floor* (`AC-MCP-C` /
+> `PR-7`) — which bounds *what* an exception may disclose, not just the act — rides the same **PRM v0.2**
+> demonstrator ([data-floor note](../docs/design-notes/2026-06-data-floor-disclosure-tiers.md)) and
+> **complements** it. The remaining proposal is inline-tagged *(Proposed, RFC)*.
 >
-> **Accepted (normative).** The **un-relaxable floor** (§ Scope discipline) — guarantees no exception
-> may relax even with consent (**AC-18 / AC-19 / AC-MCP-B**) — is now normative: demonstrated by
-> `EX-CLOUD-LLM` (which relaxes no floor AC) and **enforced** by `tools/lint-spec-ids.py` (a `Relaxes:`
-> naming a floor AC fails CI). *(Formerly proposal (3).)*
+> **Accepted (normative).** Two amendments have landed: **(a)** the **`pna-active` / `exception-handling`
+> predicate split** (§ Concept) — the conferred verdict reports PNA membership only, so a cleanly-handled
+> `EX-CLOUD-LLM` app reads the evaluate report's new **`not-pna-active`** posture, never `conformant`;
+> and **(b)** the **un-relaxable floor** (§ Scope discipline) — guarantees no exception may relax even
+> with consent (**AC-18 / AC-19 / AC-MCP-B**), demonstrated by `EX-CLOUD-LLM` and **enforced** by
+> `tools/lint-spec-ids.py` (a `Relaxes:` naming a floor AC fails CI).
 
 This file also catalogs the **mitigation side** of exceptions — a reusable
 [Countermeasure library](#countermeasure-library) — and names its sibling for adversary-in-the-runtime
@@ -49,7 +48,7 @@ be **caught** (never raised silently), and must be **handled** by a defined **so
 
 **An app is in PNA mode when no exceptions are active.** Raising any exception exits PNA mode. Two
 *separate* predicates then describe the app, and fusing them is the mistake the rest of this section
-exists to prevent: *(Proposed, RFC — predicate split; a reporting clarification.)*
+exists to prevent: *(Normative — the predicate split is a reporting clarification.)*
 
 - **`pna-active`** — the mode bit. `true` only while **no** exception is active. This is the
   categorical claim the word *PNA* carries: *the architecture is holding the local-only guarantee
@@ -79,17 +78,17 @@ conformant PNA operating in a declared non-PNA mode" — fused the two and is **
 guarantee, and the guarantee is suspended while an exception is active. The [evaluate
 flow](pna-toolkit/SKILL.md) reports both, by `EX-*` ID.
 
-**Discipline — confer the membership bit, report the rest.** *(Proposed, RFC — sharpens this change
-with the "detect, don't bless" rule.)* `pna-active` is the **only conferred conformance verdict** and
+**Discipline — confer the membership bit, report the rest.** *(Normative — the "detect, don't bless"
+rule.)* `pna-active` is the **only conferred conformance verdict** and
 the **only thing a future interop gate keys on** ([`PNA_Spec.md` § Vision](PNA_Spec.md)); a peer MUST
 refuse Private-DB access to an app whose `pna-active` is false *regardless* of how well it handles its
 exceptions. The per-clause handler report is description a *human* reads — never a badge a vendor can
 wave or a gate a machine can pass. Concretely: the evaluate report's `summary.posture`
-([`tools/evaluate-report.schema.json`](../tools/evaluate-report.schema.json)) MUST be redefined so its
-conferred value reports **PNA membership only** (exception handling living solely in the per-`EX-*`
-findings), so that a cleanly-handled `EX-CLOUD-LLM` app can never surface a top-line
-`posture: conformant`. (That schema edit lands with acceptance; it is named here so acceptance accepts
-it.)
+([`tools/evaluate-report.schema.json`](../tools/evaluate-report.schema.json)) reports **PNA membership
+only** (exception handling living solely in the per-`EX-*` findings), so a cleanly-handled
+`EX-CLOUD-LLM` app surfaces the **`not-pna-active`** posture, never a top-line `posture: conformant`.
+(Landed: the schema carries `not-pna-active`; `tools/report-fixtures-lint.py` and the Visual Validator
+render it — see sample `04-not-pna-active-exception.json`.)
 
 ### Validation, not certification
 

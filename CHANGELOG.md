@@ -2,6 +2,22 @@
 
 ## v0.1 draft (in progress)
 
+### Exceptions-hardening (D1): the `pna-active` / `exception-handling` predicate split is normative
+
+- **`spec/exceptions.md` § Concept** — promotes the predicate split from `(Proposed, RFC)` to
+  **normative**: the conferred verdict reports **PNA membership** (`pna-active`) only; how honestly each
+  active exception is handled lives solely in the per-`EX-*` findings, never rolled up. A relying party
+  (and a future interop gate) keys on `pna-active`, and nothing else ("detect, don't bless").
+- **The report contract carries it (`tools/evaluate-report.schema.json`):** `summary.posture` gains a
+  **`not-pna-active`** value — a cleanly-handled `EX-CLOUD-LLM` app reads it, never `conformant`.
+  `tools/report-fixtures-lint.py` (`POSTURES`) and the **Visual Validator** (`tools/report-viewer/`:
+  plain-language label + CSS) render it; a new sample `04-not-pna-active-exception.json` demonstrates it
+  (covered in `just ci` via report-fixtures-lint, and in the opt-in viewer suite). `PNA_Spec.md`
+  (vocab-pna + the Validation note) and `pna-toolkit/SKILL.md` (evaluate step 9) flip to normative.
+- A reporting *clarification* — it imposes no new behavioral obligation on a built PNA, only on how the
+  evaluate flow **reports**. The sole remaining exceptions RFC is **EX-H7 fail-closed** (D2), gated on
+  PRM v0.2. `just ci` green.
+
 ### Exceptions-hardening (D3): the un-relaxable floor is now normative + lint-enforced
 
 - **`spec/exceptions.md` § Scope discipline** — promotes the **un-relaxable floor** from `(Proposed, RFC)`

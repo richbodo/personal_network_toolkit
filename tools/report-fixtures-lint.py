@@ -28,7 +28,7 @@ import sys
 from pathlib import Path
 
 AC_ID = re.compile(r"^AC-[A-Z0-9-]+$")
-POSTURES = {"conformant", "non-conformant", "mixed", "indeterminate"}
+POSTURES = {"conformant", "not-pna-active", "non-conformant", "mixed", "indeterminate"}
 STATUSES = {"conformant", "non-conformant", "not-applicable", "unable-to-determine"}
 TOP_REQUIRED = ("report_schema_version", "candidate", "summary", "findings")
 
