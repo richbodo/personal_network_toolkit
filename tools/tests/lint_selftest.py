@@ -189,6 +189,16 @@ SPEC_ID_FAULTS = [
         new="AC-21, AC-999",
         expect="not a defined AC",
     ),
+    dict(
+        # The un-relaxable floor (D3, check 5): an exception that relaxes a floor AC
+        # (AC-18/19/MCP-B) is malformed and must fail loudly. EX-CLOUD-LLM relaxes only
+        # PNA-DEFINITION + AC-MCP-A; injecting a floor AC into its Relaxes trips the check.
+        name="exceptions: an exception relaxes an un-relaxable floor AC",
+        file="spec/exceptions.md",
+        old="**Relaxes:** PNA-DEFINITION, AC-MCP-A",
+        new="**Relaxes:** PNA-DEFINITION, AC-MCP-A, AC-19",
+        expect="un-relaxable floor",
+    ),
 ]
 
 

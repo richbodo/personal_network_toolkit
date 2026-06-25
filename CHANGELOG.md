@@ -2,6 +2,24 @@
 
 ## v0.1 draft (in progress)
 
+### Exceptions-hardening (D3): the un-relaxable floor is now normative + lint-enforced
+
+- **`spec/exceptions.md` § Scope discipline** — promotes the **un-relaxable floor** from `(Proposed, RFC)`
+  to **normative**: no exception may relax it even with consent — charter members **AC-18 / AC-19 /
+  AC-MCP-B** (the action-floor: no unreviewed action taken on the user's behalf, since it reaches third
+  parties who consented to nothing). An exception that names a floor AC in its `Relaxes:` is malformed.
+  The RFC banner now lists **two** remaining proposals (`pna-active`, EX-H7 fail-closed), and the EX-H7
+  demonstrator note is corrected — **PRM v0.2** enforces fail-closed; `fellows_local_db` ships only
+  best-effort.
+- **Enforced, not just asserted:** `tools/lint-spec-ids.py` (check 5) now rejects a `Relaxes:` that names
+  a floor AC, with a fault-injection self-test (**46/46**). En route this **fixed a latent `RELAXES_RE`
+  gap** — the regex lacked the `\**` that `REVERSIBLE_RE` carries, so it matched only the backtick
+  *example* in § Header conventions, never a real exception's bold `**Relaxes:**` field; the not-known
+  and floor checks now see the actual tokens.
+- Demonstrated by `EX-CLOUD-LLM` (relaxes only `PNA-DEFINITION` + `AC-MCP-A`, no floor AC) → no design
+  goes non-conformant. `docs/users-guide.md` notes the floor. EX-H7 fail-closed (D2) stays RFC, gated on
+  PRM v0.2. `just ci` green.
+
 ### User-mediation — the third general mechanism (`UM-1/2/3`)
 
 - **`spec/user_mediation.md` (new)** — promotes user-mediation from a proposal (the `(proposed; UM-1/2/3)`

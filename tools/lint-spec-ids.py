@@ -12,7 +12,9 @@ Checks:
   4. Every Exception in spec/exceptions.md carries a stable ID (EX-*) in a
      registry table row.
   5. Every "Relaxes:" header (in exceptions.md) names only valid AC IDs, EX
-     IDs, or the PNA-DEFINITION sentinel.
+     IDs, or the PNA-DEFINITION sentinel — and names no un-relaxable-floor AC
+     (AC-18/19/MCP-B; § Scope discipline): a floor AC in a Relaxes is a malformed
+     exception, since the floor may not be relaxed even with consent.
   6. Every "Reversible:" field is well-formed (yes|no); a "yes" requires a
      "Reversal:" field. Every value in a strength-profile column is one of the
      fixed strength classes (EX-H8).
@@ -95,8 +97,12 @@ RZ_ID_RE = re.compile(r"RZ-[0-9]+")
 RZ_ID_HEADERS = {"rz"}
 # Inverse of REALIZES_RE. Tokens may be AC-*, EX-*, or the PNA-DEFINITION
 # sentinel (the PNA definition is prose in vocab-pna, not an `| AC-X |` row).
+# `\**` tolerates the markdown-bold field form (`**Relaxes:** PNA-DEFINITION, …`)
+# the same way REVERSIBLE_RE does; without it this matched only the backtick
+# *example* in § Header conventions, never a real exception's bold `**Relaxes:**`
+# field — so the floor / not-known checks below never saw the actual tokens.
 RELAXES_RE = re.compile(
-    r"Relaxes:\s*((?:(?:AC-[A-Z0-9-]+|EX-[A-Z0-9-]+|PNA-DEFINITION)(?:\s*,\s*)?)+)",
+    r"Relaxes:\**\s*((?:(?:AC-[A-Z0-9-]+|EX-[A-Z0-9-]+|PNA-DEFINITION)(?:\s*,\s*)?)+)",
     re.IGNORECASE,
 )
 # The `Unifies:` header in spec/user_mediation.md names the AC-* commitments the
@@ -117,6 +123,10 @@ STRENGTH_CLASSES = {
     "enforced", "verifiable", "best-effort",
     "provider-asserted", "recoverable-only", "none",
 }
+# The un-relaxable floor (spec/exceptions.md § Scope discipline): guarantees no
+# exception may relax, even with consent. An exception that names a floor AC in its
+# `Relaxes:` header is malformed. Charter members — keep in sync with § Scope discipline.
+FLOOR_ACS = {"AC-18", "AC-19", "AC-MCP-B"}
 
 # --- Constraints (spec/constraints.md) ---
 # Constraint registry IDs are read from the "CST" column of the registry table
@@ -779,6 +789,12 @@ def main() -> int:
             failures.append(
                 f"exceptions.md: Relaxes names {tok}, which is not a known AC, EX, "
                 "or PNA-DEFINITION."
+            )
+        elif tok in FLOOR_ACS:
+            failures.append(
+                f"exceptions.md: Relaxes names {tok}, an un-relaxable floor AC that no "
+                "exception may relax, even with consent (the un-relaxable floor, "
+                "spec/exceptions.md § Scope discipline) — the exception is malformed."
             )
 
     if EXCEPTIONS_PATH.exists():
