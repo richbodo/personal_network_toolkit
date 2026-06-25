@@ -8,22 +8,25 @@
 > departs from a baseline guarantee — a named AC, or the core PNA definition ("runs local-only,
 > never as SaaS"; see [`PNA_Spec.md` § Vocabulary](PNA_Spec.md), `vocab-pna`).
 
-> **⚠ Proposed amendments (RFC — not yet accepted).** This file carries three proposed changes,
-> opened for maintainer consideration (rationale in the companion design note, landing at
+> **⚠ Proposed amendments (RFC — not yet accepted).** This file carries **two** still-proposed changes,
+> opened for maintainer consideration (rationale in the companion design note
 > `docs/design-notes/2026-06-exceptions-existential-review.md`): **(1)** split the overloaded
 > "conformant" predicate into **`pna-active`** (the mode bit a relying party keys on) and
 > **`exception-handling`** conformance — a reporting *clarification* (§ Concept); **(2)** harden
 > **EX-H7** from best-effort to *fail-closed* when human consent cannot be confirmed at a
-> PNA-controlled surface (§ Handler contract); **(3)** add an **un-relaxable floor** of guarantees no
-> exception may relax (§ Scope discipline). Changes (2) and (3) impose **new obligations** on designs,
-> so per [`CONTRIBUTING.md`](../CONTRIBUTING.md) § Contribution types they require a **demonstrating
-> reference design** before acceptance (`fellows_local_db` would demonstrate fail-closed; a PRM the
-> hardened model). A **fourth, separately-tracked** correction came out of a follow-up review — an
-> *architectural data-floor* (`AC-MCP-C` / `PR-7`) that bounds *what* an exception can disclose, not
-> just the act of disclosing — drafted as its own proposal
-> ([`docs/design-notes/2026-06-data-floor-disclosure-tiers.md`](../docs/design-notes/2026-06-data-floor-disclosure-tiers.md)),
-> to be demonstrated by the PRM reference design; it **complements, not replaces**, the three here.
-> Inline changes are tagged *(Proposed, RFC)*.
+> PNA-controlled surface (§ Handler contract). Change (2) imposes a **new obligation** on designs, so
+> per [`CONTRIBUTING.md`](../CONTRIBUTING.md) § Contribution types it requires a **demonstrating
+> reference design** before acceptance — the **PRM v0.2** *hardened model* (consent enforced at the
+> PNA's own surface); `fellows_local_db` ships only best-effort today, so it does not yet demonstrate
+> fail-closed. The separately-tracked *architectural data-floor* (`AC-MCP-C` / `PR-7`) — which bounds
+> *what* an exception may disclose, not just the act — rides the same **PRM v0.2** demonstrator
+> ([data-floor note](../docs/design-notes/2026-06-data-floor-disclosure-tiers.md)) and **complements**
+> these. The two remaining proposals are inline-tagged *(Proposed, RFC)*.
+>
+> **Accepted (normative).** The **un-relaxable floor** (§ Scope discipline) — guarantees no exception
+> may relax even with consent (**AC-18 / AC-19 / AC-MCP-B**) — is now normative: demonstrated by
+> `EX-CLOUD-LLM` (which relaxes no floor AC) and **enforced** by `tools/lint-spec-ids.py` (a `Relaxes:`
+> naming a floor AC fails CI). *(Formerly proposal (3).)*
 
 This file also catalogs the **mitigation side** of exceptions — a reusable
 [Countermeasure library](#countermeasure-library) — and names its sibling for adversary-in-the-runtime
@@ -107,9 +110,10 @@ Exceptions are bounded so they stay a PNA-class mechanism rather than a general 
   (EX-H4) renders the *currently-active* exceptions at runtime, each with its own entry and strength
   profile. The toolkit never pre-enumerates combinations; cost scales linearly in the number of defined
   exceptions, not combinatorially.
-- **Un-relaxable floor.** *(Proposed, RFC — generalizes a per-exception fact into a standing rule; a
-  new obligation on future exceptions.)* Some guarantees are a floor that **no exception may relax,
-  even with consent.** Charter members: **AC-18** (a transport's mechanism cannot read message
+- **Un-relaxable floor.** *(Normative — generalizes a per-exception fact into a standing rule; a new
+  obligation on future exceptions. Demonstrated by `EX-CLOUD-LLM` (relaxes no floor AC) and enforced by
+  `tools/lint-spec-ids.py`: a `Relaxes:` naming a floor AC fails CI.)* Some guarantees are a floor that
+  **no exception may relax, even with consent.** Charter members: **AC-18** (a transport's mechanism cannot read message
   contents), **AC-19** (the user sees the full payload before any send, and can edit or cancel), and
   **AC-MCP-B** (the workspace — not an MCP/AI client — launches the send; AC-19 "MUST NOT be
   bypassable by AI clients"). The principle that fixes the line: a user MAY consent to **disclosing
@@ -389,7 +393,7 @@ data-floor (PRM v0.2) as the bounding twin.
 `EX-CLOUD-LLM` relaxes the *delivery* guarantee (data leaves the device to a cloud model) and
 AC-MCP-A's consent posture. It does **not** relax AC-MCP-B (the workspace still launches
 transports), AC-1, or any other AC — and **cannot**: AC-18, AC-19, and AC-MCP-B are the
-[un-relaxable floor](#scope-discipline) (*Proposed, RFC*), so even a fully-consented exception keeps
+[un-relaxable floor](#scope-discipline), so even a fully-consented exception keeps
 the human-in-the-loop-before-send seam intact. Keeping the `Relaxes:` set tight is part of honest
 handling — an exception names the *minimum* set of guarantees it actually departs from.
 
