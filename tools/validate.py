@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Toolkit-Version: 0.1
+# Toolkit-Version: 0.2
 """`just validate <candidate>` — one command that produces a deterministic-baseline
 evaluate-report.json for a candidate PNA.
 

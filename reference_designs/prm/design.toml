@@ -10,7 +10,7 @@
 
 name = "prm"
 repo = "https://github.com/richbodo/prm"
-toolkit_version = "0.1"
+toolkit_version = "0.2"
 status = "active"
 archival = "archived"  # re-pinned to pnt-ref-0.2 (2d6889d) for the v0.2 re-attestation (AC-22 / AC-23 + UM-1/2/3). SWHIDs git-computed/content-addressed; Save Code Now submitted 2026-06-25 — ingest async.
 

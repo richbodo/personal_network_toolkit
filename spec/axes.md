@@ -2,7 +2,7 @@
 
 <!-- EDITING NOTE — machine-parsed tables: the per-axis "Extra commitments these picks add" tables are read by tools/lint-spec-ids.py AND by external report writers (reference-design conformance reports), and their `<a id>` row anchors are deep-linked from those reports. Treat each such table's columns, headers, and IDs as an API: if you change one, update those consumers — and the lint's self-tests (tools/tests/lint_selftest.py) — in the same change. The lint finds columns by header name, so the AC ID may sit in any column; it currently lives in the last column. -->
 
-> **Toolkit-Version:** 0.1 (draft) — the toolkit (spec, contracts, skill, lint, templates) is versioned as a unit; see [VERSION](../VERSION).
+> **Toolkit-Version:** 0.2 — the toolkit (spec, contracts, skill, lint, templates) is versioned as a unit; see [VERSION](../VERSION).
 
 This document catalogs the Axes a PNA picks along, the attested picks on each Axis, the **conditional** architectural commitments each pick entails (Layer 1; defined in [`PNA_Spec.md`](PNA_Spec.md#conditional-architectural-commitments)), and the Layer-2 **realizations** (the `RZ-*` family) it brings.
 

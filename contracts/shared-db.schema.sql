@@ -1,5 +1,5 @@
 -- Realizes: AC-1, AC-10, AC-17.
--- Toolkit-Version: 0.1
+-- Toolkit-Version: 0.2
 
 -- Shared schema interface — canonical SQL DDL for a conforming Shared DB.
 --

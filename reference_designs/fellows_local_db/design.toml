@@ -11,7 +11,7 @@
 
 name = "fellows_local_db"
 repo = "https://github.com/richbodo/fellows_local_db"
-toolkit_version = "0.1"
+toolkit_version = "0.2"
 status = "active"
 archival = "archived"   # re-pinned to pnt-ref-0.2 (15be80d) for the v0.2 re-attestation (AC-22 / AC-23 + UM + RZ-* note) + GPL-3.0 LICENSE. SWHIDs git-computed/content-addressed; Save Code Now submitted 2026-06-25 — ingest async.
 

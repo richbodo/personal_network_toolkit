@@ -2,7 +2,7 @@
 
 <!-- EDITING NOTE — machine-parsed tables: the exception registry table, the strength-profile tables, and the Reversible:/Reversal: fields are read by tools/lint-spec-ids.py AND by external report writers (reference-design conformance reports), and the `<a id>` row anchors are deep-linked from those reports. Treat the registry's columns, headers, and IDs (and the strength-class vocabulary) as an API: if you change one, update those consumers — and the lint's self-tests (tools/tests/lint_selftest.py) — in the same change. The lint finds columns by header name, so the EX ID may sit in any column; it currently lives in the last column. -->
 
-> **Toolkit-Version:** 0.1 (draft) — the toolkit (spec, contracts, skill, lint, templates) is versioned as a unit; see [VERSION](../VERSION).
+> **Toolkit-Version:** 0.2 — the toolkit (spec, contracts, skill, lint, templates) is versioned as a unit; see [VERSION](../VERSION).
 >
 > This file defines **Exceptions**: stable-ID'd conditions (`EX-*`) under which a PNA deliberately
 > departs from a baseline guarantee — a named AC, or the core PNA definition ("runs local-only,

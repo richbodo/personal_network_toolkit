@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Toolkit-Version: 0.1
+# Toolkit-Version: 0.2
 """Export-readability lint — deterministic PR-6 check (Goal 4 / PR-6).
 
 Verifies that a PNA's human-readable Private-DB export is actually readable

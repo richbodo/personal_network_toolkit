@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Toolkit-Version: 0.1
+# Toolkit-Version: 0.2
 """Egress lint — deterministic private-data-sovereignty check (Goal 3 / AC-1).
 
 Scans a PNA's source tree for *egress vectors*: code or markup that can send a

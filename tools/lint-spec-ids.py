@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Toolkit-Version: 0.1
+# Toolkit-Version: 0.2
 """Lint the AC/EX ↔ contract traceability invariants and toolkit-version stamps.
 
 Checks:

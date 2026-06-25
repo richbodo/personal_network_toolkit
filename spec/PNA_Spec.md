@@ -2,7 +2,7 @@
 
 <!-- EDITING NOTE — machine-parsed tables: the ID-bearing tables in this file (the architectural-commitment tables) are read by tools/lint-spec-ids.py AND by external report writers (reference-design conformance reports), and their `<a id>` row anchors are deep-linked from those reports. Treat each such table's columns, headers, and IDs as an API: if you change one, update those consumers — and the lint's self-tests (tools/tests/lint_selftest.py) — in the same change. The lint finds columns by header name, so the ID may sit in any column; it currently lives in the last column. -->
 
-> **Toolkit-Version:** 0.1 (draft) — the toolkit (spec, contracts, skill, lint, templates) is versioned as a unit; see [VERSION](../VERSION).
+> **Toolkit-Version:** 0.2 — the toolkit (spec, contracts, skill, lint, templates) is versioned as a unit; see [VERSION](../VERSION).
 >
 > This document is the universal specification for personal network applications (PNAs). Reference designs declare conformance to a specific Toolkit-Version and to a specific application flavor (defined by a constellation of feature axis picks). A PNA conforms to this spec if it satisfies the universal architectural commitments and the axis-derived contracts for each of its declared axis picks, listed herein.  Each reference design's specialization lives in its own repo (ex: fellows_local_db's specialization is at [`docs/Architecture.md`](https://github.com/richbodo/fellows_local_db/blob/main/docs/Architecture.md)).
 

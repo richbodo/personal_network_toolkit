@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Toolkit-Version: 0.1
+# Toolkit-Version: 0.2
 """realization-index — derive a cross-design *realization index* from the bundled
 reference-design attestation tables. **Tier-0 spike** for the code-reuse design note
 ([`docs/design-notes/2026-06-harvesting-reusable-code.md`]).

@@ -1,6 +1,6 @@
 # <design-name>
 
-> **Toolkit-Version:** 0.1 (draft) — the toolkit (spec, contracts, skill, lint, templates) is versioned as a unit; see [VERSION](../../VERSION).
+> **Toolkit-Version:** 0.2 — the toolkit (spec, contracts, skill, lint, templates) is versioned as a unit; see [VERSION](../../VERSION).
 
 **Maintainer:** <name> (<canonical-repo-url>)
 **License:** <OSI-approved license SPDX identifier>

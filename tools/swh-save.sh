@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Toolkit-Version: 0.1
+# Toolkit-Version: 0.2
 #
 # swh-save.sh — request Software Heritage archival of a reference design's
 # source and print the git-compatible SWHIDs to record in its design entry.

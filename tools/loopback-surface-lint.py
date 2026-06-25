@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Toolkit-Version: 0.1
+# Toolkit-Version: 0.2
 """Loopback-surface lint — the static half of "checked, not asserted" for the one
 surface a PNA opens over its *own* data: an app-stood-up HTTP server / local daemon —
 candidate AC-PRM-H (RFC; the loopback-surface design note and the AC itself land with their

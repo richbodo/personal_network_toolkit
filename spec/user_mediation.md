@@ -2,7 +2,7 @@
 
 <!-- EDITING NOTE — machine-parsed: the user-mediation contract table (the `UM` ID column) and the `Unifies:` header are read by tools/lint-spec-ids.py, and the `<a id>` anchors are deep-linked from reference-design conformance reports. Treat the table's `UM` column, the property IDs, and the `Unifies:` AC list as an API: changing one means updating that consumer AND the lint's self-tests (tools/tests/lint_selftest.py) in the same change. -->
 
-> **Toolkit-Version:** 0.1 (draft) — the toolkit (spec, contracts, skill, lint, templates) is versioned as a unit; see [VERSION](../VERSION).
+> **Toolkit-Version:** 0.2 — the toolkit (spec, contracts, skill, lint, templates) is versioned as a unit; see [VERSION](../VERSION).
 >
 > This file defines **User-mediation** (`UM-*`): the standing invariant that **the human is the
 > actuator** — the proposer (an AI, the network, an importer) only **stages**; the principal

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Toolkit-Version: 0.1
+# Toolkit-Version: 0.2
 """rearchive — re-archive an accepted reference design on Software Heritage and
 refresh its toolkit manifest pin in one deterministic step.
 

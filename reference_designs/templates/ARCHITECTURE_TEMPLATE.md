@@ -1,6 +1,6 @@
 # <design-name> — Architecture
 
-> **Toolkit-Version:** 0.1 (draft) — the toolkit (spec, contracts, skill, lint, templates) is versioned as a unit; see [VERSION](../../VERSION).
+> **Toolkit-Version:** 0.2 — the toolkit (spec, contracts, skill, lint, templates) is versioned as a unit; see [VERSION](../../VERSION).
 
 > The Architecture document is this design's Security Target: a declaration of its conformance against the PNA Spec (which plays the Protection Profile role). The PNA Toolkit requires every accepted reference design to ship one. A row missing the Verification field in the AC attestation table below is grounds for PR rejection.
 

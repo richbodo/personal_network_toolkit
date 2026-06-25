@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Toolkit-Version: 0.1
+# Toolkit-Version: 0.2
 """Self-tests for the PNA Toolkit's deterministic lints (Tier A of the conformance suite).
 
 Why this exists: a lint with no test silently rots. PR #18 review found the
@@ -109,8 +109,8 @@ SPEC_ID_FAULTS = [
     dict(
         name="version: an artifact's Toolkit-Version drifts from /VERSION",
         file="spec/constraints.md",
-        old="**Toolkit-Version:** 0.1 (draft)",
-        new="**Toolkit-Version:** 0.2 (draft)",
+        old="**Toolkit-Version:** 0.2",
+        new="**Toolkit-Version:** 0.1",
         expect="Toolkit-Version",
     ),
     dict(

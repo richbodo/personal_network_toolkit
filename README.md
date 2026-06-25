@@ -1,6 +1,6 @@
 # PNA Toolkit
 
-> **Toolkit-Version:** 0.1 (draft) — the toolkit (spec, contracts, skill, lint, templates) is versioned as a unit; see [VERSION](VERSION).
+> **Toolkit-Version:** 0.2 — the toolkit (spec, contracts, skill, lint, templates) is versioned as a unit; see [VERSION](VERSION).
 
 The PNA Toolkit is a [generative application-class blueprint](docs/PriorArt.md) for building and validating **[personal network applications (PNAs)](spec/PNA_Spec.md#goals)** — local-only apps that take local ownership of your contact data and let you build **private relationship memory** over it behind a firewalled private data layer. PNAs run on the user's device, never as SaaS, and bridge SaaS-held contact data into a private workspace. The spec is organized around **four goals** — *take ownership of the root · protect its integrity by validation · protect it from egress · protect it from entropy & accidents*. **[Why do this?](spec/PNA_Spec.md#preamble)**
 
@@ -10,7 +10,7 @@ When building a PNA, specs are foundational because users will increasingly comp
 
 Three deliverables, in dependency order:
 
-1. **Foundational specs.** Universal vocabulary, goals, axes, architectural commitments, and typed contracts for a PNA. — **shipping in v0.1 (draft)**.
+1. **Foundational specs.** Universal vocabulary, goals, axes, architectural commitments, and typed contracts for a PNA. — **shipped in v0.2**.
 2. **Production-ready reference applications.** Working PNAs you can install, study, and adapt. — the first two reference designs are a distributed directory archive ([richbodo/fellows_local_db](https://github.com/richbodo/fellows_local_db)) and a Personal Relationship Manager ([richbodo/prm](https://github.com/richbodo/prm)).
 3. **AI tooling — skill + MCP (Model Context Protocol) servers.** How AI agents work with the toolkit. The skill at [`pna-toolkit/SKILL.md`](pna-toolkit/SKILL.md) is what an agent reads to consume the spec at design time. The MCP servers (typed contracts in [`contracts/`](contracts/); three v1 stdio implementations in `fellows_local_db/mcp_servers/`) expose an already-built PNA's capabilities at runtime so AI clients (Claude Desktop, Cursor, local Ollama agents) can drive a PNA on the user's behalf.
 
@@ -34,9 +34,9 @@ The toolkit augments human-AI builder teams; it doesn't auto-build applications 
 
 ## Status
 
-**v0.1 (draft).** The spec is feature-complete for v0.1 — universal ACs, axes, use cases, slot map with sub-contracts, and typed contracts are all in place. The "draft" label reflects that the contribution workflow described in [`plans/reorganization-plan.md`](plans/reorganization-plan.md) hasn't yet been validated against `fellows_local_db` as the first reference design.
+**v0.2.** The toolkit is released at v0.2. The spec's three layers (Goals · architectural commitments · realizations), the universal ACs (including AC-22 / AC-23), axes, use cases, the slot map with sub-contracts, the typed contracts, the user-mediation mechanism (UM-1/2/3), and the exceptions/constraints machinery are all in place. Both reference designs — `fellows_local_db` and `prm` — attest at Toolkit-Version 0.2, and the contribution workflow has been exercised end-to-end (`prm` was authored through it).
 
-*Most recent landing: the June 2026 direction work — `prm` accepted and archived as the second reference design, the spec restructured to four goals, the countermeasure library + the advisory Harden flow, the Contact Data Format Atlas, and a rewritten roadmap. See [`CHANGELOG.md`](CHANGELOG.md).*
+*Most recent landing: the v0.2 cut — the L1/L2 three-layer spec, the user-mediation mechanism (UM-1/2/3), the exceptions-hardening (the un-relaxable floor + the `pna-active` predicate split), the new universal ACs AC-22 / AC-23, and both reference designs re-attested at Toolkit-Version 0.2 (`fellows_local_db` also gained a GPL-3.0 license). See [`CHANGELOG.md`](CHANGELOG.md).*
 
 What we're working toward — success looks like:
 
@@ -44,14 +44,14 @@ What we're working toward — success looks like:
 2. A new user can ask an LLM (via the skill) to audit a candidate PNA's source and get an actionable AC-keyed report. *— Skill flow documented; validation against a candidate pending.*
 3. A new contributor can submit a reference design end-to-end without maintainer hand-holding beyond review. *— Exercised: `prm` was authored through the contribute flow and accepted as the second reference design; awaits a first **external** (non-maintainer) contribution.*
 4. Every accepted design has a permanent Software Heritage identifier that survives upstream repo deletion. *— Met: `tools/swh-save.sh` ships, and both `fellows_local_db` and `prm` are archived with recorded SWHIDs.*
-5. The PNA Spec evolves at least one minor version based on a contributed reference design's findings. *— In progress: `prm` promoted `AC-PRM-B` / `AC-PRM-C` from draft to attested commitments; the v0.2 cut that formalizes the toolkit version is the next roadmap step (see [`docs/roadmap.md`](docs/roadmap.md)).*
+5. The PNA Spec evolves at least one minor version based on a contributed reference design's findings. *— Met at the v0.2 cut: reference-design findings drove the L1/L2 layering, the new universal ACs (AC-22 / AC-23), and the user-mediation mechanism; both `fellows_local_db` and `prm` now attest at Toolkit-Version 0.2 (see [`docs/roadmap.md`](docs/roadmap.md)).*
 6. Every AC in the spec carries a stable ID; every typed contract names the AC(s) it realizes; every Architecture document maps each applicable AC to a verification mechanism. *— First two CI-enforced via [`tools/lint-spec-ids.py`](tools/lint-spec-ids.py); both reference designs carry Architecture docs with AC attestation tables.*
 
 Step-by-step instructions for each of those goals live in [`docs/users-guide.md`](docs/users-guide.md).
 How they're **sequenced** — the dependency-ordered priority tiers and the registry of inbound findings
 from reference designs — lives in [`docs/roadmap.md`](docs/roadmap.md).
 
-Substantive changes from v0.1 bump the toolkit version per [`CHANGELOG.md`](CHANGELOG.md).
+Substantive changes bump the toolkit version per [`CHANGELOG.md`](CHANGELOG.md).
 
 ## Entry points
 

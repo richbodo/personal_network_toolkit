@@ -1,6 +1,6 @@
 # PNA Toolkit Changelog
 
-## v0.1 draft (in progress)
+## v0.2 (2026-06-25)
 
 ### Reference designs re-attested at Toolkit-Version 0.2 (the v0.2 design re-sync)
 

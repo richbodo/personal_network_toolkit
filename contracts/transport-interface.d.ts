@@ -1,5 +1,5 @@
 // Realizes: AC-16, AC-18, AC-19.
-// Toolkit-Version: 0.1
+// Toolkit-Version: 0.2
 
 // Communications slot — the transport interface every comms transport
 // implements. Sub-contracts CO-1 through CO-6 from `_pna_triage.md` Part 4.

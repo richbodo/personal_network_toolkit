@@ -1,6 +1,6 @@
 # Contributing to the PNA Toolkit
 
-> **Toolkit-Version:** 0.1 (draft) — the toolkit (spec, contracts, skill, lint, templates) is versioned as a unit; see [VERSION](VERSION).
+> **Toolkit-Version:** 0.2 — the toolkit (spec, contracts, skill, lint, templates) is versioned as a unit; see [VERSION](VERSION).
 
 The PNA Toolkit evolves through reference-driven specification: a spec change that imposes a new obligation on designs is accepted only with a working reference design that demonstrates it in code. But most contributions are lighter — **toolkit fixes** (tooling, docs, the skill, a scope or clarification spec note) that impose no such obligation. This document covers both; see *Contribution types* below for which path yours takes.
 
