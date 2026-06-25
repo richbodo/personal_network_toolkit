@@ -2,6 +2,34 @@
 
 ## v0.1 draft (in progress)
 
+### Reference designs re-attested at Toolkit-Version 0.2 (the v0.2 design re-sync)
+
+- **Both reference designs now attest at Toolkit-Version 0.2** — the design-side half of the v0.2 cut.
+  `prm` (re-pinned `pnt-ref-0.2`, `2d6889d`) and `fellows_local_db` (re-pinned `pnt-ref-0.2`, `15be80d`)
+  each gain **AC-22** (honest capability assessment) + **AC-23** (source available for verification)
+  attestation rows and carry the UM-1/2/3 user-mediation rows; bundled `Architecture.md` / `design.toml`
+  / `evaluate-report.json` copies refreshed via `just rearchive`, realization index regenerated.
+- **`fellows_local_db` gained a GPL-3.0 `LICENSE`** — the repo had no license file, a real gap bearing on
+  AC-23 (the "rebuild" right) and the archival/OSI rule; now corrected. (`prm` is MIT.)
+- Retired realizations (`AC-3/12/13/14` in fellows, `AC-PRM-C` in prm) are kept under their legacy IDs
+  for now (redirect anchors in `spec/axes.md`); a clean `RZ-*` relabel pass is queued as #103.
+- `just ci` green (the fellows re-pin also refreshed two hardcoded-pin fixtures in `lint_selftest.py`).
+
+### Tooling + docs: `swh-save.sh` ref-not-found diagnostics + `just rearchive` documentation
+
+- **`tools/swh-save.sh`** now distinguishes *"no clone provided"* from *"clone present but the ref does
+  not resolve in it."* The old code printed `No local clone provided` for both — sending a maintainer
+  hunting for a clone they had already passed, when the real cause was a tag-name typo (`pnt-ref-0.2.0`
+  vs the actual `pnt-ref-0.2`). The new branch names the missing ref and the likely fix (`git tag -l` /
+  `git fetch --tags`). Pinned by a fault-injection self-test `case_swh_save_ref_not_found` in
+  `tools/tests/lint_selftest.py` — **47/47**.
+- **`docs/users-guide.md`** gains a full **§ Re-archive a design (`just rearchive`)**: a per-argument
+  reference (`<name>` = the `reference_designs/<name>/` directory, `<ref>` = a ref in the *design's* repo,
+  `<clone>` = a local clone path) plus the `--no-save` / `--arch-src` / `--report-src` flags, what the
+  recipe does vs. leaves to you, and the "run `just realization-index` after" gotcha. The `justfile`
+  recipe comment is trimmed from a dense one-liner to a single real example.
+- A toolkit-fix — no new obligation on any design; `just ci` green.
+
 ### Exceptions-hardening (D1): the `pna-active` / `exception-handling` predicate split is normative
 
 - **`spec/exceptions.md` § Concept** — promotes the predicate split from `(Proposed, RFC)` to
