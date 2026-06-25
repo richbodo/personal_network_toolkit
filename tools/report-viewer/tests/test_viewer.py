@@ -20,6 +20,7 @@ SAMPLES = [
     ("01-conformant-minimal-pna.json", "conformant", 7, "AC-MCP-A"),
     ("02-non-conformant-leaky-app.json", "non-conformant", 3, "AC-PRM-A"),
     ("03-mixed-exceptions-and-constraints.json", "mixed", 3, "AC-MCP-A"),
+    ("04-not-pna-active-exception.json", "not-pna-active", 3, "AC-1"),
 ]
 
 

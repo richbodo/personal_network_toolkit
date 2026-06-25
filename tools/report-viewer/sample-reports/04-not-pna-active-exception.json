@@ -1,0 +1,63 @@
+{
+  "report_schema_version": "0.1",
+  "generated_at": "2026-06-25T00:00:00Z",
+  "generated_by": "pna-toolkit skill (illustrative sample — demonstrates the not-pna-active posture; not a live attestation)",
+  "candidate": {
+    "name": "fellows_local_db with a cloud AI client wired up (illustrative — EX-CLOUD-LLM active)",
+    "repo_url": "https://github.com/richbodo/fellows_local_db",
+    "commit": "0000000000000000000000000000000000000000",
+    "pna_spec_version": "0.1",
+    "picks_source": "declared",
+    "axis_picks": {
+      "distribution": "web-bundle-with-magic-link",
+      "storage": "opfs-sqlite-wasm",
+      "ingestion": "single-source-static-mirror",
+      "workspace-shell": "vanilla-js-spa",
+      "comms": "mailto-only",
+      "mcp-exposure": "shared+private+comms"
+    }
+  },
+  "summary": {
+    "posture": "not-pna-active",
+    "headline": "Not a PNA right now: the user has wired a cloud AI client, raising EX-CLOUD-LLM (pna-active = false), so the local-only guarantee is suspended while it is active. The exception is handled to contract — consent before the raise, a persistent non-PNA-mode banner, a runtime explainer, and a return-to-PNA control — and no Goal 1-4 AC is non-conformant, so this is not non-conformant; it is simply not a personal-network app while the exception runs. How honestly the exception is handled lives in the per-EX findings, never rolled up into this posture.",
+    "leading_concerns": []
+  },
+  "findings": [
+    {
+      "ac_id": "AC-1",
+      "ac_source": "universal",
+      "status": "conformant",
+      "goals": [1, 3],
+      "citations": [
+        { "path": "app/static/vendor/sqlite-worker.js", "note": "two-store split intact — the Private DB stays local even while the cloud client is connected; the exception relaxes the delivery posture, not the storage boundary" }
+      ],
+      "evidence": [
+        { "source": "deterministic", "tool": "egress-lint", "detail": "No off-device egress vectors for private data outside the consented EX-CLOUD-LLM path; the allow-list is unchanged." }
+      ]
+    },
+    {
+      "ac_id": "AC-MCP-B",
+      "ac_source": "universal",
+      "status": "conformant",
+      "goals": [3],
+      "citations": [
+        { "path": "app/static/app.js", "note": "the workspace still launches every transport — AC-MCP-B is an un-relaxable floor AC, so even the active EX-CLOUD-LLM cannot bypass the human-in-the-loop-before-send seam" }
+      ],
+      "evidence": [
+        { "source": "human", "detail": "Confirmed the floor holds: EX-CLOUD-LLM relaxes only PNA-DEFINITION + AC-MCP-A, never a floor AC (AC-18 / AC-19 / AC-MCP-B)." }
+      ]
+    },
+    {
+      "ac_id": "AC-19",
+      "ac_source": "universal",
+      "status": "conformant",
+      "goals": [3],
+      "citations": [
+        { "path": "app/static/app.js", "note": "user-visible payload before send still enforced — a floor guarantee, unaffected by the active exception" }
+      ],
+      "evidence": [
+        { "source": "llm", "detail": "Traced the send path: the composition is shown before any transport launches, including under the cloud-LLM exception." }
+      ]
+    }
+  ]
+}

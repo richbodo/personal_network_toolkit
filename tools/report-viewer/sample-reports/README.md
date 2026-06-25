@@ -21,8 +21,9 @@ They serve two jobs (per [`plans/visual-validator-plan.md`](../../../plans/visua
 | `01-conformant-minimal-pna.json` | `conformant` | a Minimum-Viable-PNA; `conformant` + `not-applicable` findings (with rationale), `goals`, inferred picks, empty `leading_concerns` |
 | `02-non-conformant-leaky-app.json` | `non-conformant` | a Goal-1 leak + an **undeclared `EX-CLOUD-LLM` deviation**; `requirement` text, `deterministic`(egress-lint) + `llm` evidence, populated `leading_concerns`, `needs_human_review` |
 | `03-mixed-exceptions-and-constraints.json` | `mixed` | EX-/CST-handling referenced inside AC findings; all three evidence sources (`deterministic` / `llm` / `human`); `unable-to-determine`; declared picks + full candidate metadata |
+| `04-not-pna-active-exception.json` | `not-pna-active` | an **active** `EX-CLOUD-LLM` exception (pna-active = false) handled to contract, with the un-relaxable floor (AC-MCP-B / AC-19) intact — demonstrates that a cleanly-handled exception app reads `not-pna-active`, never `conformant` |
 
-Together they cover all four finding statuses, three of the four postures, both `picks_source` values,
+Together they cover all four finding statuses, four of the five postures, both `picks_source` values,
 and all three evidence sources.
 
 ## Why EX-* and CST-* are not top-level keys

@@ -86,6 +86,7 @@
   .st-unable-to-determine{background:var(--ud-bg);color:var(--ud-fg);border-color:var(--ud-bd);}
   .st-mixed{background:var(--ud-bg);color:var(--ud-fg);border-color:var(--ud-bd);}
   .st-indeterminate{background:var(--na-bg);color:var(--na-fg);border-color:var(--na-bd);}
+  .st-not-pna-active{background:var(--ud-bg);color:var(--ud-fg);border-color:var(--ud-bd);}
 
   /* developer (A0) finding */
   .finding { border-left:4px solid var(--line); padding:12px 0 12px 14px; margin:10px 0; }
@@ -183,8 +184,9 @@ const POSTURE_PLAIN = {
   "non-conformant": "Not safe to trust with your relationship data as it stands.",
   "mixed": "Mostly sound, with some caveats worth weighing.",
   "indeterminate": "Couldn't be fully assessed — a human should take a closer look.",
+  "not-pna-active": "Not acting as a personal-network app right now — an exception is active (e.g. it's wired to a cloud AI), so its data isn't sealed while that's on.",
 };
-const POSTURE_CLS = {conformant:"v-ok", "non-conformant":"v-no", mixed:"v-ud", indeterminate:"v-na"};
+const POSTURE_CLS = {conformant:"v-ok", "non-conformant":"v-no", mixed:"v-ud", indeterminate:"v-na", "not-pna-active":"v-ud"};
 const SPEC_GOALS_URL = "https://github.com/richbodo/personal_network_toolkit/blob/main/spec/PNA_Spec.md#goals";
 // Caveat under the end-user posture. Split around the "goals of a PNA" link so it
 // renders as a real <a> (via safeLink), not innerHTML.

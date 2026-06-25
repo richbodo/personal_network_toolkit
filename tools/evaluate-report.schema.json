@@ -49,8 +49,8 @@
       "additionalProperties": false,
       "properties": {
         "posture": {
-          "enum": ["conformant", "non-conformant", "mixed", "indeterminate"],
-          "description": "conformant = no non-conformances found and nothing left undetermined. non-conformant = at least one Goal 1-4 AC is non-conformant. mixed = some non-conformances but none on Goals 1-4, or non-conformances coexisting with conformant findings. indeterminate = too many unable-to-determine findings to take a posture."
+          "enum": ["conformant", "not-pna-active", "non-conformant", "mixed", "indeterminate"],
+          "description": "Reports PNA membership (the pna-active bit, exceptions.md § Concept) together with conformance; exception *handling* lives solely in the per-EX findings and is never rolled up here. conformant = a PNA right now (no exception active) AND no non-conformances AND nothing left undetermined. not-pna-active = an exception is active (pna-active = false), so the app is not a PNA right now — a cleanly-handled EX-CLOUD-LLM app reads this, never conformant. non-conformant = at least one Goal 1-4 AC is non-conformant. mixed = some non-conformances but none on Goals 1-4, or non-conformances coexisting with conformant findings. indeterminate = too many unable-to-determine findings to take a posture."
         },
         "headline": {
           "type": "string",
