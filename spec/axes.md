@@ -128,7 +128,7 @@ No conditional ACs or realizations are triggered by picks on this axis in v0.1. 
 
 Which canonical MCP servers (Shared Data Ops / Private Data Ops / Ingestion / Comms / Diagnostics) the PNA hosts — and therefore which capabilities an AI client can drive without modifying the PNA's core. The MCP-exposure pick determines whether the MCP-related universal ACs apply at all (they're universal, but each is vacuous when no server that triggers it is exposed).
 
-The picks are structured as a progression: each adds one canonical server to the previous pick's set. The Shared / Private split is the load-bearing distinction — `shared-only` is cloud-safe (no Private DB rows flow); anything that includes `private` brings AC-MCP-A into force.
+The picks are structured as a progression: each adds one canonical server to the previous pick's set. AC-1's shared/private class boundary is the load-bearing distinction — `shared-only` is cloud-safe (no Private DB rows flow); anything that includes `private` brings AC-MCP-A into force.
 
 ### Picks
 

@@ -179,6 +179,12 @@ These references inform the toolkit's design without constraining it to any of t
 
 A running log of toolkit-shaping decisions and their rationale — most often a mapping of the toolkit against the prior art above driving a spec change (or a deliberate decision *not* to make one), but also discipline and tooling decisions distilled from a real finding in a reference design. This is where the *why* of a toolkit fix lives when it isn't itself a reference design. Newest first; each entry is dated and names what it changed.
 
+### 2026-06 — AC-1 restated: "Sovereign, sealed private layer" (two-store split → canonical realization)
+
+*Full note: [`design-notes/2026-06-ac1-privacy-boundary-restatement.md`](design-notes/2026-06-ac1-privacy-boundary-restatement.md). Surfaced by the Signal Desktop evaluation.*
+
+Held AC-1 to the spec's own swap test and found it conflated a goal-entailed commitment with one mechanism. AC-1 was "Two-store ownership split"; decomposed, only three of its four claims survive a total technology swap — classification (shared vs private), private sovereignty, and a data-layer-enforced boundary — while "two stores / separate namespaces" is a *realization*, sufficient and canonical but not necessary. **Decision:** restate AC-1 as **"Sovereign, sealed private layer"** (the property), recategorize the two-store split as the **canonical, recommended realization**, and admit a single-store, data-layer-enforced classification *in principle* — demonstrator-gated (pinned by a negative test that a shared-class accessor cannot read private rows), the same discipline used for `native-sqlcipher`'s deferred key-management ACs. A clarification, not a new obligation: both reference designs use the canonical split and stay conformant unchanged. The payoff is sharper evaluation — against Signal Desktop the restatement separates "owns locally (Goal 1): yes" from "seals the private layer (Goal 3): no — notes/graph sync off-device," where the old wording could only render the blunt "no two stores." Completes a seed from the 2026-06-14 direction grill ("mechanism mistaken for goal; the concept is privilege separation"). `/VERSION` unchanged; a future single-store demonstrator is the additive event that would merit a bump.
+
 ### 2026-06 — What the PNA Toolkit can learn from CLI Printing Press (build & validation flows)
 
 *Full note: [`design-notes/2026-06-printing-press-build-validation-flows.md`](design-notes/2026-06-printing-press-build-validation-flows.md). Analysis captured; nothing adopted yet.*
