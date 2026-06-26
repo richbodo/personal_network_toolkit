@@ -75,7 +75,7 @@ Mind the asymmetry: `strict=True` trips the day the fix *lands* (it XPASSes, pro
 
 | AC | Realization | Verification | Status |
 |---|---|---|---|
-| AC-1 (two-store ownership split) | <how the design realizes it; file/code references> | <test file(s), LLM evaluation rubric, or human-review note> | conformant / partial-conformance / not-applicable |
+| AC-1 (sovereign, sealed private layer) | <how the design realizes it — the canonical two-store split, or a single-store data-layer-enforced classification; file/code references> | <test file(s), LLM evaluation rubric, or human-review note> | conformant / partial-conformance / not-applicable |
 | AC-4 (versioned cross-boundary handshake) | | | |
 | AC-6 (always-reachable diagnostic escape) | | | |
 | AC-7 (self-service field-debug substrate) | | | |

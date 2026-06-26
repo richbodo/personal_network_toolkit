@@ -40,7 +40,8 @@ nexus the candidate has with the personal-network root:
 
 ### Mode 1 — Conformance evaluation (membership)
 For an app that *claims* to be a PNA, or is architecturally shaped like one
-(two-store split, local-first, downstream of SaaS). The full machinery applies:
+(a sovereign sealed private layer — canonically a two-store split — local-first,
+downstream of SaaS). The full machinery applies:
 every applicable AC, every conditional AC, the Exceptions
 ([`exceptions.md`](../spec/exceptions.md)) and Constraints
 ([`constraints.md`](../spec/constraints.md)) passes, reported by `AC-*`/`EX-*`/

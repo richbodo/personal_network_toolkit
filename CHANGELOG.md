@@ -2,6 +2,28 @@
 
 ## Unreleased
 
+### AC-1 restated: "Sovereign, sealed private layer" (two-store split → canonical realization)
+
+- **Reframed AC-1** from "Two-store ownership split" to **"Sovereign, sealed private layer."** The Layer-1
+  commitment is now the *property* — a classified shared/private boundary; a locally-owned, sealed-by-default
+  private class; the boundary enforced at the data layer so a shared-class accessor cannot reach private rows
+  — and the **two-store split is recategorized as the canonical, recommended realization** rather than the
+  commitment itself. A **single-store, data-layer-enforced classification** is admissible in principle (pinned
+  by a negative test) but **not yet demonstrated**. Held to the spec's own swap test, the split named a
+  *mechanism* (Layer 2), not a commitment (Layer 1). Rationale + the worked Signal example:
+  [`docs/design-notes/2026-06-ac1-privacy-boundary-restatement.md`](docs/design-notes/2026-06-ac1-privacy-boundary-restatement.md).
+- **Clarification — no new obligation, no conformance change.** Both reference designs use the canonical
+  two-store split, which trivially satisfies the restated commitment; nothing must change to stay conformant.
+  Ripples reworded across `spec/PNA_Spec.md` (the AC-1 row, the Goal 1/3 constraint lists, the cardinality
+  note, required-slots + Storage slot, the Shared-DB/Private-DB + MCP vocabulary, the Preamble first-move),
+  `spec/axes.md` (MCP-exposure distinction), **AC-MCP-A's "cloud-safe" wording** (the Shared-only separation
+  is *structural* under the split and MUST be data-layer-enforced under a single store), the Architecture
+  template's AC-1 label, `docs/conformance-scope-and-lifecycle.md`, and `tools/validate.py`'s AC-1 requirement
+  string. The two-store split stays canonical, so the bundled design attestations, the generated realization
+  index, the typed contracts/sub-contracts, and the sample reports stay valid. `/VERSION` stays `0.2.0` (a
+  clarifying restatement; a future single-store demonstrator is the additive event that would merit a bump).
+  `just ci` green.
+
 ### Reference designs: retired AC-IDs relabeled to RZ-* (#103)
 
 - Both reference designs now attest the Layer-2 realizations under their `RZ-*` IDs instead of the legacy

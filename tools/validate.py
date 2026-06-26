@@ -60,9 +60,9 @@ AC_ID_RE = re.compile(r"^AC-[A-Z0-9-]+$")
 # on a non-conformant finding). A generic fallback keeps the report schema-valid for
 # any other AC the egress lint's `--ac` is pointed at.
 AC_REQUIREMENT = {
-    "AC-1": ("Shared data MUST be read-only and externally managed; private data MUST be "
-             "read-write and locally owned, in separate storage namespaces — and private "
-             "data MUST NOT leave the device on its own."),
+    "AC-1": ("A PNA MUST keep a sovereign, sealed private layer: private data is locally "
+             "owned and user-writable, the shared/private class boundary is enforced at the "
+             "data layer, and private data MUST NOT egress except by explicit user action."),
     "AC-2": "Servers are delivery-only; no server may persist or sync private data.",
 }
 
