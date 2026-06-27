@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+### Toolkit self-check: a judgment-tier swap-test + tooling-honesty audit the agent runs routinely
+
+- Added the **Toolkit self-check** — the judgment-tier sibling of `/capture-lesson`. When the agent
+  completes a validation/evaluation or edits a spec/contract artifact, it audits **layer integrity**
+  (every AC touched still survives a technology swap *and* advances a Goal; plus the rare, high-value
+  *up-ripple* where a realization or a validation finding reveals an L1 AC is mis-stated — how AC-1 was
+  restated) and **tooling honesty** (did a lint/tool mislead), then routes any finding and emits a
+  one-line verdict (`no findings` / `found N: …`). It is an **agent practice, not a lint** (the swap
+  test is architectural judgment, not mechanizable); the existing traceability lints keep the mechanical
+  slivers. Procedure in `pna-toolkit/SKILL.md` § Toolkit self-check; agent directive in `CLAUDE.md`;
+  user-facing summary in `docs/users-guide.md`. The thin version of issue #89 (toolkit retro) — borrows
+  the cadence, not a tool. Docs/skill only — no new obligation on any design. `just ci` green.
+
 ### AC-1 restated: "Sovereign, sealed private layer" (two-store split → canonical realization)
 
 - **Reframed AC-1** from "Two-store ownership split" to **"Sovereign, sealed private layer."** The Layer-1

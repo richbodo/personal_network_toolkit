@@ -117,3 +117,16 @@ gate on a shared workspace port; here only the opt-in viewer test does — see a
   `partial`/`Open`, a CHANGELOG "deferred" note), never a bare `TODO`/`INERT` comment that
   *claims* a property the code doesn't deliver.
 - **Convert an absent guarantee into a red test (or a lint failure), never a silent pass.**
+
+## Toolkit self-check — run it on validations and spec edits
+
+When you complete a **validation / evaluation** or **edit any spec or contract artifact**, run the
+**Toolkit self-check** and emit its one-line verdict — routine hygiene, like running tests and checking
+docs. It is a judgment-tier audit (not a lint): (1) **layer integrity** — every AC you touched still
+**survives a technology swap** *and* **advances a Goal** (a fail means a mis-filed realization or an
+orphan), plus the rare, high-value **up-ripple** where a realization or a validation finding reveals an
+L1 AC is mis-stated (how AC-1 was restated); (2) **tooling honesty** — did a lint/tool mislead (a false
+pass/fail, a checkability gap)?; (3) **route** any finding (field note · inbound-findings registry ·
+design note · issue · spec diff) and **honest-decline** when there is nothing. Procedure:
+[`pna-toolkit/SKILL.md` § Toolkit self-check](pna-toolkit/SKILL.md). Most runs find nothing — the point
+is the occasional high-leverage catch not waiting on serendipity.

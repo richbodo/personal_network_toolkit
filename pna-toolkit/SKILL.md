@@ -174,6 +174,34 @@ When you implement or harden a feature to satisfy an AC and its tests pass — e
 
 **Standing rule (PR-checklist-enforced).** A PR that adds or changes a feature to satisfy an AC, with tests now passing, links the field-note entry it added/updated — or checks "no generalizable lesson" with a one-line why. The bounded trigger (AC-driven *and* test-backed) keeps it sustainable; the honest decline keeps it from manufacturing noise. Full rationale: [`docs/design-notes/2026-06-capturing-conformance-lessons.md`](../docs/design-notes/2026-06-capturing-conformance-lessons.md).
 
+## Toolkit self-check (the swap-test + tooling-honesty audit)
+
+The judgment-tier sibling of [§ Capturing a conformance lesson](#capturing-a-conformance-lesson-field-notes). Where capture-lesson harvests *AC-conformance content* (what an AC is easy to get wrong → a field note), the **self-check** audits the *toolkit's own machinery* — does each layer still hold, and did a tool mislead? It is an **agent practice, not a lint**: "does this AC survive a technology swap / advance a Goal?" is architectural judgment (the LLM tier), not something a deterministic check can decide. The mechanical slivers stay with the lints (`lint-spec-ids.py` already checks every AC is cited and carries a `Serves`); the judgment is yours.
+
+**When to run it** (not every session — pure-conversation turns don't trigger it):
+- after you complete a **validation / evaluate** run, or
+- after you **edit any spec or contract artifact** (a Goal, an AC, an axis/realization, an Exception / Constraint / UM, a typed contract, a sub-contract).
+
+**The check — three questions, then route:**
+
+1. **Layer integrity (the ripple).** The spec is three layers ([§ How the pieces fit together](../spec/PNA_Spec.md#how-the-pieces-fit-together)); a change at one ripples to the others. Audit in both directions:
+   - **Down (the common case).** A **Goal (L0)** rarely moves; if one did, re-check the **ACs (L1)** it entails, then their **realizations / contracts (L2)**. An **AC (L1)** change → re-check the realizations, sub-contracts, and lints that cite it.
+   - **Each AC (L1) still passes the two-part rule:** it is **tech-independent** (survives a total technology swap) **and advances ≥1 Goal**. An AC that fails tech-independence is a *mis-filed realization* — demote it to L2. An AC that advances no Goal is *orphaned* — it shouldn't exist.
+   - **Up (rare, highest-value).** Did a realization, a sub-contract, or *what a validation just revealed* (L2 / the real world) show that an **L1 AC is mis-stated**? This is the easiest finding to miss — you don't expect a ground-level observation to overturn a top-level commitment — yet it is exactly how AC-1 was restated (evaluating Signal revealed the two-store split was a *mechanism* masquerading as a commitment; see [`docs/design-notes/2026-06-ac1-privacy-boundary-restatement.md`](../docs/design-notes/2026-06-ac1-privacy-boundary-restatement.md)). Ask it explicitly.
+2. **Tooling honesty.** Did any lint or tool give a **misleading pass or fail**, or reveal a **checkability gap**? (e.g. `egress-lint` scanning a native / dynamic-egress app near-clean while it egresses heavily — a false negative; see [`docs/design-notes/2026-06-egress-lint-dynamic-egress-blind-spot.md`](../docs/design-notes/2026-06-egress-lint-dynamic-egress-blind-spot.md).)
+3. **Route any findings**, then **honest-decline** if there are none:
+   - a generalizable **AC-conformance lesson** → a field note (`/capture-lesson`);
+   - a **toolkit-machinery finding** (a mis-filed AC, a missing / misleading lint, a skill-flow gap, a template nudge) → the [inbound-findings registry](../docs/roadmap.md) + a **design note** (rationale) and / or a **GitHub issue**; a *decision* also logs to [`docs/PriorArt.md` § Design notes](../docs/PriorArt.md);
+   - a concrete **spec / contract fix** → a spec diff (routed per [§ Contribute flow](#contribute-flow): a clarification is a toolkit fix; a new obligation needs a demonstrating design).
+
+**Always emit a one-line verdict** so it is legible the check ran:
+
+> `Toolkit self-check — no findings: everything touched holds the swap test.`
+> — or —
+> `Toolkit self-check — N finding(s):` then one bullet each (`[layer/up-ripple] …`, `[tooling] …`) with its route.
+
+**Honest decline.** Most runs find nothing — say so in the one-liner and move on; manufacturing a finding is worse than none. The value is the *occasional* high-leverage catch (a mis-filed L1 commitment) that would otherwise wait on serendipity.
+
 ## Principles to honor in every flow
 
 - **Layering of verification.** Deterministic tools (lints in `tools/`) for the mechanical layer; LLMs (you) for the architectural-conformance layer; humans for judgment-and-review at PR time. Investment is ~80/20 toward description-and-process; the toolkit does not ship a Python conformance test runner beyond trivial lints.

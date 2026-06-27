@@ -159,6 +159,10 @@ The first three flows check the *app*; **Harden** advises on the *environment* a
 
 3. **Apply the countermeasures you choose — in your environment.** The toolkit advises; you actuate. Where a hazard already has a PNA-intrinsic guard (e.g. AC-MCP-A's per-call consent is the in-app analog of an external MCP broker) the agent says so, so you don't double-pay. If a countermeasure ought to become a built-in AC, that's a [contribute](#contribute-your-design-back-as-a-reference-design)-flow proposal, not a Harden output.
 
+### The agent keeps the toolkit honest (a self-check you don't have to run)
+
+You don't have to remember any of this — the agent does it for you. Whenever it **runs a validation** for you, or **changes an architectural commitment or contract**, it performs a quick **toolkit self-check**: it confirms each commitment it touched still holds the toolkit's own rule (it stays **technology-independent** *and* **advances a Goal**), watches for the rarer case where something learned on the ground means a higher-level commitment needs rethinking (this is how [AC-1 was restated](../docs/design-notes/2026-06-ac1-privacy-boundary-restatement.md) after evaluating Signal), and notices when one of the deterministic tools gave a misleading result. It then tells you in one line — **"no findings"** or **"found N: …"** — and routes anything real to the right place (a field note, an issue, or a spec fix). It's the toolkit watching its own back so you don't have to think about it. (Procedure: [`pna-toolkit/SKILL.md` § Toolkit self-check](../pna-toolkit/SKILL.md).)
+
 ---
 
 ## Working in this repo
