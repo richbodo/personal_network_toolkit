@@ -12,7 +12,7 @@
 
 ## Spec
 
-- [PNA Spec](spec/PNA_Spec.md) — universal spec; Toolkit-Version 0.1 (draft)
+- [PNA Spec](spec/PNA_Spec.md) — universal spec; Toolkit-Version 0.2
 - [Axes](spec/axes.md) — the Axes a PNA varies along, attested picks per Axis, and the `RZ-*` realizations + constraints each pick brings (the conditional ACs they entail live in PNA_Spec.md)
 - [Use cases](spec/use_cases.md) — attested classes of PNA (Minimum Viable PNA, Directory Archive, Personal Relationship Manager [draft], Multi-PNA ecosystem [target v0.2+])
 - [CHANGELOG](CHANGELOG.md) — toolkit version history

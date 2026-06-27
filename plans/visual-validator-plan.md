@@ -1,6 +1,6 @@
 # Visual Validator — implementation plan
 
-> **Toolkit-Version:** 0.1 (draft) — the toolkit (spec, contracts, skill, lint, templates) is versioned as a unit; see [VERSION](../VERSION).
+> **Toolkit-Version:** 0.2 — the toolkit (spec, contracts, skill, lint, templates) is versioned as a unit; see [VERSION](../VERSION).
 >
 > The *how/when* of building a static viewer for evaluate-reports. The *why* lives in the
 > brainstorms: the **validation dashboard** ("web app: parse a validation report → render")

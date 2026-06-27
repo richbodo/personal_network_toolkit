@@ -1,6 +1,6 @@
 # Conformance suite — scope, the utility line, and the reference-design lifecycle
 
-> **Toolkit-Version:** 0.1 (draft) — the toolkit (spec, contracts, skill, lint, templates) is versioned as a unit; see [VERSION](../VERSION).
+> **Toolkit-Version:** 0.2 — the toolkit (spec, contracts, skill, lint, templates) is versioned as a unit; see [VERSION](../VERSION).
 >
 > A design note, not a normative spec file. It records *why* the conformance
 > suite is bounded the way it is, where the line of useful output sits, and how

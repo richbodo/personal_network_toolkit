@@ -12,7 +12,7 @@
 
 name = "<design-name>"
 repo = "https://github.com/<owner>/<repo>"
-toolkit_version = "0.1"          # the Toolkit-Version this design was validated against
+toolkit_version = "0.2"          # the Toolkit-Version this design was validated against
 status = "active"                # active | archived | superseded
 archival = "pending"             # pending | archived  (SWHIDs required once archived)
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Toolkit-Version: 0.1
+# Toolkit-Version: 0.2
 """Render-contract lint for evaluate-report.json instances.
 
 The Visual Validator (plans/visual-validator-plan.md; tools/report-viewer/) renders

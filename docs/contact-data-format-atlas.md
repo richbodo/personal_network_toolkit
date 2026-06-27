@@ -1,6 +1,6 @@
 # Contact Data Format Atlas
 
-> **Toolkit-Version:** 0.1 (draft) — versioned as a unit with the toolkit; see [VERSION](../VERSION).
+> **Toolkit-Version:** 0.2 — versioned as a unit with the toolkit; see [VERSION](../VERSION).
 >
 > A survey of the contact-export / contact-sync formats a Personal Network Application
 > ingests, **ranked by commonality (account base that produces the format)** and answering,

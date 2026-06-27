@@ -1,6 +1,6 @@
 # Visual Validator — browser-render testing (Playwright)
 
-> **Toolkit-Version:** 0.1 (draft) — the toolkit (spec, contracts, skill, lint, templates) is versioned as a unit; see [VERSION](../VERSION).
+> **Toolkit-Version:** 0.2 — the toolkit (spec, contracts, skill, lint, templates) is versioned as a unit; see [VERSION](../VERSION).
 >
 > The *how/when* of adding real-browser render tests for the Visual Validator viewer
 > ([`visual-validator-plan.md`](visual-validator-plan.md)). Mirrors how `fellows_local_db` runs

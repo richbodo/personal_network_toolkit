@@ -28,9 +28,10 @@ Checks:
      require a "Workaround:"; every "Detectability:" is one of the fixed classes.
      The table and the blocks must agree on every field per entry (no drift).
   7. The toolkit is versioned as a unit: a /VERSION file is the source of
-     truth, and every versioned toolkit artifact (spec, skill, lint,
-     contracts, templates, CONTRIBUTING, README) carries a "Toolkit-Version:"
-     header whose minor matches /VERSION.
+     truth, and every versioned toolkit artifact (spec, skill, lints,
+     contracts, templates, CONTRIBUTING, README, and the durable docs that
+     carry the stamp) carries a "Toolkit-Version:" header whose minor matches
+     /VERSION.
   8. Every reference_designs/<name>/design.toml is well-formed: required keys
      present; status/archival from their fixed vocab; [flavor] picks resolve to
      the right axis in axes.md; [verify] runner known. An `archived` design must
@@ -179,8 +180,8 @@ DESIGN_ARCHIVAL = {"pending", "archived"}
 DESIGN_RUNNERS = {"container", "just", "make"}
 
 # Matches the version stamp across every artifact format: markdown
-# (`**Toolkit-Version:** 0.1`), comments (`# / -- / //  Toolkit-Version: 0.1`),
-# and JSON `$comment` strings (`... Toolkit-Version: 0.1.`).
+# (`**Toolkit-Version:** 0.2`), comments (`# / -- / //  Toolkit-Version: 0.2`),
+# and JSON `$comment` strings (`... Toolkit-Version: 0.2.`).
 TOOLKIT_VERSION_RE = re.compile(r"Toolkit-Version:\**\s*(\d+\.\d+)")
 
 EXCEPTIONS_PATH = REPO / "spec" / "exceptions.md"
@@ -199,9 +200,15 @@ VERSIONED_ARTIFACTS = [
     "tools/lint-spec-ids.py", "tools/egress-lint.py", "tools/export-readable-lint.py",
     "tools/attestation-evidence-lint.py", "tools/loopback-surface-lint.py", "tools/validate.py",
     "tools/evaluate-report.schema.json", "tools/swh-save.sh", "tools/rearchive.py",
-    "tools/realization-index.py",
+    "tools/realization-index.py", "tools/report-fixtures-lint.py",
     "reference_designs/templates/TEMPLATE.md",
     "reference_designs/templates/ARCHITECTURE_TEMPLATE.md",
+    # Durable docs that carry the "versioned as a unit" stamp. Enforced so a
+    # version bump can't leave them at a stale minor — the 0.1→0.2 drift fixed
+    # 2026-06-27 reached these because they were unenforced. (Ephemeral plans
+    # and external paper drafts deliberately stay out.)
+    "docs/roadmap.md", "docs/conformance-scope-and-lifecycle.md",
+    "docs/contact-data-format-atlas.md",
 ]
 
 
@@ -668,7 +675,7 @@ def collect_design_manifest_violations(spec_ids: set[str]) -> tuple[int, list[st
 
 
 def expected_toolkit_minor() -> str | None:
-    """The MAJOR.MINOR series from /VERSION (e.g. '0.1' from '0.1.0-draft')."""
+    """The MAJOR.MINOR series from /VERSION (e.g. '0.2' from '0.2.0', '0.1' from '0.1.0-draft')."""
     if not VERSION_PATH.exists():
         return None
     m = re.match(r"\s*(\d+\.\d+)", VERSION_PATH.read_text())

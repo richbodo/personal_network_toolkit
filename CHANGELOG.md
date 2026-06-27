@@ -2,6 +2,37 @@
 
 ## Unreleased
 
+### Documentation-stamp reconciliation: finish the v0.2 cut + bring durable docs under the version lint
+
+- **Completed the v0.2 mechanical bump's trailing drift.** `VERSION` was already `0.2.0` (tag `v0.2.0`,
+  README de-drafted, released `## v0.2` CHANGELOG section), but a set of stamp-bearing artifacts *outside*
+  the version lint's enforced set had silently rotted at `0.1 (draft)`. Bumped to `0.2`: `docs/roadmap.md`,
+  `docs/conformance-scope-and-lifecycle.md`, `docs/contact-data-format-atlas.md`,
+  `docs/papers/paper2-blueprint-method.md`, `llms.txt`, `plans/conformance-suite-plan.md`,
+  `plans/viewer-e2e-testing-plan.md`, `plans/visual-validator-plan.md`,
+  `reference_designs/templates/design.toml`, and `tools/report-fixtures-lint.py`.
+- **`docs/roadmap.md` reconciled to "cut shipped."** The progress snapshot, critical-path diagram, Tier-0
+  section, and README-criteria fit now read the v0.2 cut as **DONE (2026-06-27)** rather than "imminent",
+  and record the three post-cut merges (AC-1 restatement #106, Toolkit self-check #108, `evaluations/`
+  casebook #109). `plans/v0.2-spec-cut-plan.md` gains a SHIPPED banner. PRM v0.2 status refreshed to "in
+  final testing 2026-06-27, near merge."
+- **Recurrence prevention (`tools/lint-spec-ids.py`).** Added the durable rotted artifacts — `docs/roadmap.md`,
+  `docs/conformance-scope-and-lifecycle.md`, `docs/contact-data-format-atlas.md`, and
+  `tools/report-fixtures-lint.py` — to `VERSIONED_ARTIFACTS`, so a future bump can't leave them at a stale
+  minor (the drift reached them precisely because they were unenforced). No new lint *check* — the existing
+  `check_toolkit_versions` and its fault-injection self-test cover them — so no new self-test was needed.
+  Ephemeral plans and external paper drafts deliberately stay out of enforcement (stamps bumped, not gated).
+- **AC-1 restatement ripple finished in the plain-language docs.** The AC-1 reframe (#106, "Sovereign,
+  sealed private layer") plus the earlier L1/L2 layering pass had left stale ID anchors in
+  `docs/plain-language/four-goals-in-plain-language.md`. Repointed to current homes: the "honest about what
+  it can/can't do" promise now correctly cites the new **AC-22** (was the demoted capability-detection
+  realization); conditional ACs (AC-2/5/8/PRM-B) → `PNA_Spec.md`; AC-PRM-A/D → AC-20/21; demoted
+  realizations → their `RZ-*` anchors. The live `docs/field-notes/AC-PRM-H.md` pointer moved from
+  `axes.md § Workspace shell` to `PNA_Spec.md § Conditional architectural commitments`. The plain-language
+  *prose* on AC-1 was already property-level (no "two databases"), so it stands, and `why-this-matters.md`
+  needed nothing; PriorArt § Design-notes history is left as-is per the AC-1 note's own ripple policy.
+- Docs/tooling only — no new obligation on any design, no spec/AC/contract change. `just ci` green.
+
 ### `evaluations/` — a casebook of validations that proved something
 
 - Added a top-level **`evaluations/`** directory: a home for typed `evaluate-report.json` artifacts run

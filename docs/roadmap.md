@@ -1,6 +1,6 @@
 # PNA Toolkit Roadmap
 
-> **Toolkit-Version:** 0.1 (draft) — the toolkit (spec, contracts, skill, lint, templates) is versioned as a unit; see [VERSION](../VERSION).
+> **Toolkit-Version:** 0.2 — the toolkit (spec, contracts, skill, lint, templates) is versioned as a unit; see [VERSION](../VERSION).
 >
 > **What this doc owns:** the *prioritization and sequencing* across the toolkit's work, and the
 > **inbound-findings registry**. It links to the per-plan detail and the normative spec rather than
@@ -10,14 +10,20 @@
 > (see its `## OUTPUT WORK QUEUE` and `## R2 SYNTHESIS`). *Prior dated snapshots are superseded by the
 > one below; git history preserves them.*
 
-## Progress snapshot — 2026-06-25
+## Progress snapshot — 2026-06-27
 
-**The entire v0.2-cuttable normative content is now merged to `main`. The cut is imminent — gated only on
-PRM v0.2's design re-attestation, not on any new spec work.** Since the 2026-06-24 snapshot the whole
-Tier-0 normative spine landed (six merges), and the v0.2 cut is now the near-term keystone.
+**The v0.2 cut has shipped.** `VERSION` is `0.2.0`, tag `v0.2.0` is cut, the README "draft" label is gone,
+and `CHANGELOG.md` carries the released **`## v0.2 (2026-06-25)`** section. The entire Tier-0 normative
+spine is merged to `main`; the mechanical bump and the design re-sync are done, and the final
+documentation-stamp reconciliation (this doc, the plans, `llms.txt`, the design.toml template) lands with
+the drift-fix PR. **Since the cut**, three post-v0.2 changes have merged to `main` (now in the
+`CHANGELOG.md` `## Unreleased` section): the **AC-1 restatement** (#106 — "Sovereign, sealed private
+layer"; the two-store split demoted to canonical *realization*), the **Toolkit self-check** agent practice
+(#108), and the **`evaluations/` casebook** with the Signal Desktop evaluation (#109). The next keystone is
+the PRM-driven **graduation wave** (a separate upstream PR; see Tier 1).
 
-- **Done — the v0.1 spine (unchanged):** `fellows_local_db` + **PRM** archived as the two reference
-  designs. `VERSION` stays `0.1.0-draft` until the cut.
+- **Done — the two-design spine:** `fellows_local_db` + **PRM** archived as the two reference designs,
+  both re-attested at **Toolkit-Version 0.2**. `VERSION` is `0.2.0` (tag `v0.2.0`).
 
 - **L1/L2 layering pass — MERGED** (#95). Three layers (L0 Goals · L1 ACs · L2 realizations);
   realizations factored out of the `AC-*` namespace to **`RZ-*`**; conditional ACs consolidated into
@@ -45,21 +51,18 @@ Tier-0 normative spine landed (six merges), and the v0.2 cut is now the near-ter
   Verification · Disclosure** + threat-modeling cross-cut), the composite-group analysis (PNA within
   {EUDI, IDS-RAM, Inrupt}), the evolutionary stance.
 
-- **PRM v0.2 — nearly complete** (testing 2026-06-25). Builds the **AC-MCP-C / PR-7 / EX-H9** data-floor
+- **PRM v0.2 — near merge** (in final testing 2026-06-27). Builds the **AC-MCP-C / PR-7 / EX-H9** data-floor
   trio (the **Disclosure**-family demonstrator) + the enforced-consent surface that demonstrates D2.
 
-> **Does the cut require PRM to file an upstream PR first? No — for the version bump.** v0.2 stamps the
-> already-merged content (layering · UM · D3 · D1) independently of PRM. Two real dependencies, **neither
-> a PRM "upstream PR to the toolkit"**:
-> - **The design re-sync** — the deferred **AC-22/23 + UM attestation rows** on fellows/PRM, `just
->   rearchive` of the bundled copies, and the realization index — needs each design's `Architecture.md`
->   to attest the 0.2 content at a taggable ref. That is PRM's own v0.2 work (which you're finishing) +
->   a **maintainer `just rearchive`**, not a PR PRM files here. (Per [`PNA_Spec.md` § Scope](../spec/PNA_Spec.md#scope-and-versioning)
->   a design MAY even stay at its 0.1 attestation and re-attest later — so this re-sync could itself be
->   deferred, though bundling it with the cut is cleaner.)
-> - **The data-floor graduation** (AC-MCP-C / PR-7 / EX-H9 + D2 EX-H7 + B2 AI-write tiers) **is** a
->   separate upstream PR, demonstrator-gated on PRM v0.2 — but it only needs to precede the cut **if you
->   want it *in* v0.2**; otherwise it lands in v0.2.x. **The cut is independent of it.**
+> **What the cut needed, and where each piece landed.** v0.2 stamped the already-merged normative content
+> (layering · UM · D3 · D1) independently of PRM. The two real dependencies — **neither a PRM "upstream PR
+> to the toolkit"** — resolved as:
+> - **The design re-sync** — the **AC-22/23 + UM attestation rows** on fellows/PRM, `just rearchive` of the
+>   bundled copies, and the realization index — **done**: both designs re-attest at Toolkit-Version 0.2 at a
+>   taggable ref (a maintainer `just rearchive`, not a PR PRM filed here).
+> - **The data-floor graduation** (AC-MCP-C / PR-7 / EX-H9 + D2 EX-H7 + B2 AI-write tiers) **is** a separate
+>   upstream PR, demonstrator-gated on PRM v0.2 — it did **not** gate the cut and lands in v0.2.x. **The cut
+>   was independent of it.**
 
 ## Operating rule (unchanged)
 
@@ -74,10 +77,9 @@ dogfood) over speculative reach; prefer low-cost, high-reversibility moves.
    · D1 pna-active (#100) · positioning-reconcile (#94) · Paper 1 (#91)
         │  ► every v0.2-cuttable normative commitment is merged
         │
-[T0 — NOW] the v0.2 cut ──► drops the "draft" label; satisfies README criteria 3 & 5
-   =  design re-sync (AC-22/23 + UM attestation on fellows/PRM · just rearchive · realization index)
-      +  the mechanical version bump (VERSION→0.2 · stamp sweep · README · CHANGELOG · tag v0.2.0)
-   gated on PRM v0.2's 0.2 attestation; **INDEPENDENT** of the data-floor graduation
+[T0 — DONE ✓] the v0.2 cut ──► dropped the "draft" label; satisfied README criteria 3 & 5
+   =  design re-sync (AC-22/23 + UM attestation on fellows/PRM · just rearchive · realization index)  ✓
+      +  the mechanical version bump (VERSION 0.2.0 · stamp sweep · README · CHANGELOG · tag v0.2.0)   ✓
         │
         ├──► [T1 — testing now] PRM v0.2 / data-floor
         │         └──► GRADUATION wave (a *separate* upstream PR): data-floor trio (AC-MCP-C/PR-7/EX-H9)
@@ -89,9 +91,10 @@ dogfood) over speculative reach; prefer low-cost, high-reversibility moves.
 
 ## Priority tiers
 
-### Tier 0 — the v0.2 spec cut *(the near-term keystone; normative work DONE, the cut remains)*
-All the normative content is merged to `main`; what remains is the **design re-sync + the mechanical
-bump**. Detailed plan: [`plans/v0.2-spec-cut-plan.md`](../plans/v0.2-spec-cut-plan.md).
+### Tier 0 — the v0.2 spec cut *(DONE — shipped 2026-06-27)*
+All the normative content is merged to `main`, and the **design re-sync + the mechanical bump** have
+shipped: `VERSION` is `0.2.0`, tag `v0.2.0` is cut, README is de-drafted, and the released `## v0.2`
+CHANGELOG section is in place. Detailed plan: [`plans/v0.2-spec-cut-plan.md`](../plans/v0.2-spec-cut-plan.md).
 - **A. 4-goal restructure** — **DONE** (in `main`).
 - **B1. Distribution verifiability** — **DONE** as universal **AC-23** (#95).
 - **B2. Safe-AI-write tiers (AC-PRM-E/F)** — **deferred to PRM v0.2 → graduation wave.** AC-PRM-F is
@@ -101,21 +104,22 @@ bump**. Detailed plan: [`plans/v0.2-spec-cut-plan.md`](../plans/v0.2-spec-cut-pl
 - **D. Exceptions-hardening** — **D3 floor DONE** (#98) · **D1 `pna-active` DONE** (#100) · **D2 EX-H7
   fail-closed → deferred to the graduation wave** (gated on PRM v0.2's enforced-consent demonstrator).
 - **Positioning-reconciliation** — **DONE** (#94): evolutionary stance + Disclosure framing in the spec.
-- **The cut (TODO — the remaining Tier-0 work):**
-  1. **Design re-sync** *(the one non-trivial part)* — add **AC-22/23 + UM** attestation rows to
-     fellows/PRM `Architecture.md`, `just rearchive` both at their v0.2 refs, regenerate the realization
-     index. Needs PRM v0.2's attestation (your work) for the PRM side; fellows is a maintainer update.
-  2. **Mechanical bump** — `VERSION` → `0.2.0`; Toolkit-Version stamp sweep; both designs to
-     `toolkit_version = "0.2"`; README "draft" removed (3 places); CHANGELOG `## v0.1 draft (in progress)`
-     → released **`## v0.2`**; tag `v0.2.0`.
-- **Done-when:** `just ci` green; `VERSION` = `0.2.0`; README "draft" gone; CHANGELOG v0.2 + tag. Keep
-  the mechanical bump a separate, last, reviewable PR.
+- **The cut (DONE):**
+  1. **Design re-sync** — **done**: AC-22/23 + UM attestation rows on fellows/PRM `Architecture.md`,
+     `just rearchive` of both bundled copies, realization index regenerated (both re-attest at 0.2).
+  2. **Mechanical bump** — **done**: `VERSION` = `0.2.0`; both designs `toolkit_version = "0.2"`; README
+     "draft" removed; CHANGELOG released **`## v0.2`**; tag `v0.2.0`. The trailing documentation-stamp
+     reconciliation (this roadmap, the plans, `llms.txt`, the design.toml template) landed with the
+     drift-fix PR, which also brought the durable docs under the version-stamp lint so they can't rot again.
+- **Done-when (all met):** `just ci` green; `VERSION` = `0.2.0`; README "draft" gone; CHANGELOG v0.2 + tag.
 
 ### Tier 1 — PRM v0.2 *(the reference-design long pole; nearly complete)*
 PRM's v0.2: custom relationship schema · per-field AI-write tiers · the **data-floor** demonstrator
 (sealed-by-default disclosure tiers + projection-bound MCP surface) · the workspace `EX-CLOUD-LLM`
-consent gate (EX-H2–H5/H9) enforced at its own surface (the D2 demonstrator). *State (2026-06-25):
-testing, nearly complete — see PRM's `plans/ex-cloud-llm-workspace-handler.md`.*
+consent gate (EX-H2–H5/H9) enforced at its own surface (the D2 demonstrator). *State (2026-06-27):
+in final testing, near merge — see PRM's `plans/ex-cloud-llm-workspace-handler.md`. Once it merges, the
+design re-sync (Architecture re-attestation + `just rearchive`) and the graduation-wave upstream PR are the
+follow-on toolkit work to prepare for.*
 - **Feeds the cut:** PRM v0.2's `Architecture.md` (attesting AC-22/23 + UM + toolkit_version 0.2 at a
   taggable ref) is what the cut's PRM-side re-sync consumes.
 - **Unblocks the GRADUATION wave (a separate upstream PR):** once PRM v0.2 attests them, the **data-floor
@@ -164,7 +168,7 @@ health/vulnerability-adjacent, so it stress-tests G2/G3 harder than any prior de
 | Exceptions-hardening — `pna-active` predicate split | exceptions existential review | D1 | fellows (`<body data-pna-mode>`) | **DONE** — normative + `not-pna-active` posture, merged (#100) |
 | Exceptions-hardening — EX-H7 fail-closed | exceptions existential review | D2 | PRM v0.2 (enforced consent) | **Deferred → graduation wave** (gated on PRM v0.2; fellows attests only best-effort) |
 | Tiered safe-AI-write (AC-PRM-E/F) | prm / #64 r2 | B2 | PRM | **Deferred to PRM v0.2** → graduation wave |
-| Data-floor / disclosure tiers (AC-MCP-C/PR-7/EX-H9) | design note / PR #34 | graduation | PRM v0.2 | **In progress** (PRM testing 2026-06-25); the **Disclosure-family** demonstrator (ties to Paper 1) |
+| Data-floor / disclosure tiers (AC-MCP-C/PR-7/EX-H9) | design note / PR #34 | graduation | PRM v0.2 | **In progress** (PRM in final testing 2026-06-27); the **Disclosure-family** demonstrator (ties to Paper 1) |
 | EUDI/IDS/Inrupt open questions: EX-H7 enforced · AC-PRM-H (AC-2 → local daemon) | prm | graduation | PRM (PR #59 loopback auth + lint) | **Resolve in the graduation wave** with the data-floor |
 | Paper 1 positioning → evolutionary stance + Disclosure framing | R2 survey / PR #91 | positioning-reconcile | landed paper | **DONE** — folded into the spec Preamble + § Scope (#94) |
 | Reference drift: corpus ↔ PriorArtReferences | Paper 1 § 9 | ref-drift lint | — | **Tier 2 toolkit-fix** — reconcile-not-merge + a drift lint |
@@ -188,8 +192,8 @@ health/vulnerability-adjacent, so it stress-tests G2/G3 harder than any prior de
 
 - **Criteria 1, 4, 6** (toolkit proven end-to-end · durable archival · AC-as-identity) — **met** (keystone).
 - **Criterion 3** (a contributor submits a design end-to-end) — **met** (PRM); awaits a first *external* contribution.
-- **Criterion 5** (the spec evolves ≥1 minor version from a design's findings) — **met at the v0.2 cut**
-  (all normative content merged; the cut is imminent); **deepened** by the PRM-driven graduation wave.
+- **Criterion 5** (the spec evolves ≥1 minor version from a design's findings) — **met** at the v0.2 cut
+  (shipped 2026-06-27: `VERSION` 0.2.0, tag `v0.2.0`); **deepened** by the PRM-driven graduation wave.
 - **Criterion 2** (a user audits a candidate → AC-keyed report) — exercised by the evaluate flow, surfaced
   by the Visual Validator (now with the `not-pna-active` posture); deepened by the audit-flow UX (#55/#62).
 

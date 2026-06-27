@@ -1,6 +1,6 @@
 # AC-PRM-H — authenticated loopback surface · field notes
 
-*Surfaced by [prm #59](https://github.com/richbodo/prm/pull/59) (daemon session-auth + the loopback-surface lint). The AC: [`spec/axes.md` § Workspace shell](../../spec/axes.md#ac-prm-h).*
+*Surfaced by [prm #59](https://github.com/richbodo/prm/pull/59) (daemon session-auth + the loopback-surface lint). The AC: [`spec/PNA_Spec.md` § Conditional architectural commitments](../../spec/PNA_Spec.md#ac-prm-h).*
 
 ## Lesson
 
