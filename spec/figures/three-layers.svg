@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="624" font-family="-apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#202124">
+  <rect x="0" y="0" width="1200" height="624" fill="white"/>
+
+  <!-- Title -->
+  <text x="600" y="40" text-anchor="middle" font-size="24" font-weight="700">The PNA Spec in three layers</text>
+  <text x="600" y="66" text-anchor="middle" font-size="13" fill="#5f6368">Goals &#8594; architectural commitments &#8594; realizations &#183; the dividing test: does it survive a total technology swap?</text>
+
+  <!-- ===================== LAYER 0 — GOALS (blue) ===================== -->
+  <!-- left label -->
+  <text x="212" y="130" text-anchor="end" font-size="11" letter-spacing="1.5" fill="#5f6368">LAYER 0</text>
+  <text x="212" y="158" text-anchor="end" font-size="21" font-weight="700" fill="#0c5460">Goals</text>
+  <text x="212" y="180" text-anchor="end" font-size="12" font-style="italic" fill="#5f6368">the why</text>
+
+  <!-- container -->
+  <rect x="236" y="92" width="560" height="130" rx="10" fill="#d1ecf1" stroke="#0c5460" stroke-width="1.5"/>
+  <text x="254" y="114" font-size="12" font-style="italic" fill="#0c5460">The four user-facing outcomes (the whole set):</text>
+  <!-- chips -->
+  <rect x="254" y="126" width="254" height="32" rx="7" fill="#ffffff" stroke="#0c5460" stroke-width="1"/>
+  <text x="266" y="147" font-size="12.5">1 &#183; Take ownership of the root</text>
+  <rect x="524" y="126" width="254" height="32" rx="7" fill="#ffffff" stroke="#0c5460" stroke-width="1"/>
+  <text x="536" y="147" font-size="12.5">2 &#183; Protect integrity (validate)</text>
+  <rect x="254" y="168" width="254" height="32" rx="7" fill="#ffffff" stroke="#0c5460" stroke-width="1"/>
+  <text x="266" y="189" font-size="12.5">3 &#183; Protect the root from egress</text>
+  <rect x="524" y="168" width="254" height="32" rx="7" fill="#ffffff" stroke="#0c5460" stroke-width="1"/>
+  <text x="536" y="189" font-size="12.5">4 &#183; Survive entropy &amp; accidents</text>
+
+  <!-- right description -->
+  <text x="812" y="150" font-size="13">The few outcomes a PNA delivers for a person.</text>
+  <text x="812" y="174" font-size="13"><tspan font-weight="700">Belongs here</tspan> only if it names no technology &#8212; pure why.</text>
+
+  <!-- derivation arrow: Goals -> ACs -->
+  <text x="516" y="252" text-anchor="middle" font-size="22" fill="#9aa0a6">&#8595;</text>
+  <text x="540" y="246" font-size="11" fill="#9aa0a6">each Goal is made real by its ACs</text>
+
+  <!-- ===================== LAYER 1 — COMMITMENTS (green) ===================== -->
+  <text x="212" y="296" text-anchor="end" font-size="11" letter-spacing="1.5" fill="#5f6368">LAYER 1</text>
+  <text x="212" y="320" text-anchor="end" font-size="18" font-weight="700" fill="#155724">Architectural</text>
+  <text x="212" y="342" text-anchor="end" font-size="18" font-weight="700" fill="#155724">commitments</text>
+  <text x="212" y="362" text-anchor="end" font-size="12" font-style="italic" fill="#5f6368">the what (checkable)</text>
+
+  <rect x="236" y="258" width="560" height="130" rx="10" fill="#d4edda" stroke="#155724" stroke-width="1.5"/>
+  <text x="254" y="280" font-size="12" font-style="italic" fill="#155724">Promises with stable AC-* IDs &#8212; universal &amp; conditional:</text>
+  <rect x="254" y="292" width="254" height="32" rx="7" fill="#ffffff" stroke="#155724" stroke-width="1"/>
+  <text x="266" y="313" font-size="12.5">AC-1 &#183; sealed, sovereign private layer</text>
+  <rect x="524" y="292" width="254" height="32" rx="7" fill="#ffffff" stroke="#155724" stroke-width="1"/>
+  <text x="536" y="313" font-size="12.5">AC-19 &#183; show payload before send</text>
+  <rect x="254" y="334" width="254" height="32" rx="7" fill="#ffffff" stroke="#155724" stroke-width="1"/>
+  <text x="266" y="355" font-size="12.5">AC-9 &#183; auto-backup recovery ring</text>
+  <text x="536" y="355" font-size="12.5" font-style="italic" fill="#5f6368">+ conditional: AC-MCP-A, AC-PRM-B&#8230;</text>
+
+  <text x="812" y="316" font-size="13">Checkable promises that make the Goals real.</text>
+  <text x="812" y="340" font-size="13"><tspan font-weight="700">Test:</tspan> survives a total technology swap &amp; serves a Goal.</text>
+
+  <!-- ===================== THE DIVIDING TEST ===================== -->
+  <text x="236" y="408" font-size="11" fill="#5f6368">&#9650; Layers 0&#8211;1 &#8212; survive the swap</text>
+  <text x="1176" y="408" text-anchor="end" font-size="11" fill="#5f6368">&#9660; Layer 2 &#8212; stack-specific</text>
+  <line x1="236" y1="416" x2="1176" y2="416" stroke="#9aa0a6" stroke-width="1.3" stroke-dasharray="6,4"/>
+  <rect x="498" y="406" width="204" height="19" fill="white"/>
+  <text x="600" y="420" text-anchor="middle" font-size="12" font-weight="700" fill="#5f6368">the dividing test</text>
+
+  <!-- ===================== LAYER 2 — REALIZATIONS (amber) ===================== -->
+  <text x="212" y="476" text-anchor="end" font-size="11" letter-spacing="1.5" fill="#5f6368">LAYER 2</text>
+  <text x="212" y="500" text-anchor="end" font-size="18" font-weight="700" fill="#946c00">Realizations</text>
+  <text x="212" y="522" text-anchor="end" font-size="18" font-weight="700" fill="#946c00">&amp; constraints</text>
+  <text x="212" y="542" text-anchor="end" font-size="12" font-style="italic" fill="#5f6368">the how (per stack)</text>
+
+  <rect x="236" y="440" width="560" height="130" rx="10" fill="#fff3cd" stroke="#d39e00" stroke-width="1.5"/>
+  <text x="254" y="462" font-size="12" font-style="italic" fill="#946c00">Stack-specific mechanics &#8212; no AC-* IDs:</text>
+  <rect x="254" y="474" width="254" height="32" rx="7" fill="#ffffff" stroke="#d39e00" stroke-width="1"/>
+  <text x="266" y="495" font-size="12.5">RZ-1 &#183; single OPFS-owning worker</text>
+  <rect x="524" y="474" width="254" height="32" rx="7" fill="#ffffff" stroke="#d39e00" stroke-width="1"/>
+  <text x="536" y="495" font-size="12.5">RZ-5 &#183; native file-lock</text>
+  <rect x="254" y="516" width="254" height="32" rx="7" fill="#ffffff" stroke="#d39e00" stroke-width="1"/>
+  <text x="266" y="537" font-size="12.5">CST-PWA-* &#183; browser sandbox ceiling</text>
+  <text x="536" y="537" font-size="12.5" font-style="italic" fill="#5f6368">+ sub-contracts: ST-1, WS-10 &#183; axis picks</text>
+
+  <text x="812" y="498" font-size="13">How a commitment is met on one specific stack.</text>
+  <text x="812" y="522" font-size="13"><tspan font-weight="700">Test:</tspan> names a stack &#8594; fails the swap; no AC-* ID.</text>
+
+  <!-- footnote: the swap test made concrete -->
+  <text x="236" y="596" font-size="11" fill="#5f6368"><tspan font-weight="700">Worked example.</tspan> AC-11 (one writer at a time) is realized by RZ-1 &#8212; a single OPFS-owning worker &#8212; on a browser stack, and by RZ-5 &#8212; a native file-lock &#8212; on a native stack.</text>
+  <text x="236" y="612" font-size="11" fill="#5f6368">One Layer-1 commitment, two Layer-2 realizations: the gap between them is exactly what the swap test measures.</text>
+</svg>

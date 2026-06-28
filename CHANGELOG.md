@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+### Spec figure: the three layers, illustrated (`spec/figures/three-layers.svg`)
+
+Added a diagram to `spec/PNA_Spec.md` § How the pieces fit together showing the spec's three layers —
+**Goals** (L0, the *why*), **architectural commitments** (L1, the *what*; ACs, the unit of conformance), and
+**realizations & constraints** (L2, the *how*; per-stack mechanics). Each layer is colored, named on the
+left, holds a couple of examples, and carries its membership test on the right; the dividing line between L1
+and L2 marks the swap test, and a worked example shows AC-11 realized by RZ-1 (a single OPFS-owning worker)
+on a browser stack and by RZ-5 (a native file-lock) on a native stack — one commitment, two realizations.
+Hand-authored SVG matching the existing `docs/papers/figures/figure-2.svg` style, with a 2× PNG export
+alongside. Docs only — no AC, contract, or conformance-meaning change. `just ci` green.
+
 ### Documentation-stamp reconciliation: finish the v0.2 cut + bring durable docs under the version lint
 
 - **Completed the v0.2 mechanical bump's trailing drift.** `VERSION` was already `0.2.0` (tag `v0.2.0`,

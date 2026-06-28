@@ -174,6 +174,10 @@ Your data **survives** — you never lose your people. The private layer is dura
 
 The spec is a small graph of typed components arranged in **three layers**. Naming the layers — and the line between them — is what keeps the spec navigable for a human and *applicable* for an AI building or evaluating against it on a technology stack the authors never saw.
 
+![The PNA Spec in three layers — Layer 0 Goals (the why), Layer 1 architectural commitments (the what; ACs, the unit of conformance), Layer 2 realizations and constraints (the how; per-stack mechanics). Layers 0–1 survive a total technology swap; Layer 2 names a specific stack and does not. Worked example: AC-11 (one writer at a time) is realized by RZ-1 (a single OPFS-owning worker) on a browser stack and by RZ-5 (a native file-lock) on a native stack — one commitment, two realizations.](figures/three-layers.svg)
+
+*The three layers and the line between them; [The dividing test](#the-dividing-test) below states it precisely.*
+
 ### The three layers
 
 - **Layer 0 — Goals.** The few human- and agent-facing outcomes a PNA delivers (see [§ Goals](#goals)). Stated at outcome altitude; they name no technology. The *why*.
