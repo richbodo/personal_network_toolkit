@@ -64,7 +64,7 @@ Worked examples below cite `fellows_local_db` as the first reference design — 
 
 - <a id="vocab-mcp-server"></a>**MCP server.** A process exposing PNA capabilities as MCP tools (Anthropic's Model Context Protocol — JSON-RPC, a JSON-based Remote Procedure Call format, over stdio or socket). The spec defines five canonical MCP servers per PNA, structured around the Shared / Private privacy boundary so an AI client can be wired to one without the other:
 
-  - **Shared Data Ops** — read access over the Shared DB (mirrored contact data; AC-MCP-A is not triggered, because no Private DB rows flow through this surface).
+  - **Shared Data Ops** — read access over the Shared DB (typically mirrored contact data from SaaS systems; AC-MCP-A is not triggered, because no Private DB rows flow through this surface).
   - **Private Data Ops** — read access over the Private DB (user-owned relationship data; AC-MCP-A applies — cloud clients require per-call consent).
   - **Ingestion** — drives imports, dedup, orphan preview.
   - **Communications** — stages outreach for workspace-mediated user confirmation (AC-MCP-B; the MCP server proposes, the workspace disposes).
@@ -172,12 +172,18 @@ Your data **survives** — you never lose your people. The private layer is dura
 
 The spec is a small graph of typed components arranged in **three layers**. Naming the layers — and the line between them — is what keeps the spec navigable for a human and *applicable* for an AI building or evaluating against it on a technology stack the authors never saw.
 
+![The PNA Spec in three layers — Layer 0 Goals (the why), Layer 1 architectural commitments (the what; ACs, the unit of conformance), Layer 2 realizations and constraints (the how; per-stack mechanics). Layers 0–1 survive a total technology swap; Layer 2 names a specific stack and does not. Worked example: AC-11 (one writer at a time) is realized by RZ-1 (a single OPFS-owning worker) on a browser stack and by RZ-5 (a native file-lock) on a native stack — one commitment, two realizations.](figures/three-layers.svg)
+
+*The three layers and the line between them; [The dividing test](#the-dividing-test) below states it precisely.*
+
 ### The three layers
 
 - **Layer 0 — Goals.** The few human- and agent-facing outcomes a PNA delivers (see [§ Goals](#goals)). Stated at outcome altitude; they name no technology. The *why*.
+  
 - **Layer 1 — Architectural commitments (ACs).** The checkable promises that make the Goals real (see [§ Universal architectural commitments](#universal-architectural-commitments)). An AC is the **unit of conformance**. Layer 1 has two kinds, both technology-independent:
   - **Universal** — applies to every PNA, derived from the Goals alone.
   - **Conditional** — applies only when the PNA has a particular *behavioral property* (it reaches out to contacts; it mirrors more than one source; it exposes a programmatic surface over private data). Still Layer 1: a conditional AC names a *behavior*, never a technology.
+    
 - **Layer 2 — Realizations and constraints (the mechanical layer).** Everything that names or depends on a specific technology stack: the **Axes** ([`axes.md`](axes.md)) — the menu of technology choices a builder picks from; the **realizations** of each commitment on a chosen stack (a single OPFS-owning worker; a native file-lock); the **Constraints** (`CST-*`, [`constraints.md`](constraints.md)) a stack imposes; and the per-component **[sub-contracts](#vocab-subcontract)** that decompose an implementation.
 
 ### The dividing test
