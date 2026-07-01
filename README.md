@@ -6,7 +6,7 @@ The PNA Toolkit is a [generative application-class blueprint](docs/PriorArt.md) 
 
 The spec is built in **three layers**: the **Goals** (what a PNA delivers for a person), the **architectural commitments** (the technology-independent promises that make the Goals real — and the unit of conformance), and the **realizations and constraints** (how those promises are met on a specific stack — a given language, OS, database, or delivery mechanism — and what that stack permits). A commitment holds no matter how the app is built; the mechanical specifics live one layer down. See [§ How the pieces fit together](spec/PNA_Spec.md#how-the-pieces-fit-together).
 
-When building a PNA, specs are foundational because users will increasingly compose software by prompting AI agents, and success is measured by adherence to them.
+When building a PNA, specs are foundational because users will increasingly compose software by prompting AI agents, and as we believe that these specs are fundamental to user data safety, success is measured by adherence to them.
 
 Three deliverables, in dependency order:
 
